@@ -5,7 +5,8 @@ public class CuisineHasDependents extends EntityHasDependents{
 
   public CuisineHasDependents(String mensagem) {
     super(mensagem);
-    //TODO Auto-generated constructor stub
   }
-  
+  public CuisineHasDependents(Long id) {
+    super(String.format("Cuisine with id: %d id 1 has dependent entities in the system", id));
+  }
 }
