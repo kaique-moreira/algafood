@@ -1,8 +1,6 @@
 package km1.algafood.api.exceptionHandler;
 
-import lombok.Getter;
 
-@Getter
 public enum ProblemType {
   RESOURCE_NOT_FOUND("/resource-not-found", "Resource not found"),
   RESOURCE_HAS_DEPENDENTS("/resource-has-dependents", "Resource has dependents"),
@@ -15,4 +13,13 @@ public enum ProblemType {
     this.uri = "https://algafood.com.br" + path;
     this.title = title;
   }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getUri() {
+    return uri;
+  }
+
 }
