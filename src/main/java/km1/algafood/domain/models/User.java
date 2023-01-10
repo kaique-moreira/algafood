@@ -1,26 +1,55 @@
 package km1.algafood.domain.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.annotations.CreationTimestamp;
 
+@Entity
+@Table(name = "tb_user")
 public class User {
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	private String name;
-	
-	private String email;
-	
-	private String password;
-	
-	private LocalDateTime registerDate;
-	
-	private List<Group> grupos = new ArrayList<>();
+  @Column(nullable = false)
+  private String name;
 
-  public User() {
-  }
+  @Column(nullable = false)
+  private String email;
 
-  public User(Long id, String name, String email, String password, LocalDateTime registerDate, List<Group> grupos) {
+  @Column(nullable = false)
+  private String password;
+
+  @CreationTimestamp
+  @Column(nullable = false)
+  private LocalDateTime registerDate;
+
+  @ManyToMany
+  @JoinTable(
+      name = "user_group",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "group_id"))
+  private List<Group> grupos = new ArrayList<>();
+
+  public User() {}
+
+  public User(
+      Long id,
+      String name,
+      String email,
+      String password,
+      LocalDateTime registerDate,
+      List<Group> grupos) {
     this.id = id;
     this.name = name;
     this.email = email;
@@ -87,19 +116,13 @@ public class User {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     User other = (User) obj;
     if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
+      if (other.id != null) return false;
+    } else if (!id.equals(other.id)) return false;
     return true;
   }
-
 }

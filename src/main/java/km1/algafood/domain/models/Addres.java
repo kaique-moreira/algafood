@@ -1,16 +1,29 @@
 package km1.algafood.domain.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Embeddable
 public class Addres {
   private String postalCode;
 
+  @Column(name = "addres_street")
   private String street;
 
+  @Column(name = "addres_number")
   private String number;
 
+  @Column(name = "addres_complement")
   private String complement;
 
+  @Column(name = "addres_district")
   private String district;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "addres_city_id")
   private City city;
 
 
