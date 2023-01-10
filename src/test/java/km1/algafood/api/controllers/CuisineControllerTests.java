@@ -3,15 +3,25 @@ package km1.algafood.api.controllers;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
-import static km1.algafood.matchers.ProblemMatcher.*;
-import static km1.algafood.utils.CuisineBuilderFactory.*;
-import static org.hamcrest.MatcherAssert.*;
-import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
+import static km1.algafood.matchers.CuisineMatcher.isCuisineEqualTo;
+import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
+import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
+import static km1.algafood.utils.CuisineBuilderFactory.registeredCuisine;
+import static km1.algafood.utils.CuisineBuilderFactory.validCuisine;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
-import static km1.algafood.matchers.CuisineMatcher.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,14 +33,6 @@ import km1.algafood.domain.exceptions.CuisineHasDependents;
 import km1.algafood.domain.exceptions.CuisineNotFountException;
 import km1.algafood.domain.models.Cuisine;
 import km1.algafood.domain.services.CuisineRegisterService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 
 @ExtendWith(MockitoExtension.class)
 public class CuisineControllerTests {
