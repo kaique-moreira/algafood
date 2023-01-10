@@ -13,13 +13,13 @@ public class Restaurant {
 
   private BigDecimal shippingFee;
 
-  private Cuisine cozinha;
-
-  private Addres addres;
+  private Cuisine cuisine;
 
   private LocalDateTime registerDate;
 
   private LocalDateTime updateDate;
+
+  private Addres addres;
 
   private List<PaymentMethod> paymentMethod = new ArrayList<>();
 
@@ -40,7 +40,7 @@ public class Restaurant {
     this.id = id;
     this.name = name;
     this.shippingFee = shippingFee;
-    this.cozinha = cozinha;
+    this.cuisine = cozinha;
     this.addres = addres;
     this.registerDate = registerDate;
     this.updateDate = updateDate;
@@ -76,12 +76,12 @@ public class Restaurant {
     this.shippingFee = shippingFee;
   }
 
-  public Cuisine getCozinha() {
-    return cozinha;
+  public Cuisine getCuisine() {
+    return cuisine;
   }
 
-  public void setCozinha(Cuisine cozinha) {
-    this.cozinha = cozinha;
+  public void setCuisine(Cuisine cozinha) {
+    this.cuisine = cozinha;
   }
 
   public Addres getAddres() {
