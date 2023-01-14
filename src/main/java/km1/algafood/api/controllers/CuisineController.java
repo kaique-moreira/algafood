@@ -34,7 +34,8 @@ public class CuisineController {
 
   @GetMapping
   public List<Cuisine> findCuisines() {
-    return registerService.fetchAll();
+    List<Cuisine> cuisines = registerService.fetchAll();
+    return cuisines;
   }
 
   @GetMapping("/{id}")

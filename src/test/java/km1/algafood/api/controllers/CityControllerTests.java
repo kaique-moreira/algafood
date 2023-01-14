@@ -1,5 +1,4 @@
 package km1.algafood.api.controllers;
-
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
@@ -43,7 +42,7 @@ public class CityControllerTests {
   ObjectMapper mapper = new ObjectMapper();
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     standaloneSetup(controller, exceptionHandler);
     basePath = BASE_PATH;
   }
@@ -59,7 +58,8 @@ public class CityControllerTests {
     .when()
       .get("/1")
     .then()
-      .status(HttpStatus.NOT_FOUND); }
+      .status(HttpStatus.NOT_FOUND); 
+  }
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenGetIsCalledWithUnregisteredId() {

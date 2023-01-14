@@ -1,6 +1,6 @@
 package km1.algafood.api.exceptionHandler;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -52,7 +52,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
   private ProblemBuilder createProblemBuilder(
       HttpStatus status, ProblemType problemType, String detail) {
     return Problem.builder()
-        .timestamp(LocalDateTime.now())
+        .timestamp(OffsetDateTime.now())
         .status(status)
         .type(problemType.getUri())
         .title(problemType.getTitle())
@@ -64,14 +64,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
       Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     if (body == null) {
       body = Problem.builder()
-          .timestamp(LocalDateTime.now())
+          .timestamp(OffsetDateTime.now())
           .title(((HttpStatus) status).getReasonPhrase())
           .status(status)
           .detail(DEFAULT_ERROR_MESSAGE)
           .build();
     } else if (body instanceof String) {
       body = Problem.builder()
-          .timestamp(LocalDateTime.now())
+          .timestamp(OffsetDateTime.now())
           .title((String) body)
           .status(status)
           .detail(DEFAULT_ERROR_MESSAGE)

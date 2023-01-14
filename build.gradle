@@ -9,7 +9,9 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
-
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -22,6 +24,7 @@ flyway {
     password = ''
     cleanDisabled = false
 }
+
 testing {
     suites { 
         test { 
@@ -29,14 +32,15 @@ testing {
             dependencies {
                 implementation 'io.rest-assured:spring-mock-mvc'
 	              implementation 'org.springframework.boot:spring-boot-starter-test'
-                implementation project() 
+                implementation project()
             }
         }
 
         intTest(JvmTestSuite) { 
             dependencies {
 	              implementation 'org.springframework.boot:spring-boot-starter-test'
-                implementation project() 
+                implementation project()
+                implementation sourceSets.test.output
             }
         sources { 
                 java { 
@@ -51,6 +55,25 @@ testing {
                 }
             }
         }
+        apiTest(JvmTestSuite) { 
+            dependencies {
+                implementation project() 
+                implementation 'io.rest-assured:rest-assured:5.3.0'
+	              implementation 'org.springframework.boot:spring-boot-starter-test'
+            }
+        sources { 
+                java { 
+                    srcDirs = ['src/apiTest/java'] 
+                }
+            }
+            targets { 
+                all {
+                    testTask.configure {
+                        shouldRunAfter(intTest)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -58,11 +81,32 @@ repositories {
 	mavenCentral()
 }
 
+
 dependencies {
+  compileOnly 'org.projectlombok:lombok'
+  annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.flywaydb:flyway-core'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
   compileOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly 'org.postgresql:postgresql'
+}
+
+tasks.named('bootRun') {
+    doFirst {
+        file('.env').readLines().each() {
+            def (key, value) = it.tokenize('=')
+            environment key, value
+        }
+    }
+}
+
+tasks.named('bootRun') {
+    doFirst {
+        file('.env').readLines().each() {
+            def (key, value) = it.tokenize('=')
+            environment key, value
+        }
+    }
 }

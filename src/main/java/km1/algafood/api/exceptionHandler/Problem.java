@@ -1,19 +1,19 @@
 package km1.algafood.api.exceptionHandler;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 
 public class Problem extends ProblemDetail {
-  private LocalDateTime timestamp;
+  private OffsetDateTime timestamp;
 
   public Problem() {
   }
 
-  public Problem(ProblemDetail other, LocalDateTime timestamp) {
+  public Problem(ProblemDetail other, OffsetDateTime timestamp) {
     super(other);
     this.timestamp = timestamp;
   }
@@ -22,11 +22,11 @@ public class Problem extends ProblemDetail {
     return new ProblemBuilder();
   }
 
-  public LocalDateTime getTimestamp() {
+  public OffsetDateTime getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(LocalDateTime timestamp) {
+  public void setTimestamp(OffsetDateTime timestamp) {
     this.timestamp = timestamp;
   }
 
@@ -37,7 +37,7 @@ public class Problem extends ProblemDetail {
     private HttpStatusCode status;
     private String detail;
     private String instance;
-    private LocalDateTime timestamp;
+    private OffsetDateTime timestamp;
     private Map<String, Object> properties;
 
     public ProblemBuilder type(String type) {
@@ -73,7 +73,7 @@ public class Problem extends ProblemDetail {
       return this;
     }
 
-    public ProblemBuilder timestamp(LocalDateTime timestamp) {
+    public ProblemBuilder timestamp(OffsetDateTime timestamp) {
       this.timestamp = timestamp;
       return this;
     }
