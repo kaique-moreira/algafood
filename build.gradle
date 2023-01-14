@@ -2,33 +2,111 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.0'
 	id 'io.spring.dependency-management' version '1.1.0'
+  id 'jvm-test-suite'
+  id "org.flywaydb.flyway" version "9.8.1"
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
-
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+}
+ 
+flyway {
+    url = 'jdbc:postgresql://172.17.0.2:5432/algafood'
+    user = 'postgres'
+    password = ''
+    cleanDisabled = false
+}
+
+testing {
+    suites { 
+        test { 
+            useJUnitJupiter() 
+            dependencies {
+                implementation 'io.rest-assured:spring-mock-mvc'
+	              implementation 'org.springframework.boot:spring-boot-starter-test'
+                implementation project()
+            }
+        }
+
+        intTest(JvmTestSuite) { 
+            dependencies {
+	              implementation 'org.springframework.boot:spring-boot-starter-test'
+                implementation project()
+                implementation sourceSets.test.output
+            }
+        sources { 
+                java { 
+                    srcDirs = ['src/intTest/java'] 
+                }
+            }
+            targets { 
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+        apiTest(JvmTestSuite) { 
+            dependencies {
+                implementation project() 
+                implementation 'io.rest-assured:rest-assured:5.3.0'
+	              implementation 'org.springframework.boot:spring-boot-starter-test'
+            }
+        sources { 
+                java { 
+                    srcDirs = ['src/apiTest/java'] 
+                }
+            }
+            targets { 
+                all {
+                    testTask.configure {
+                        shouldRunAfter(intTest)
+                    }
+                }
+            }
+        }
+    }
 }
 
 repositories {
 	mavenCentral()
 }
 
+
 dependencies {
+  compileOnly 'org.projectlombok:lombok'
+  annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.flywaydb:flyway-core'
-	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  compileOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+tasks.named('bootRun') {
+    doFirst {
+        file('.env').readLines().each() {
+            def (key, value) = it.tokenize('=')
+            environment key, value
+        }
+    }
+}
+
+tasks.named('bootRun') {
+    doFirst {
+        file('.env').readLines().each() {
+            def (key, value) = it.tokenize('=')
+            environment key, value
+        }
+    }
 }
