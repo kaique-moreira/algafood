@@ -5,9 +5,13 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 
 @Embeddable
+@Builder
 public class Addres {
+
+  @Column(name = "addres_postal_code")
   private String postalCode;
 
   @Column(name = "addres_street")
