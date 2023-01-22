@@ -1,0 +1,14 @@
+spring: 
+  datasource: 
+    url: jdbc:postgresql://localhost:5432/algafood_test?serverTimezone=UTC
+    username: postgres
+    password:  
+    data: classpath:data.sql
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: none
+  flyway:
+    baselineOnMigrate: true
