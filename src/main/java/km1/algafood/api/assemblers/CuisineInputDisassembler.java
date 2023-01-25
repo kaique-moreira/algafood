@@ -16,7 +16,7 @@ public class CuisineInputDisassembler implements Function<CuisineInput, Cuisine>
   private final ModelMapper modelMapper;
 
   @Override
-  public Cuisine apply(CuisineInput t) {
-    return modelMapper.map(t, Cuisine.class);
+  public Cuisine apply(CuisineInput cuisineInput) {
+    return modelMapper.map(cuisineInput, Cuisine.class);
   }
 }

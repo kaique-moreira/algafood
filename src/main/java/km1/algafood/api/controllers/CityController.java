@@ -13,33 +13,44 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import km1.algafood.domain.models.City;
+import jakarta.validation.Valid;
+import km1.algafood.api.assemblers.CityDtoAssembler;
+import km1.algafood.api.assemblers.CityInputDisassembler;
+import km1.algafood.api.models.CityDto;
+import km1.algafood.api.models.CityInput;
 import km1.algafood.domain.services.CityRegisterService;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/cities")
+@AllArgsConstructor
 public class CityController {
   
   private final CityRegisterService registerService;
-
-  public CityController(CityRegisterService registerService) {
-    this.registerService = registerService;
-  }
+  private final CityInputDisassembler disassembler;
+  private final CityDtoAssembler assembler;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public City saveCity(@RequestBody City city) {
-    return registerService.register(city);
+  public CityDto saveCity(@RequestBody @Valid CityInput cityInput) {
+    var toRegister = disassembler.apply(cityInput);
+    var registered = registerService.register(toRegister);
+    var cityDto = assembler.apply(registered);
+    return cityDto;
   }
 
   @GetMapping
-  public List<City> findCitys() {
-    return registerService.fetchAll();
+  public List<CityDto> findCitys() {
+    var cities = registerService.fetchAll();
+    var citiesDto = cities.stream().map(assembler).toList();
+    return citiesDto;
   }
 
   @GetMapping("/{id}")
-  public City findCityById(@PathVariable Long id) {
-    return registerService.fetchByID(id);
+  public CityDto findCityById(@PathVariable Long id) {
+    var city = registerService.fetchByID(id);
+    var cityDto = assembler.apply(city);
+    return cityDto;
   }
 
   @DeleteMapping("/{id}")
@@ -49,8 +60,11 @@ public class CityController {
   }
 
   @PutMapping("/{id}")
-  public City updateCityById(@PathVariable Long id,@RequestBody City city) {
-    return registerService.update(id, city);
+  public CityDto updateCityById(@PathVariable Long id,@RequestBody @Valid CityInput cityInput) {
+    var toUpdate = disassembler.apply(cityInput);
+    var updatetd =  registerService.update(id, toUpdate);
+    var cityDto = assembler.apply(updatetd);
+    return cityDto;
   }
 
 
