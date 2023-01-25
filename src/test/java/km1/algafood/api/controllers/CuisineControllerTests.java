@@ -35,6 +35,10 @@ import km1.algafood.domain.services.CuisineRegisterService;
 
 @ExtendWith(MockitoExtension.class)
 public class CuisineControllerTests {
+  private static final long INVALID_ID = 1l;
+  private static final long VALID_ID = 1l;
+  private static final String PATH_VALID_ID = String.format("/%d", VALID_ID);
+  private static final String PATH_INVALID_ID = String.format("/%d", INVALID_ID);
   @Mock private CuisineRegisterService registerService;
   @InjectMocks private CuisineController controller;
   @InjectMocks private ApiExceptionHandler exceptionHandler;
@@ -51,26 +55,26 @@ public class CuisineControllerTests {
   @Test
   void shouldReturnNotFound_whenGetIsCalledWithUnregisteredId() {
     when(
-      registerService.fetchByID(1l)
+      registerService.fetchByID(VALID_ID)
     ).thenThrow(CuisineNotFountException.class);
 
     given()
       .accept(ContentType.JSON)
     .when()
-      .get("/1")
+      .get(PATH_VALID_ID)
     .then()
       .status(HttpStatus.NOT_FOUND); }
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenGetIsCalledWithUnregisteredId() {
     when(
-      registerService.fetchByID(1l)
+      registerService.fetchByID(VALID_ID)
     ).thenThrow(CuisineNotFountException.class);
 
     Problem actual = given()
                       .accept(ContentType.JSON)
                     .when()
-                      .get("/1")
+                      .get(PATH_VALID_ID)
                     .thenReturn()
                       .as(Problem.class);
 
@@ -81,12 +85,12 @@ public class CuisineControllerTests {
   void shouldReturnNotFound_whenDeleteIsCalledWitchUnregisteredId() {
     doThrow(
       CuisineNotFountException.class
-    ).when(registerService).remove(1l);
+    ).when(registerService).remove(VALID_ID);
 
     given()
       .accept(ContentType.JSON)
     .when()
-      .delete("/1")
+      .delete(PATH_VALID_ID)
     .then()
       .status(HttpStatus.NOT_FOUND);
   }
@@ -100,7 +104,7 @@ public class CuisineControllerTests {
     Problem actual = given()
                       .accept(ContentType.JSON)
                     .when()
-                      .delete("/1")
+                      .delete(PATH_VALID_ID)
                     .thenReturn()
                       .as(Problem.class);
 
@@ -116,7 +120,7 @@ public class CuisineControllerTests {
     given()
       .accept(ContentType.JSON)
     .when()
-    .delete("/1")
+    .delete(PATH_VALID_ID)
     .then()
       .status(HttpStatus.CONFLICT);
   }
@@ -130,7 +134,7 @@ public class CuisineControllerTests {
     Problem actual = given()
                       .accept(ContentType.JSON)
                     .when()
-                      .delete("/1")
+                      .delete(PATH_VALID_ID)
                     .thenReturn()
                       .as(Problem.class);
 
@@ -156,7 +160,7 @@ public class CuisineControllerTests {
         )
       )
     .when()
-      .put("/1")
+      .put(PATH_VALID_ID)
     .then()
       .status(HttpStatus.NOT_FOUND);
   }
@@ -166,7 +170,7 @@ public class CuisineControllerTests {
     Cuisine valid = validCuisine().build();
     when(
       registerService.update(
-        1l,
+        INVALID_ID,
         valid
       )
     ).thenThrow(CuisineNotFountException.class);
@@ -180,7 +184,7 @@ public class CuisineControllerTests {
                         )
                       )
                     .when()
-                      .put("/1")
+                      .put(PATH_INVALID_ID)
                     .thenReturn()
                       .as(Problem.class);
     
@@ -193,7 +197,7 @@ public class CuisineControllerTests {
     Cuisine registered = registeredCuisine().build();
     when(
       registerService.update(
-        1l,
+        VALID_ID,
         valid
       )
     ).thenReturn(
@@ -209,7 +213,7 @@ public class CuisineControllerTests {
                         )
                       )
                     .when()
-                      .put("/1")
+                      .put(PATH_VALID_ID)
                     .thenReturn()
                       .as(Cuisine.class);
 
@@ -236,7 +240,7 @@ public class CuisineControllerTests {
         )
       )
     .when()
-      .put("/1")
+      .put(PATH_VALID_ID)
     .then()
       .status(HttpStatus.OK);
   }
@@ -308,7 +312,7 @@ public class CuisineControllerTests {
     Cuisine actual = given()
                       .accept(ContentType.JSON)
                     .when()
-                      .get("/1")
+                      .get(PATH_VALID_ID)
                     .thenReturn()
                       .as(Cuisine.class);
 
@@ -349,7 +353,7 @@ public class CuisineControllerTests {
     given()
       .accept(ContentType.JSON)
     .when()
-      .delete("/1")
+      .delete(PATH_VALID_ID)
     .then()
       .status(HttpStatus.NO_CONTENT);
   }
