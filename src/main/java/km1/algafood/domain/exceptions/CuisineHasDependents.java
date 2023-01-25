@@ -7,6 +7,6 @@ public class CuisineHasDependents extends EntityHasDependents{
     super(mensagem);
   }
   public CuisineHasDependents(Long id) {
-    super(String.format("Cuisine with id: %d id 1 has dependent entities in the system", id));
+    super(String.format("Cuisine with id: %d, has dependent entities in the system", id));
   }
 }

@@ -1,6 +1,6 @@
 package km1.algafood;
 
-import static km1.algafood.utils.CuisineBuilderFactory.validCuisine;
+import static km1.algafood.utils.StateBuilderFactory.validState;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -14,21 +14,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-import km1.algafood.domain.exceptions.CuisineNotFountException;
+import km1.algafood.domain.exceptions.StateNotFountException;
 import km1.algafood.domain.exceptions.DomainException;
-import km1.algafood.domain.models.Cuisine;
-import km1.algafood.domain.services.CuisineRegisterService;
+import km1.algafood.domain.models.State;
+import km1.algafood.domain.services.StateRegisterService;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class CuisineRegisterIntTests {
+public class StateRegisterIntTests {
 
   private static final String TEST_DATA = "/querys/test_data.sql";
   private static final String TRUNCATE_TABLES = "/querys/truncate_tables.sql";
   private static final long WITHOUT_DEPENDENTS_ID = 3l;
   private static final long INVALID_ID = 100l;
   private static final long VALID_ID = 1l;
-  @Autowired private CuisineRegisterService underTest;
+  @Autowired private StateRegisterService underTest;
 
   @BeforeEach
   void setup() {
@@ -36,23 +36,23 @@ public class CuisineRegisterIntTests {
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldRegisterCuisine_whenTryRegisterValidCuisine() {
-    Cuisine toRegister  = Cuisine.builder().name("").build();
-    Cuisine registered = underTest.register(toRegister);
+  void shouldRegisterState_whenTryRegisterValidState() {
+    State toRegister  = State.builder().name("").build();
+    State registered = underTest.register(toRegister);
     assertThat(registered.getId(), notNullValue());
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldReturnCuisine_whenTryFetchValidCuisine() {
+  void shouldReturnState_whenTryFetchValidState() {
     var cuisine = underTest.fetchByID(VALID_ID);
-    assertThat(cuisine, notNullValue(Cuisine.class));
+    assertThat(cuisine, notNullValue(State.class));
     assertThat(cuisine.getId(), is(VALID_ID));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldReturnAllCuisines_whenTryFetchAllCuisines() {
+  void shouldReturnAllStates_whenTryFetchAllStates() {
     var cuisines = underTest.fetchAll();
     assertThat(cuisines, notNullValue());
     assertThat(cuisines, hasSize(3));
@@ -60,52 +60,52 @@ public class CuisineRegisterIntTests {
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldThrowCuisineNotFound_whenTryFetchValidCuisine() {
-    assertThrows(CuisineNotFountException.class, () -> underTest.fetchByID(INVALID_ID));
+  void shouldThrowStateNotFound_whenTryFetchValidState() {
+    assertThrows(StateNotFountException.class, () -> underTest.fetchByID(INVALID_ID));
   }
 
-  @Test @Sql({TRUNCATE_TABLES, TEST_DATA}) void shouldThrowDomainException_whenTryRegisterCuisineWithNullName() {
-    Cuisine cuisine = validCuisine().name(null).build();
+  @Test @Sql({TRUNCATE_TABLES, TEST_DATA}) void shouldThrowDomainException_whenTryRegisterStateWithNullName() {
+    State cuisine = validState().name(null).build();
     assertThrows(DomainException.class, () -> underTest.register(cuisine));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldThrowCuisineHasDependents_whenTryRemoveCuisineWhileHasDependents() {
+  void shouldThrowStateHasDependents_whenTryRemoveStateWhileHasDependents() {
     assertThrows(DomainException.class, () -> underTest.remove(1l));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldThrowCuisineNotFound_whenTryRemoveUnregisteredCuisine() {
-    assertThrows(CuisineNotFountException.class, () -> underTest.remove(INVALID_ID));
+  void shouldThrowStateNotFound_whenTryRemoveUnregisteredState() {
+    assertThrows(StateNotFountException.class, () -> underTest.remove(INVALID_ID));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldRemoveCuisine_whenTryRemoveValidCuisine() {
+  void shouldRemoveState_whenTryRemoveValidState() {
     underTest.remove(WITHOUT_DEPENDENTS_ID);
-    assertThrows(CuisineNotFountException.class, () -> underTest.fetchByID(WITHOUT_DEPENDENTS_ID));
+    assertThrows(StateNotFountException.class, () -> underTest.fetchByID(WITHOUT_DEPENDENTS_ID));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldThrowDomainException_whenTryUpdateCuisineWithNullName() {
-    var toUpdate = Cuisine.builder().build();
+  void shouldThrowDomainException_whenTryUpdateStateWithNullName() {
+    var toUpdate = State.builder().build();
     assertThrows(DomainException.class, () -> underTest.update(VALID_ID,toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldThrowCuisineNotFoundException_whenTryUpdateUnregisteredCuisine() {
-    var toUpdate = Cuisine.builder().build();
+  void shouldThrowStateNotFoundException_whenTryUpdateUnregisteredState() {
+    var toUpdate = State.builder().build();
     assertThrows(DomainException.class, () -> underTest.update(INVALID_ID,toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
-  void shouldReturnUpdatedCuisine_whenTryUpdateValidCuisine() {
-    var toUpdate = Cuisine.builder().name("test").build();
+  void shouldReturnUpdatedState_whenTryUpdateValidState() {
+    var toUpdate = State.builder().name("test").build();
     var updated = underTest.update(VALID_ID, toUpdate);
     assertThat(updated.getName(),is(toUpdate.getName()));
     assertThat(updated.getId(),is(VALID_ID));

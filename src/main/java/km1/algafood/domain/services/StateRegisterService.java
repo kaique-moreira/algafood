@@ -24,8 +24,12 @@ public class StateRegisterService implements RegisterService<State> {
 
   @Override
   public State register(State entity) throws DomainException {
-    State state = repository.save(entity);
-    return state;
+    try{
+      entity = repository.save(entity);
+    }catch (DataIntegrityViolationException e){
+      throw new DomainException(e.getMessage());
+    }
+    return entity;
   }
 
   @Override
@@ -49,7 +53,7 @@ public class StateRegisterService implements RegisterService<State> {
   public State update(Long id, State entity) throws DomainException {
     State state = this.fetchByID(id);
     BeanUtils.copyProperties(entity, state, "id");
-    return repository.save(state);
+    return this.register(state);
   }
 
   @Override
