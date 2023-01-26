@@ -6,8 +6,8 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
 import static km1.algafood.matchers.RestaurantMatcher.isRestaurantEqualTo;
-import static km1.algafood.utils.RestaurantBuilderFactory.registeredRestaurant;
-import static km1.algafood.utils.RestaurantBuilderFactory.validRestaurant;
+import static km1.algafood.utils.JsonConversionUtils.toJson;
+import static km1.algafood.utils.RestaurantTestBuilder.aRestaurant;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doThrow;
@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.restassured.http.ContentType;
@@ -143,7 +142,7 @@ public class RestaurantControllerTests {
     when( 
       registerService.update(
         1l,
-        validRestaurant()
+        aRestaurant()
         .build()
       )
     ).thenThrow(RestaurantNotFountException.class);
@@ -153,7 +152,7 @@ public class RestaurantControllerTests {
       .accept(ContentType.JSON)
       .body(
         toJson(
-        validRestaurant()
+        aRestaurant()
           .build()
         )
       )
@@ -168,7 +167,7 @@ public class RestaurantControllerTests {
     when(
       registerService.update(
         1l,
-        validRestaurant()
+        aRestaurant()
         .build()
       )
     ).thenThrow(RestaurantNotFountException.class);
@@ -178,7 +177,7 @@ public class RestaurantControllerTests {
                       .accept(ContentType.JSON)
                       .body(
                         toJson(
-                          validRestaurant()
+                          aRestaurant()
                           .build()
                         )
                       )
@@ -195,11 +194,11 @@ public class RestaurantControllerTests {
     when(
       registerService.update(
         1l,
-        validRestaurant()
+        aRestaurant()
         .build()
       )
     ).thenReturn(
-        registeredRestaurant().build()
+        aRestaurant().withValidId().build()
       );
 
     Restaurant actual = given()
@@ -207,7 +206,7 @@ public class RestaurantControllerTests {
                       .accept(ContentType.JSON)
                       .body(
                         toJson(
-                          validRestaurant()
+                          aRestaurant()
                           .build()
                         )
                       )
@@ -216,7 +215,7 @@ public class RestaurantControllerTests {
                     .thenReturn()
                       .as(Restaurant.class);
 
-    assertThat(actual, isRestaurantEqualTo(registeredRestaurant().build()));
+    assertThat(actual, isRestaurantEqualTo(aRestaurant().withValidId().build()));
   }
 
   @Test
@@ -224,17 +223,17 @@ public class RestaurantControllerTests {
     when(
       registerService.update(
         1l,
-        validRestaurant()
+        aRestaurant()
         .build()
       )
-    ).thenReturn(registeredRestaurant().build());
+    ).thenReturn(aRestaurant().withValidId().build());
 
     given()
       .contentType(ContentType.JSON)
       .accept(ContentType.JSON)
       .body(
         toJson(
-          validRestaurant()
+          aRestaurant()
           .build()
         )
       )
@@ -248,17 +247,17 @@ public class RestaurantControllerTests {
   void shouldReturnCreated_whenPostIsCalledWithValidRestaurant() {
     when(
       registerService.register(
-        validRestaurant()
+        aRestaurant()
         .build()
       )
-    ).thenReturn(registeredRestaurant().build());
+    ).thenReturn(aRestaurant().withValidId().build());
 
     given()
       .contentType(ContentType.JSON)
       .accept(ContentType.JSON)
       .body(
         toJson(
-          validRestaurant()
+          aRestaurant()
           .build()
         )
       )
@@ -272,11 +271,11 @@ public class RestaurantControllerTests {
   void shouldReturnSavedRestaurant_whenPostIsCalledWithValidRestaurant() {
     when(
       registerService.register(
-        validRestaurant()
+        aRestaurant()
         .build()
       )
     ).thenReturn(
-        registeredRestaurant().build()
+        aRestaurant().withValidId().build()
       );
 
     Restaurant actual = given()
@@ -284,7 +283,7 @@ public class RestaurantControllerTests {
                       .accept(ContentType.JSON)
                       .body(
                         toJson(
-                          validRestaurant()
+                          aRestaurant()
                           .build()
                         )
                       )
@@ -293,7 +292,7 @@ public class RestaurantControllerTests {
                     .thenReturn()
                       .as(Restaurant.class);
 
-    assertThat(actual, isRestaurantEqualTo(registeredRestaurant().build()));
+    assertThat(actual, isRestaurantEqualTo(aRestaurant().withValidId().build()));
   }
 
   @Test
@@ -301,7 +300,7 @@ public class RestaurantControllerTests {
     when(
       registerService.fetchByID(1l)
     ).thenReturn(
-        registeredRestaurant().build()
+        aRestaurant().withValidId().build()
       );
 
     Restaurant actual = given()
@@ -311,7 +310,7 @@ public class RestaurantControllerTests {
                     .thenReturn()
                       .as(Restaurant.class);
 
-    assertThat(actual, isRestaurantEqualTo(registeredRestaurant().build()));
+    assertThat(actual, isRestaurantEqualTo(aRestaurant().withValidId().build()));
   }
 
   @Test
@@ -330,8 +329,7 @@ public class RestaurantControllerTests {
       registerService.fetchAll()
     ).thenReturn(
        Collections.singletonList(
-          registeredRestaurant()
-          .build()
+          aRestaurant().withValidId().build()
         )
       );
 
@@ -353,12 +351,5 @@ public class RestaurantControllerTests {
       .status(HttpStatus.NO_CONTENT);
   }
 
-  public String toJson(Object object) {
-    try {
-      return mapper.writeValueAsString(object);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
+  
 }

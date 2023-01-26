@@ -3,10 +3,11 @@ package km1.algafood.api.controllers;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
-import static km1.algafood.matchers.StateMatcher.isStateEqualTo;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
-import static km1.algafood.utils.StateBuilderFactory.*;
+import static km1.algafood.matchers.StateMatcher.isStateEqualTo;
+import static km1.algafood.utils.JsonConversionUtils.toJson;
+import static km1.algafood.utils.StateTestBuilder.aState;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doThrow;
@@ -22,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.restassured.http.ContentType;
@@ -139,7 +139,7 @@ public class StateControllerTests {
 
   @Test
   void shouldReturnNotFound_whenPutIsCalledWithInvalidId() {
-    State valid = validState().build();
+    State valid = aState().build();
     when( 
       registerService.update(
         1l,
@@ -163,7 +163,7 @@ public class StateControllerTests {
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenPutIsCalledWithInvalidId() {
-    State valid = validState().build();
+    State valid = aState().build();
     when(
       registerService.update(
         1l,
@@ -189,8 +189,8 @@ public class StateControllerTests {
    
   @Test
   void shouldReturnUpdatedState_whenPutIsCalledWithValidState() {
-    State valid = validState().build();
-    State registered = registeredState().build();
+    State valid = aState().build();
+    State registered = aState().withValidId().build();
     when(
       registerService.update(
         1l,
@@ -218,8 +218,8 @@ public class StateControllerTests {
 
   @Test
   void shouldReturnOk_whenPutIsCalledWithValidState() {
-    State valid = validState().build();
-    State registered = registeredState().build();
+    State valid = aState().build();
+    State registered = aState().withValidId().build();
     when(
       registerService.update(
         1l,
@@ -243,8 +243,8 @@ public class StateControllerTests {
 
   @Test
   void shouldReturnCreated_whenPostIsCalledWithValidState() {
-    State valid = validState().build();
-    State registered = registeredState().build();
+    State valid = aState().build();
+    State registered = aState().withValidId().build();
 
     when(
       registerService.register(
@@ -268,8 +268,8 @@ public class StateControllerTests {
 
   @Test
   void shouldReturnSavedState_whenPostIsCalledWithValidState() {
-    State valid = validState().build();
-    State registered = registeredState().build();
+    State valid = aState().build();
+    State registered = aState().withValidId().build();
 
     when(
       registerService.register(
@@ -297,7 +297,7 @@ public class StateControllerTests {
 
   @Test
   void shouldReturnState_whenGetIsCalledWithValidStateId() {
-    State registered = registeredState().build();
+    State registered = aState().withValidId().build();
   
     when(
       registerService.fetchByID(1l)
@@ -327,7 +327,7 @@ public class StateControllerTests {
 
   @Test
   void shouldReturnStateList_whenGetIsCalled() {  
-    State registered = registeredState().build();
+    State registered = aState().withValidId().build();
     when(
       registerService.fetchAll()
     ).thenReturn(
@@ -354,12 +354,4 @@ public class StateControllerTests {
       .status(HttpStatus.NO_CONTENT);
   }
 
-  public String toJson(Object object) {
-    try {
-      return mapper.writeValueAsString(object);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
 }
