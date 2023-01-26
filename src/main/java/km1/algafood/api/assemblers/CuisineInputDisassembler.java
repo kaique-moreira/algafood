@@ -9,8 +9,8 @@ import km1.algafood.api.models.CuisineInput;
 import km1.algafood.domain.models.Cuisine;
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 @Component
+@AllArgsConstructor
 public class CuisineInputDisassembler implements Function<CuisineInput, Cuisine> {
 
   private final ModelMapper modelMapper;
