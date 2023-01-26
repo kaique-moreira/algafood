@@ -1,6 +1,6 @@
 package km1.algafood;
 
-import static km1.algafood.utils.StateBuilderFactory.validState;
+import static km1.algafood.utils.StateTestBuilder.aState;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -37,7 +37,7 @@ public class StateRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldRegisterState_whenTryRegisterValidState() {
-    State toRegister  = State.builder().name("").build();
+    State toRegister  = aState().build();
     State registered = underTest.register(toRegister);
     assertThat(registered.getId(), notNullValue());
   }
@@ -65,7 +65,7 @@ public class StateRegisterIntTests {
   }
 
   @Test @Sql({TRUNCATE_TABLES, TEST_DATA}) void shouldThrowDomainException_whenTryRegisterStateWithNullName() {
-    State cuisine = validState().name(null).build();
+    State cuisine = aState().withNullName().build();
     assertThrows(DomainException.class, () -> underTest.register(cuisine));
   }
 
@@ -91,21 +91,21 @@ public class StateRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowDomainException_whenTryUpdateStateWithNullName() {
-    var toUpdate = State.builder().build();
+    var toUpdate = aState().build();
     assertThrows(DomainException.class, () -> underTest.update(VALID_ID,toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowStateNotFoundException_whenTryUpdateUnregisteredState() {
-    var toUpdate = State.builder().build();
+    var toUpdate = aState().build();
     assertThrows(DomainException.class, () -> underTest.update(INVALID_ID,toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldReturnUpdatedState_whenTryUpdateValidState() {
-    var toUpdate = State.builder().name("test").build();
+    var toUpdate = aState().build();
     var updated = underTest.update(VALID_ID, toUpdate);
     assertThat(updated.getName(),is(toUpdate.getName()));
     assertThat(updated.getId(),is(VALID_ID));

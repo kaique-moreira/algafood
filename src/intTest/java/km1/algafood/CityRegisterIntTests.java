@@ -1,21 +1,23 @@
 package km1.algafood;
 
-import static km1.algafood.utils.CityBuilderFactory.validCity;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static km1.algafood.utils.CityTestBuilder.aCity;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import km1.algafood.domain.exceptions.CityNotFountException;
-import km1.algafood.domain.exceptions.DomainException;
-import km1.algafood.domain.models.City;
-import km1.algafood.domain.models.State;
-import km1.algafood.domain.services.CityRegisterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+
+import km1.algafood.domain.exceptions.CityNotFountException;
+import km1.algafood.domain.exceptions.DomainException;
+import km1.algafood.domain.models.City;
+import km1.algafood.domain.services.CityRegisterService;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -34,7 +36,7 @@ public class CityRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldRegisterCity_whenTryRegisterValidCity() {
-    City toRegister = City.builder().name("").state(State.builder().id(1l).build()).build();
+    City toRegister = aCity().build();
     City registered = underTest.register(toRegister);
     assertThat(registered.getId(), notNullValue());
   }
@@ -64,7 +66,7 @@ public class CityRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowDomainException_whenTryRegisterCityWithNullName() {
-    City cuisine = validCity().name(null).build();
+    City cuisine = aCity().withNullName().build();
     assertThrows(DomainException.class, () -> underTest.register(cuisine));
   }
 
@@ -90,21 +92,21 @@ public class CityRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowDomainException_whenTryUpdateCityWithNullName() {
-    var toUpdate = City.builder().build();
+    var toUpdate = aCity().build();
     assertThrows(DomainException.class, () -> underTest.update(VALID_ID, toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowCityNotFoundException_whenTryUpdateUnregisteredCity() {
-    var toUpdate = City.builder().build();
+    var toUpdate = aCity().build();
     assertThrows(DomainException.class, () -> underTest.update(INVALID_ID, toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldReturnUpdatedCity_whenTryUpdateValidCity() {
-    var toUpdate = City.builder().name("test").build();
+    var toUpdate = aCity().build();
     var updated = underTest.update(VALID_ID, toUpdate);
     assertThat(updated.getName(), is(toUpdate.getName()));
     assertThat(updated.getId(), is(VALID_ID));
