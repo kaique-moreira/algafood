@@ -455,5 +455,4 @@ public class CuisineControllerTests {
     .then()
       .status(HttpStatus.NO_CONTENT);
   }
-
 }

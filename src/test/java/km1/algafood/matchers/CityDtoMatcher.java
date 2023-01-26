@@ -3,12 +3,12 @@ package km1.algafood.matchers;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import km1.algafood.domain.models.City;
+import km1.algafood.api.models.CityDto;
 
-public class CityMatcher extends TypeSafeMatcher<City> {
+public class CityDtoMatcher extends TypeSafeMatcher<CityDto> {
 
-  private City expected;
-  public CityMatcher(City expected) {
+  private CityDto expected;
+  public CityDtoMatcher(CityDto expected) {
     this.expected = expected;
   } 
 
@@ -18,13 +18,13 @@ public class CityMatcher extends TypeSafeMatcher<City> {
   }
 
   @Override
-  protected boolean matchesSafely(City item) {
+  protected boolean matchesSafely(CityDto item) {
     boolean isEqualIds = expected.getId() == item.getId();
     boolean isEqualNames = expected.getName() == item.getName();
     return isEqualIds && isEqualNames;
   }
 
-  public static CityMatcher isCityEqualTo(City expected){
-    return new CityMatcher(expected);
+  public static CityDtoMatcher isCityDtoEqualTo(CityDto expected){
+    return new CityDtoMatcher(expected);
   }
 }
