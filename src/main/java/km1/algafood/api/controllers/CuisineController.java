@@ -31,7 +31,7 @@ public class CuisineController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CuisineDto saveCuisine(@RequestBody  @Valid CuisineInput cuisineinput) {
+  public CuisineDto saveCuisine(@RequestBody CuisineInput cuisineinput) {
     var toRegister = disassembler.apply(cuisineinput);
     var registered =  registerService.register(toRegister);
     var cuisineDto = assembler.apply(registered);

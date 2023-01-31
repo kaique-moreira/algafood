@@ -1,5 +1,11 @@
 package km1.algafood.utils;
 
+import java.math.BigDecimal;
+import km1.algafood.api.models.CuisineDto;
+import km1.algafood.api.models.CuisineIdInput;
+import km1.algafood.api.models.RestaurantDto;
+import km1.algafood.api.models.RestaurantInput;
+import km1.algafood.domain.models.Cuisine;
 import km1.algafood.domain.models.Restaurant;
 
 public class RestaurantTestBuilder {
@@ -9,7 +15,7 @@ public class RestaurantTestBuilder {
           .id(null)
           .name("")
           .addres(null)
-          .cuisine(null)
+          .cuisine(Cuisine.builder().name("Francesa").build())
           .products(null)
           .shippingFee(null)
           .updateDate(null)
@@ -33,5 +39,26 @@ public class RestaurantTestBuilder {
 
   public Restaurant build() {
     return this.restaurant;
+  }
+
+  public RestaurantDto buildDto() {
+    return RestaurantDto.builder()
+        .name(this.restaurant.getName())
+        .id(this.restaurant.getId())
+        .cuisine(
+            CuisineDto.builder()
+                .name(this.restaurant.getCuisine().getName())
+                .id(this.restaurant.getId())
+                .build())
+        .shippingFee(BigDecimal.valueOf(1l))
+        .build();
+  }
+
+  public RestaurantInput buildInput() {
+    return RestaurantInput.builder()
+        .name(this.restaurant.getName())
+        .cuisineIdInput(CuisineIdInput.builder().id(this.restaurant.getId()).build())
+        .shippingFee(BigDecimal.valueOf(1l))
+        .build();
   }
 }

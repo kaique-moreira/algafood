@@ -40,7 +40,7 @@ public class CityController {
   }
 
   @GetMapping
-  public List<CityDto> findCitys() {
+  public List<CityDto> findCities() {
     var cities = registerService.fetchAll();
     var citiesDto = cities.stream().map(assembler).toList();
     return citiesDto;

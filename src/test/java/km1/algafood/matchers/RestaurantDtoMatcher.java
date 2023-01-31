@@ -3,12 +3,12 @@ package km1.algafood.matchers;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import km1.algafood.domain.models.Restaurant;
+import km1.algafood.api.models.RestaurantDto;
 
-public class RestaurantMatcher extends TypeSafeMatcher<Restaurant> {
+public class RestaurantDtoMatcher extends TypeSafeMatcher<RestaurantDto> {
 
-  private Restaurant expected;
-  public RestaurantMatcher(Restaurant expected) {
+  private RestaurantDto expected;
+  public RestaurantDtoMatcher(RestaurantDto expected) {
     this.expected = expected;
   } 
 
@@ -18,14 +18,14 @@ public class RestaurantMatcher extends TypeSafeMatcher<Restaurant> {
   }
 
   @Override
-  protected boolean matchesSafely(Restaurant item) {
+  protected boolean matchesSafely(RestaurantDto item) {
     boolean isEqualIds = expected.getId() == item.getId();
     boolean isEqualNames = expected.getName().equals(item.getName());
     return isEqualIds && isEqualNames;
   }
 
-  public static RestaurantMatcher isRestaurantEqualTo(Restaurant expected){
-    return new RestaurantMatcher(expected);
+  public static RestaurantDtoMatcher isRestaurantDtoEqualTo(RestaurantDto expected){
+    return new RestaurantDtoMatcher(expected);
   }
   
 }
