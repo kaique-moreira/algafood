@@ -2,20 +2,26 @@ package km1.algafood.api.exceptionHandler;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 
+import lombok.Builder;
+import lombok.Getter;
+
 public class Problem extends ProblemDetail {
   private OffsetDateTime timestamp;
-
+  private List<Object> objects;
+  
   public Problem() {
   }
 
-  public Problem(ProblemDetail other, OffsetDateTime timestamp) {
+  public Problem(ProblemDetail other, OffsetDateTime timestamp, List<Object> objects) {
     super(other);
     this.timestamp = timestamp;
+    this.objects = objects;
   }
 
   public static ProblemBuilder builder() {
@@ -30,6 +36,20 @@ public class Problem extends ProblemDetail {
     this.timestamp = timestamp;
   }
 
+  public List<Object> getObjects() {
+    return objects;
+  }
+
+  public void setObjects(List<Object> objects) {
+    this.objects = objects;
+  }
+
+  @Getter
+	@Builder
+	public static class Object {
+		private String name;
+		private String userMessage;
+	}
   public static class ProblemBuilder {
 
     private String type;
@@ -39,6 +59,7 @@ public class Problem extends ProblemDetail {
     private String instance;
     private OffsetDateTime timestamp;
     private Map<String, Object> properties;
+    private List<Object> objects;
 
     public ProblemBuilder type(String type) {
       this.type = type;
@@ -53,6 +74,10 @@ public class Problem extends ProblemDetail {
       return this;
     }
 
+    public ProblemBuilder objetcs(List<Object> objects) {
+      this.objects = objects;
+      return this;
+    }
     public ProblemBuilder status(HttpStatusCode status) {
       this.status = status;
       return this;
@@ -90,7 +115,7 @@ public class Problem extends ProblemDetail {
       if (this.properties != null) {
         this.properties.forEach((k, v) -> problemDetail.setProperty(k, v));
       }
-      return new Problem(problemDetail, this.timestamp);
+      return new Problem(problemDetail, this.timestamp, this.objects);
     }
   }
 }

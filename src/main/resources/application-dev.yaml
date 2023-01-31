@@ -1,7 +1,7 @@
 spring: 
   datasource: 
-    url: jdbc:postgresql://172.17.0.2:5432/algafood?serverTimezone=UTC
+    url: jdbc:postgresql://localhost:5432/algafood?serverTimezone=UTC
     username: postgres
-    password:  
+    password: 123
   flyway:
     baselineOnMigrate: true

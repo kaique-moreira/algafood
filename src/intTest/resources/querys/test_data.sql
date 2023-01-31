@@ -24,7 +24,8 @@ INSERT INTO tb_restaurant (
   addres_number, 
   addres_complement, 
   addres_district, 
-  cuisine_id
+  cuisine_id,
+  active
 ) VALUES
   (
     'Le President',
@@ -35,7 +36,8 @@ INSERT INTO tb_restaurant (
     '3527',
     '',
     'Cerqueira César',
-    (SELECT id FROM tb_cuisine where name = 'Francesa')
+    (SELECT id FROM tb_cuisine where name = 'Francesa'),
+    true
   ),
   (
     'Cão veio',
@@ -46,7 +48,8 @@ INSERT INTO tb_restaurant (
     '1534',
     '',
     'Vila Gomes Cardim',
-    (SELECT id FROM tb_cuisine where name = 'Francesa')
+    (SELECT id FROM tb_cuisine where name = 'Francesa'),
+    true
   ), 
   (
     'Test',
@@ -57,7 +60,8 @@ INSERT INTO tb_restaurant (
     '1534',
     '',
     'Vila Gomes Cardim',
-    (SELECT id FROM tb_cuisine where name = 'Francesa')
+    (SELECT id FROM tb_cuisine where name = 'Francesa'),
+    true
   );
 INSERT INTO tb_payment_method (
   description

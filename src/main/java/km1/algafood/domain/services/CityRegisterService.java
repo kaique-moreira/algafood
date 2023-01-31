@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import km1.algafood.domain.exceptions.CityHasDependents;
 import km1.algafood.domain.exceptions.CityNotFountException;
 import km1.algafood.domain.exceptions.DomainException;
@@ -23,6 +24,7 @@ public class CityRegisterService implements RegisterService<City> {
   }
 
   @Override
+  @Transactional
   public City register(City entity) throws DomainException {
     try{
       entity = repository.save(entity);
@@ -33,15 +35,18 @@ public class CityRegisterService implements RegisterService<City> {
   }
 
   @Override
+  @Transactional
   public List<City> fetchAll() throws DomainException {
     List<City> cities = repository.findAll();
     return cities;
   }
 
   @Override
+  @Transactional
   public void remove(Long id) throws DomainException {
     try {
       repository.deleteById(id);
+      repository.flush();
     } catch (EmptyResultDataAccessException e) {
       throw new CityNotFountException(id);
     } catch (DataIntegrityViolationException e) {
@@ -50,6 +55,7 @@ public class CityRegisterService implements RegisterService<City> {
   }
 
   @Override
+  @Transactional
   public City update(Long id, City entity) throws DomainException {
     City cuisine = this.fetchByID(id);
     BeanUtils.copyProperties(entity, cuisine, "id");
@@ -57,6 +63,7 @@ public class CityRegisterService implements RegisterService<City> {
   }
 
   @Override
+  @Transactional
   public City fetchByID(Long id) throws DomainException {
     City city = repository.findById(id).orElseThrow(() -> new CityNotFountException(id));
     return city;

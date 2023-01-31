@@ -36,7 +36,16 @@ public class RestaurantTestBuilder {
     this.restaurant.setName(null);
     return this;
   }
+  
+  public RestaurantTestBuilder disactived(){
+    this.restaurant.setActive(false);
+    return this;
+  }
 
+  public RestaurantTestBuilder actived(){
+    this.restaurant.setActive(true);
+    return this;
+  }
   public Restaurant build() {
     return this.restaurant;
   }

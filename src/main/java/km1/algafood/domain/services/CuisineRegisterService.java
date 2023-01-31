@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import km1.algafood.domain.exceptions.CuisineHasDependents;
 import km1.algafood.domain.exceptions.CuisineNotFountException;
 import km1.algafood.domain.exceptions.DomainException;
@@ -23,6 +24,7 @@ public class CuisineRegisterService implements RegisterService<Cuisine> {
   }
 
   @Override
+  @Transactional
   public Cuisine register(Cuisine entity) throws DomainException {
     try {
       entity = repository.save(entity);    
@@ -33,15 +35,18 @@ public class CuisineRegisterService implements RegisterService<Cuisine> {
   }
 
   @Override
+  @Transactional
   public List<Cuisine> fetchAll() throws DomainException {
     List<Cuisine> cuisines = repository.findAll();
     return cuisines;
   }
 
   @Override
+  @Transactional
   public void remove(Long id) throws DomainException {
     try {
       repository.deleteById(id);
+      repository.flush();
     } catch (EmptyResultDataAccessException e) {
       throw new CuisineNotFountException(id);
     } catch (DataIntegrityViolationException e) {
@@ -50,6 +55,7 @@ public class CuisineRegisterService implements RegisterService<Cuisine> {
   }
 
   @Override
+  @Transactional
   public Cuisine update(Long id, Cuisine entity) throws DomainException {
     Cuisine cuisine = this.fetchByID(id);
     BeanUtils.copyProperties(entity, cuisine, "id");
@@ -57,6 +63,7 @@ public class CuisineRegisterService implements RegisterService<Cuisine> {
   }
 
   @Override
+  @Transactional
   public Cuisine fetchByID(Long id) throws DomainException {
     Cuisine cuisine = repository.findById(id).orElseThrow(() -> new CuisineNotFountException(id));
     return cuisine;
