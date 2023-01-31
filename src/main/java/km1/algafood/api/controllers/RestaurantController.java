@@ -64,4 +64,16 @@ public class RestaurantController {
     var restaurantDto = assembler.apply(updated);
     return restaurantDto;
   }
+
+  @PutMapping("/{id}/active")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void active(@PathVariable Long id){
+    registerService.active(id);
+  }
+
+  @DeleteMapping("/{id}/active")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void disactive(@PathVariable Long id){
+    registerService.disactive(id);
+  }
 }

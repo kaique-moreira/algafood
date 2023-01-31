@@ -311,4 +311,46 @@ public class RestaurantControllerTests {
         .then()
         .status(HttpStatus.NO_CONTENT);
   }
+
+  @Test
+  void shouldReturnNoContent_whenPutActiveIsCalledWithValidRestaurantId() {
+    given()
+        .accept(ContentType.JSON)
+        .when()
+        .put(PATH_VALID_ID.concat("/active"))
+        .then()
+        .status(HttpStatus.NO_CONTENT);
+  }
+
+  @Test
+  void shouldReturnNoContent_whenDeleteActiveIsCalledWithValidRestaurantId() {
+    given()
+        .accept(ContentType.JSON)
+        .when()
+        .delete(PATH_VALID_ID.concat("/active"))
+        .then()
+        .status(HttpStatus.NO_CONTENT);
+  }
+  
+  @Test
+  void shouldReturnNotFound_whenPutActiveIsCalledWithInValidRestaurantId() {
+    doThrow(RestaurantNotFountException.class).when(registerService).active(VALID_ID);
+    given()
+        .accept(ContentType.JSON)
+        .when()
+        .put(PATH_VALID_ID.concat("/active"))
+        .then()
+        .status(HttpStatus.NOT_FOUND);
+  }
+
+  @Test
+  void shouldReturnNotFound_whenDeleteActiveIsCalledWithInvalidRestaurantId() {
+    doThrow(RestaurantNotFountException.class).when(registerService).disactive(VALID_ID);
+    given()
+        .accept(ContentType.JSON)
+        .when()
+        .delete(PATH_VALID_ID.concat("/active"))
+        .then()
+        .status(HttpStatus.NOT_FOUND);
+  }
 }
