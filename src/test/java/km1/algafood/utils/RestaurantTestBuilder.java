@@ -1,10 +1,11 @@
 package km1.algafood.utils;
 
 import java.math.BigDecimal;
+
 import km1.algafood.api.models.CuisineDto;
 import km1.algafood.api.models.CuisineIdInput;
-import km1.algafood.api.models.RestaurantDto;
 import km1.algafood.api.models.RestaurantInput;
+import km1.algafood.api.models.RestaurantModel;
 import km1.algafood.domain.models.Cuisine;
 import km1.algafood.domain.models.Restaurant;
 
@@ -13,11 +14,11 @@ public class RestaurantTestBuilder {
   private Restaurant restaurant =
       Restaurant.builder()
           .id(null)
-          .name("")
+          .name("test")
           .addres(null)
-          .cuisine(Cuisine.builder().name("Francesa").build())
+          .cuisine(Cuisine.builder().id(1l).name("Francesa").build())
           .products(null)
-          .shippingFee(null)
+          .shippingFee(BigDecimal.valueOf(1l))
           .updateDate(null)
           .registerDate(null)
           .paymentMethod(null)
@@ -36,6 +37,11 @@ public class RestaurantTestBuilder {
     this.restaurant.setName(null);
     return this;
   }
+
+  public RestaurantTestBuilder withBlankName() {
+    this.restaurant.setName("");
+    return this;
+  }
   
   public RestaurantTestBuilder disactived(){
     this.restaurant.setActive(false);
@@ -50,8 +56,8 @@ public class RestaurantTestBuilder {
     return this.restaurant;
   }
 
-  public RestaurantDto buildDto() {
-    return RestaurantDto.builder()
+  public RestaurantModel buildModel() {
+    return RestaurantModel.builder()
         .name(this.restaurant.getName())
         .id(this.restaurant.getId())
         .cuisine(
@@ -66,8 +72,9 @@ public class RestaurantTestBuilder {
   public RestaurantInput buildInput() {
     return RestaurantInput.builder()
         .name(this.restaurant.getName())
-        .cuisineIdInput(CuisineIdInput.builder().id(this.restaurant.getId()).build())
+        .cuisineIdInput(CuisineIdInput.builder().id(this.restaurant.getCuisine().getId()).build())
         .shippingFee(BigDecimal.valueOf(1l))
+        .addresiInput(null)
         .build();
   }
 }
