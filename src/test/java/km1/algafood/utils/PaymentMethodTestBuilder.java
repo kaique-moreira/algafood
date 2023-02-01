@@ -1,6 +1,6 @@
 package km1.algafood.utils;
 
-import km1.algafood.api.models.PaymentMethodDto;
+import km1.algafood.api.models.PaymentMethodModel;
 import km1.algafood.api.models.PaymentMethodInput;
 import km1.algafood.domain.models.PaymentMethod;
 
@@ -32,8 +32,8 @@ public class PaymentMethodTestBuilder {
     .build();
   }
 
-  public PaymentMethodDto buildDto() {
-    return PaymentMethodDto.builder()
+  public PaymentMethodModel buildModel() {
+    return PaymentMethodModel.builder()
     .description(this.cuisine.getDescription())
     .id(this.cuisine.getId())
     .build();

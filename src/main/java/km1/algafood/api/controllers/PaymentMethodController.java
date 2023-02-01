@@ -1,9 +1,9 @@
 package km1.algafood.api.controllers;
 
 import java.util.List;
-import km1.algafood.api.assemblers.PaymentMethodDtoAssembler;
+import km1.algafood.api.assemblers.PaymentMethodModelAssembler;
 import km1.algafood.api.assemblers.PaymentMethodInputDisassembler;
-import km1.algafood.api.models.PaymentMethodDto;
+import km1.algafood.api.models.PaymentMethodModel;
 import km1.algafood.api.models.PaymentMethodInput;
 import km1.algafood.domain.services.PaymentMethodRegisterService;
 import lombok.AllArgsConstructor;
@@ -27,29 +27,29 @@ public class PaymentMethodController {
 
   private final PaymentMethodRegisterService registerService;
   private final PaymentMethodInputDisassembler disassembler;
-  private final PaymentMethodDtoAssembler assembler;
+  private final PaymentMethodModelAssembler assembler;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public PaymentMethodDto savePaymentMethod(@RequestBody @Valid PaymentMethodInput cuisineinput) {
+  public PaymentMethodModel savePaymentMethod(@RequestBody @Valid PaymentMethodInput cuisineinput) {
     var toRegister = disassembler.apply(cuisineinput);
     var registered =  registerService.register(toRegister);
-    var cuisineDto = assembler.apply(registered);
-    return cuisineDto;
+    var cuisineModel = assembler.apply(registered);
+    return cuisineModel;
   }
 
   @GetMapping
-  public List<PaymentMethodDto> findPaymentMethods() {
+  public List<PaymentMethodModel> findPaymentMethods() {
     var cuisines = registerService.fetchAll();
-    var cuisinesDto = cuisines.stream().map(assembler).toList();
-    return cuisinesDto;
+    var cuisinesModel = cuisines.stream().map(assembler).toList();
+    return cuisinesModel;
   }
 
   @GetMapping("/{id}")
-  public PaymentMethodDto findPaymentMethodById(@PathVariable Long id) {
+  public PaymentMethodModel findPaymentMethodById(@PathVariable Long id) {
     var cuisine = registerService.fetchByID(id);
-    var cuisineDto = assembler.apply(cuisine);
-    return cuisineDto;
+    var cuisineModel = assembler.apply(cuisine);
+    return cuisineModel;
   }
 
   @DeleteMapping("/{id}")
@@ -59,10 +59,10 @@ public class PaymentMethodController {
   }
 
   @PutMapping("/{id}")
-  public PaymentMethodDto updatePaymentMethodById(@PathVariable Long id, @RequestBody @Valid PaymentMethodInput cuisineInput) {
+  public PaymentMethodModel updatePaymentMethodById(@PathVariable Long id, @RequestBody @Valid PaymentMethodInput cuisineInput) {
     var toUpdate = disassembler.apply(cuisineInput);
     var updated = registerService.update(id, toUpdate);
-    var cuisineDto = assembler.apply(updated);
-    return cuisineDto;
+    var cuisineModel = assembler.apply(updated);
+    return cuisineModel;
   }
 }

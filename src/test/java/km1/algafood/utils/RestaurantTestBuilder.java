@@ -2,7 +2,7 @@ package km1.algafood.utils;
 
 import java.math.BigDecimal;
 
-import km1.algafood.api.models.CuisineDto;
+import km1.algafood.api.models.CuisineModel;
 import km1.algafood.api.models.CuisineIdInput;
 import km1.algafood.api.models.RestaurantInput;
 import km1.algafood.api.models.RestaurantModel;
@@ -61,7 +61,7 @@ public class RestaurantTestBuilder {
         .name(this.restaurant.getName())
         .id(this.restaurant.getId())
         .cuisine(
-            CuisineDto.builder()
+            CuisineModel.builder()
                 .name(this.restaurant.getCuisine().getName())
                 .id(this.restaurant.getId())
                 .build())

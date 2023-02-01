@@ -3,12 +3,12 @@ package km1.algafood.matchers;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import km1.algafood.api.models.StateDto;
+import km1.algafood.api.models.StateModel;
 
-public class StateDtoMatcher extends TypeSafeMatcher<StateDto> {
+public class StateModelMatcher extends TypeSafeMatcher<StateModel> {
 
-  private StateDto expected;
-  public StateDtoMatcher(StateDto expected) {
+  private StateModel expected;
+  public StateModelMatcher(StateModel expected) {
     this.expected = expected;
   } 
 
@@ -18,14 +18,14 @@ public class StateDtoMatcher extends TypeSafeMatcher<StateDto> {
   }
 
   @Override
-  protected boolean matchesSafely(StateDto item) {
+  protected boolean matchesSafely(StateModel item) {
     boolean isEqualIds = expected.getId() == item.getId();
     boolean isEqualNames = expected.getName().equals(item.getName());
     return isEqualIds && isEqualNames;
   }
 
-  public static StateDtoMatcher isStateDtoEqualTo(StateDto expected){
-    return new StateDtoMatcher(expected);
+  public static StateModelMatcher isStateModelEqualTo(StateModel expected){
+    return new StateModelMatcher(expected);
   }
   
 }

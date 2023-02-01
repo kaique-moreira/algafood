@@ -3,7 +3,7 @@ package km1.algafood.api.controllers;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
-import static km1.algafood.matchers.StateDtoMatcher.isStateDtoEqualTo;
+import static km1.algafood.matchers.StateModelMatcher.isStateModelEqualTo;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
 import static km1.algafood.utils.StateTestBuilder.aState;
@@ -17,11 +17,11 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import java.util.Collections;
-import km1.algafood.api.assemblers.StateDtoAssembler;
+import km1.algafood.api.assemblers.StateModelAssembler;
 import km1.algafood.api.assemblers.StateInputDisassembler;
 import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
 import km1.algafood.api.exceptionHandler.Problem;
-import km1.algafood.api.models.StateDto;
+import km1.algafood.api.models.StateModel;
 import km1.algafood.api.models.StateInput;
 import km1.algafood.domain.exceptions.StateHasDependents;
 import km1.algafood.domain.exceptions.StateNotFountException;
@@ -44,7 +44,7 @@ public class StateControllerTests {
 
   @Mock private StateRegisterService registerService;
   @Mock private StateInputDisassembler disassembler;
-  @Mock private StateDtoAssembler assembler;
+  @Mock private StateModelAssembler assembler;
   @InjectMocks private StateController controller;
   @InjectMocks private ApiExceptionHandler exceptionHandler;
 
@@ -176,7 +176,7 @@ public class StateControllerTests {
     StateInput input = aState().buildInput();
     State valid = aState().build();
     State registered = aState().withValidId().build();
-    StateDto expected = aState().withValidId().buildDto();
+    StateModel expected = aState().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
@@ -184,7 +184,7 @@ public class StateControllerTests {
 
     when(registerService.update(VALID_ID, valid)).thenReturn(registered);
 
-    StateDto actual =
+    StateModel actual =
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -192,9 +192,9 @@ public class StateControllerTests {
             .when()
             .put(PATH_VALID_ID)
             .thenReturn()
-            .as(StateDto.class);
+            .as(StateModel.class);
 
-    assertThat(actual, isStateDtoEqualTo(expected));
+    assertThat(actual, isStateModelEqualTo(expected));
   }
 
   @Test
@@ -246,7 +246,7 @@ public class StateControllerTests {
     StateInput input = aState().buildInput();
     State valid = aState().build();
     State registered = aState().withValidId().build();
-    StateDto expected = aState().withValidId().buildDto();
+    StateModel expected = aState().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
@@ -254,7 +254,7 @@ public class StateControllerTests {
 
     when(registerService.register(valid)).thenReturn(registered);
 
-    StateDto actual =
+    StateModel actual =
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -262,29 +262,29 @@ public class StateControllerTests {
             .when()
             .post()
             .thenReturn()
-            .as(StateDto.class);
+            .as(StateModel.class);
 
-    assertThat(actual, isStateDtoEqualTo(expected));
+    assertThat(actual, isStateModelEqualTo(expected));
   }
 
   @Test
   void shouldReturnState_whenGetIsCalledWithValidStateId() {
     State registered = aState().withValidId().build();
-    StateDto expected = aState().withValidId().buildDto();
+    StateModel expected = aState().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
     when(registerService.fetchByID(1l)).thenReturn(registered);
 
-    StateDto actual =
+    StateModel actual =
         given()
             .accept(ContentType.JSON)
             .when()
             .get(PATH_VALID_ID)
             .thenReturn()
-            .as(StateDto.class);
+            .as(StateModel.class);
 
-    assertThat(actual, isStateDtoEqualTo(expected));
+    assertThat(actual, isStateModelEqualTo(expected));
   }
 
   @Test
@@ -295,7 +295,7 @@ public class StateControllerTests {
   @Test
   void shouldReturnStateList_whenGetIsCalled() {
     State registered = aState().withValidId().build();
-    when(assembler.apply(registered)).thenReturn(aState().withValidId().buildDto());
+    when(assembler.apply(registered)).thenReturn(aState().withValidId().buildModel());
 
     when(registerService.fetchAll()).thenReturn(Collections.singletonList(registered));
 

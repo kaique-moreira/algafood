@@ -2,7 +2,7 @@ package km1.algafood.api.controllers;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import km1.algafood.api.assemblers.RestaurantDtoAssembler;
+import km1.algafood.api.assemblers.RestaurantModelAssembler;
 import km1.algafood.api.assemblers.RestaurantInputDisassembler;
 import km1.algafood.api.models.RestaurantInput;
 import km1.algafood.api.models.RestaurantModel;
@@ -29,7 +29,7 @@ public class RestaurantController {
 
   private final RestaurantRegisterService registerService;
   private final RestaurantInputDisassembler disassembler;
-  private final RestaurantDtoAssembler assembler;
+  private final RestaurantModelAssembler assembler;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -37,8 +37,8 @@ public class RestaurantController {
     try {
     var toRegister = disassembler.apply(restaurantInput);
     var registered = registerService.register(toRegister);
-    var restaurantDto = assembler.apply(registered);
-    return restaurantDto;
+    var restaurantModel = assembler.apply(registered);
+    return restaurantModel;
       
     } catch (CuisineNotFountException | CityNotFountException e) {
       throw new DomainException(e.getMessage());
@@ -48,15 +48,15 @@ public class RestaurantController {
   @GetMapping
   public List<RestaurantModel> findCities() {
     var cities = registerService.fetchAll();
-    var citiesDto = cities.stream().map(assembler).toList();
-    return citiesDto;
+    var citiesModel = cities.stream().map(assembler).toList();
+    return citiesModel;
   }
 
   @GetMapping("/{id}")
   public RestaurantModel findRestaurantById(@PathVariable Long id) {
     var restaurant = registerService.fetchByID(id);
-    var restaurantDto = assembler.apply(restaurant);
-    return restaurantDto;
+    var restaurantModel = assembler.apply(restaurant);
+    return restaurantModel;
   }
 
   @DeleteMapping("/{id}")
@@ -71,8 +71,8 @@ public class RestaurantController {
     try {
       var toUpdate = disassembler.apply(restaurantInput);
       var updatetd = registerService.update(id, toUpdate);
-      var restaurantDto = assembler.apply(updatetd);
-      return restaurantDto;
+      var restaurantModel = assembler.apply(updatetd);
+      return restaurantModel;
 
     } catch (CuisineNotFountException | CityNotFountException  e) {
       throw new DomainException(e.getMessage());

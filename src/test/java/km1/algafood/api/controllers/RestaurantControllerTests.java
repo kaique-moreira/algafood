@@ -1,8 +1,12 @@
 package km1.algafood.api.controllers;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
-import static km1.algafood.matchers.ProblemMatcher.*;
-import static km1.algafood.matchers.RestaurantDtoMatcher.isRestaurantDtoEqualTo;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.enableLoggingOfRequestAndResponseIfValidationFails;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
+import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
+import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
+import static km1.algafood.matchers.RestaurantModelMatcher.isRestaurantModelEqualTo;
 import static km1.algafood.utils.JsonConversionUtils.toJson;
 import static km1.algafood.utils.RestaurantTestBuilder.aRestaurant;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -11,21 +15,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import java.util.Collections;
-import km1.algafood.api.assemblers.RestaurantDtoAssembler;
-import km1.algafood.api.assemblers.RestaurantInputDisassembler;
-import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
-import km1.algafood.api.exceptionHandler.Problem;
-import km1.algafood.api.models.RestaurantInput;
-import km1.algafood.api.models.RestaurantModel;
-import km1.algafood.domain.exceptions.RestaurantHasDependents;
-import km1.algafood.domain.exceptions.RestaurantNotFountException;
-import km1.algafood.domain.models.Restaurant;
-import km1.algafood.domain.services.RestaurantRegisterService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +25,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.restassured.http.ContentType;
+import km1.algafood.api.assemblers.RestaurantInputDisassembler;
+import km1.algafood.api.assemblers.RestaurantModelAssembler;
+import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
+import km1.algafood.api.exceptionHandler.Problem;
+import km1.algafood.api.models.RestaurantInput;
+import km1.algafood.api.models.RestaurantModel;
+import km1.algafood.domain.exceptions.RestaurantHasDependents;
+import km1.algafood.domain.exceptions.RestaurantNotFountException;
+import km1.algafood.domain.models.Restaurant;
+import km1.algafood.domain.services.RestaurantRegisterService;
 
 @ExtendWith(MockitoExtension.class)
 public class RestaurantControllerTests {
@@ -44,7 +49,7 @@ public class RestaurantControllerTests {
 
   @Mock private RestaurantRegisterService registerService;
   @Mock private RestaurantInputDisassembler disassembler;
-  @Mock private RestaurantDtoAssembler assembler;
+  @Mock private RestaurantModelAssembler assembler;
   @InjectMocks private RestaurantController controller;
   @InjectMocks private ApiExceptionHandler exceptionHandler;
 
@@ -200,7 +205,7 @@ public class RestaurantControllerTests {
             .thenReturn()
             .as(RestaurantModel.class);
 
-    assertThat(actual, isRestaurantDtoEqualTo(expected));
+    assertThat(actual, isRestaurantModelEqualTo(expected));
   }
 
   @Test
@@ -286,7 +291,7 @@ public class RestaurantControllerTests {
             .thenReturn()
             .as(RestaurantModel.class);
 
-    assertThat(actual, isRestaurantDtoEqualTo(expected));
+    assertThat(actual, isRestaurantModelEqualTo(expected));
   }
 
   @Test
@@ -306,7 +311,7 @@ public class RestaurantControllerTests {
             .thenReturn()
             .as(RestaurantModel.class);
 
-    assertThat(actual, isRestaurantDtoEqualTo(expected));
+    assertThat(actual, isRestaurantModelEqualTo(expected));
   }
 
   @Test

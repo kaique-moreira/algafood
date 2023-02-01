@@ -1,6 +1,6 @@
 package km1.algafood.utils;
 
-import km1.algafood.api.models.CuisineDto;
+import km1.algafood.api.models.CuisineModel;
 import km1.algafood.api.models.CuisineInput;
 import km1.algafood.domain.models.Cuisine;
 
@@ -32,8 +32,8 @@ public class CuisineTestBuilder {
     .build();
   }
 
-  public CuisineDto buildDto() {
-    return CuisineDto.builder()
+  public CuisineModel buildModel() {
+    return CuisineModel.builder()
     .name(this.cuisine.getName())
     .id(this.cuisine.getId())
     .build();
