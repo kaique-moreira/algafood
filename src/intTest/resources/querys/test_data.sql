@@ -159,20 +159,16 @@ INSERT INTO tb_permission (
   name,
   description
 ) VALUES
-  (
-    'Make Order',
-    ''
-  ),
-  (
-    'Create Restaurant',
-    ''
-  );
+  ('Make Order',''),
+  ('Create Restaurant','');
 
 INSERT INTO tb_group (
   name
 ) VALUES 
-  ('Client'),
-  ('Restaurant');
+  ('Gerente'),
+  ('Vendedor'), 
+  ('Secretária'),
+  ('Cadastrador');
 
 INSERT INTO group_permission (
   group_id,

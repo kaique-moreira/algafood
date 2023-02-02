@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import km1.algafood.api.exceptionHandler.Problem.ProblemBuilder;
 import km1.algafood.domain.exceptions.DomainException;
 import km1.algafood.domain.exceptions.EntityHasDependents;
 import km1.algafood.domain.exceptions.EntityNotFoundException;
+import lombok.Setter;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,11 +35,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @EnableWebMvc
 @RestControllerAdvice
+@Setter
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
   public static final String DEFAULT_ERROR_MESSAGE =
       "An unexpected internal system error has occurred. Try again and if"
           + "the problem persists, contact your system administrator.";
+
   @Autowired private MessageSource messageSource;
 
   @Override
@@ -49,19 +55,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     BindingResult bidingResult = ex.getBindingResult();
     List<Problem.Object> problemObjects =
         bidingResult.getAllErrors().stream()
-            .map(
-                objectError -> {
-                  String message =
-                      messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
-
-                  String name = objectError.getObjectName();
-
-                  if (objectError instanceof FieldError) {
-                    name = ((FieldError) objectError).getField();
-                  }
-
-                  return Problem.Object.builder().name(name).userMessage(message).build();
-                })
+            .map(this::extracted)
             .toList();
 
     Problem problem =
@@ -69,10 +63,23 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             .detail(detail)
             .type(problemType.getUri())
             .title(problemType.getTitle())
-            .objetcs(problemObjects)
+            .objects(problemObjects)
             .build();
 
     return handleExceptionInternal(ex, problem, headers, status, request);
+  }
+
+  private Problem.Object extracted(ObjectError objectError) {
+    String message =
+        messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+
+    String name = objectError.getObjectName();
+
+    if (objectError instanceof FieldError) {
+      name = ((FieldError) objectError).getField();
+    }
+
+    return Problem.Object.builder().name(name).userMessage(message).build();
   }
 
   @ExceptionHandler(Exception.class)
