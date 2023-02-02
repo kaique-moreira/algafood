@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import km1.algafood.api.assemblers.StateModelAssembler;
 import km1.algafood.api.assemblers.StateInputDisassembler;
 import km1.algafood.api.models.StateModel;
@@ -31,7 +32,7 @@ public class StateController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public StateModel saveState(@RequestBody StateInput stateInput) {
+  public StateModel saveState(@RequestBody @Valid StateInput stateInput) {
     var toRegister = disassembler.apply(stateInput);
     var registered = registerService.register(toRegister);
     var stateModel = assembler.apply(registered);
@@ -59,7 +60,7 @@ public class StateController {
   }
 
   @PutMapping("/{id}")
-  public StateModel updateStateById(@PathVariable Long id,@RequestBody StateInput stateInput) {
+  public StateModel updateStateById(@PathVariable Long id,@RequestBody @Valid StateInput stateInput) {
     var toUpdate = disassembler.apply(stateInput);
     var updated =  registerService.update(id, toUpdate);
     var stateModel = assembler.apply(updated);

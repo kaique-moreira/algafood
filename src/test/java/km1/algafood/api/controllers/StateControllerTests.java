@@ -311,4 +311,32 @@ public class StateControllerTests {
         .then()
         .status(HttpStatus.NO_CONTENT);
   }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithBlankNameState() {
+    StateInput input = aState().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithBlankNameState() {
+    StateInput input = aState().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
 }

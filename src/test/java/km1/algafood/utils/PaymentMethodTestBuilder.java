@@ -22,6 +22,11 @@ public class PaymentMethodTestBuilder {
     return this;
   }
 
+  public PaymentMethodTestBuilder withBlankDescription() {
+    this.cuisine.setDescription("");
+    return this;
+  }
+
   public PaymentMethod build() {
     return this.cuisine;
   }

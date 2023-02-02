@@ -25,7 +25,7 @@ public class ProblemMatcher extends TypeSafeMatcher<Problem> {
 
     boolean isEqualTypes = expected.getType().equals(actual.getType());
     boolean isEqualTitles = expected.getTitle().equals(actual.getTitle());
-    boolean isEqualStatus = expected.getStatus() == actual.getStatus();
+    boolean isEqualStatus = expected.getStatus().equals(actual.getStatus());
 
     return (isEqualTypes && isEqualTitles && isEqualStatus);
   }

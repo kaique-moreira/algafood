@@ -17,12 +17,12 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import java.util.Collections;
-import km1.algafood.api.assemblers.CuisineModelAssembler;
 import km1.algafood.api.assemblers.CuisineInputDisassembler;
+import km1.algafood.api.assemblers.CuisineModelAssembler;
 import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
 import km1.algafood.api.exceptionHandler.Problem;
-import km1.algafood.api.models.CuisineModel;
 import km1.algafood.api.models.CuisineInput;
+import km1.algafood.api.models.CuisineModel;
 import km1.algafood.domain.exceptions.CuisineHasDependents;
 import km1.algafood.domain.exceptions.CuisineNotFountException;
 import km1.algafood.domain.models.Cuisine;
@@ -310,5 +310,33 @@ public class CuisineControllerTests {
         .delete(PATH_VALID_ID)
         .then()
         .status(HttpStatus.NO_CONTENT);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithBlankNameCuisine() {
+    CuisineInput input = aCuisine().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithBlankNameCuisine() {
+    CuisineInput input = aCuisine().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
   }
 }

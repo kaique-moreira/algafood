@@ -1,7 +1,6 @@
 package km1.algafood.utils;
 
 import java.time.OffsetDateTime;
-import org.springframework.http.HttpStatusCode;
 
 import km1.algafood.api.exceptionHandler.Problem;
 
@@ -11,7 +10,7 @@ public class ProblemBuilderFactory {
     return Problem.builder()
         .title("Resource not found")
         .type("https://algafood.com.br/resource-not-found")
-        .status(HttpStatusCode.valueOf(404))
+        .status(404)
         .detail("")
         .instance("").timestamp(OffsetDateTime.now()).properties(null);
   }
@@ -20,7 +19,7 @@ public class ProblemBuilderFactory {
     return Problem.builder()
         .title("Resource has dependents")
         .type("https://algafood.com.br/resource-has-dependents")
-        .status(HttpStatusCode.valueOf(409))
+        .status(409)
         .detail("")
         .instance("").timestamp(OffsetDateTime.now()).properties(null);
   }
