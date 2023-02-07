@@ -29,6 +29,8 @@ public class RestaurantRegisterServiceTests {
   private static final long VALID_ID = 1l;
 
   @Mock RestaurantRepository repository;
+  @Mock CuisineRegisterService cuisineRegisterService;
+  @Mock CityRegisterService cityRegisterService;
 
   @InjectMocks RestaurantRegisterService service;
 
@@ -59,6 +61,8 @@ public class RestaurantRegisterServiceTests {
     Restaurant valid = aRestaurant().build();
     Restaurant registered = aRestaurant().withValidId().build();
 
+    when(cuisineRegisterService.fetchByID(valid.getCuisine().getId())).thenReturn(valid.getCuisine());
+    when(cityRegisterService.fetchByID(valid.getAddres().getCity().getId())).thenReturn(valid.getAddres().getCity());
     when(repository.save(valid)).thenReturn(registered);
 
     Restaurant actual = service.register(valid);
@@ -109,7 +113,7 @@ public class RestaurantRegisterServiceTests {
     when(repository.findAll())
         .thenReturn(Collections.singletonList(aRestaurant().withValidId().build()));
     List<Restaurant> actual = service.fetchAll();
-    assertThat(actual.size(), is(VALID_ID));
+    assertThat(actual.size(), is(1));
   }
 
   @Test

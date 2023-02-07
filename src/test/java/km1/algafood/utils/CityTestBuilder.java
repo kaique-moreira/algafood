@@ -12,7 +12,7 @@ import km1.algafood.domain.models.State;
 
 public class CityTestBuilder {
   private City city =
-      City.builder().name("São Paulo").state(aState().build()).build();
+      City.builder().name("São Paulo").state(aState().withValidId().build()).build();
 
   public static CityTestBuilder aCity() {
     return new CityTestBuilder();
