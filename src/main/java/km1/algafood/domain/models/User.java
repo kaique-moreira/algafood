@@ -52,4 +52,12 @@ public class User {
       inverseJoinColumns = @JoinColumn(name = "group_id"))
   @Default
   private List<Group> grupos = new ArrayList<>();
+
+  public boolean passwordMatchesWith(String password) {
+    return this.getPassword().equals(password);
+  }
+
+  public boolean passwordNotMatchesWith(String password) {
+     return !passwordMatchesWith(password);
+  }
 }
