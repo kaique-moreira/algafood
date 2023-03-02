@@ -129,13 +129,14 @@ public class UserRegisterServiceTests {
       );
   }
 
-  @Test
-  void shouldReturnUserList_whenFetcAll(){
-    User registered = aUser().withValidId().build();
-    when(repository.findAll()).thenReturn(Collections.singletonList(registered));
-    List<User> actual = service.fetchAll();
-    assertThat(actual.size(), is(1));
-  }
+  // @Test
+  // void shouldReturnUserList_whenFetcAll(){
+  //   User registered = aUser().withValidId().build();
+  //   when(repository.findAll()).thenReturn(Collections.singletonList(registered));
+  //   List<User> actual = service.fetchAll();
+  //   assertThat(actual.size(), is(1));
+  // }
+
 @Test
   void s1houldReturnUserList_whenFetcAll(){
     User user = aUser().build();
