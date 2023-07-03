@@ -42,7 +42,7 @@ CREATE TABLE tb_restaurant (
 CREATE TABLE tb_product (
 	id SERIAL,
 	name VARCHAR(100) NOT NULL,
-	description VARCHAR(60) NOT NULL,
+	description VARCHAR(200) NOT NULL,
 	price MONEY NOT NULL,
   active BOOLEAN NOT NULL,
   
@@ -71,7 +71,7 @@ CREATE TABLE tb_user (
   email VARCHAR(100) NOT NULL,
   password VARCHAR(60) NOT NULL, 
   confirmed  BOOLEAN DEFAULT FALSE,
-  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  register_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
   PRIMARY KEY(id)
 );
@@ -124,7 +124,7 @@ CREATE TABLE tb_order (
 	
   status VARCHAR(10) NOT NULL,
   created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  confirmed_date TIMESTAMP NULL,
+  confirm_date TIMESTAMP NULL,
   cancel_date TIMESTAMP NULL,
   delivery_date TIMESTAMP NULL,
 
@@ -176,7 +176,7 @@ foreign KEY (user_id) references tb_user (id);
 ALTER TABLE tb_order ADD constraint fk_order_restaurant 
 FOREIGN KEY (restaurant_id) references tb_restaurant (id);
 
-ALTER TABLE tb_order ADD constraint fk_order_usser_client
+ALTER TABLE tb_order ADD constraint fk_order_user_client
 FOREIGN KEY (user_client_id) references tb_user (id);
 
 ALTER TABLE tb_order ADD constraint fk_order_payment_method 
