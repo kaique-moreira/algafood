@@ -1,5 +1,11 @@
 package km1.algafood.domain.models;
 
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,16 +15,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "tb_user")
@@ -51,13 +53,21 @@ public class User {
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "group_id"))
   @Default
-  private List<Group> grupos = new ArrayList<>();
+  private Set<Group> groups = new HashSet<>();
 
   public boolean passwordMatchesWith(String password) {
     return this.getPassword().equals(password);
   }
 
   public boolean passwordNotMatchesWith(String password) {
-     return !passwordMatchesWith(password);
+    return !passwordMatchesWith(password);
+  }
+
+  public boolean addGroup(Group toAdd) {
+    return this.getGroups().add(toAdd);
+  }
+
+  public boolean removeGroup(Group toRemove) {
+    return this.getGroups().remove(toRemove);
   }
 }
