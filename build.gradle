@@ -13,6 +13,13 @@ plugins {
   id 'com.bmuschko.docker-remote-api' version '9.1.0'
 }
 
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/algafood?serverTimezone=UTC'
+    user = 'postgres'
+    password = '1234'
+    cleanDisabled = false
+}
+   
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
@@ -111,15 +118,6 @@ task migrateDBTest(type: FlywayMigrateTask) {
     user = 'postgres'
     password = ''
 
-}
-
-tasks.named('bootRun') {
-    doFirst {
-        file('.env').readLines().each() {
-            def (key, value) = it.tokenize('=')
-            environment key, value
-        }
-    }
 }
 
 tasks.named('bootRun') {

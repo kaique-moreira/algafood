@@ -7,7 +7,7 @@ public class PaymentMethodNotFountException extends EntityNotFoundException{
     super(mensagem);
   }
 
-  public PaymentMethodNotFountException(Long cuisineId) {
-    this(String.format("there is no cuisine with id %d", cuisineId));
+  public PaymentMethodNotFountException(Long id) {
+    this(String.format("there is no permission with id %d", id));
   }  
 }

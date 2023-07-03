@@ -32,39 +32,39 @@ public class GroupController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public GroupModel saveGroup(@RequestBody @Valid GroupInput cityInput) {
-    var toRegister = disassembler.apply(cityInput);
+  public GroupModel add(@RequestBody @Valid GroupInput groupInput) {
+    var toRegister = disassembler.toDomainObject(groupInput);
     var registered = registerService.register(toRegister);
-    var cityModel = assembler.apply(registered);
-    return cityModel;
+    var groupModel = assembler.toModel(registered);
+    return groupModel;
   }
 
   @GetMapping
-  public List<GroupModel> findCities() {
-    var cities = registerService.fetchAll();
-    var citiesModel = cities.stream().map(assembler).toList();
-    return citiesModel;
+  public List<GroupModel> list() {
+    var groups = registerService.fetchAll();
+    var groupsModel = assembler.toCollectionModel(groups);
+    return (List<GroupModel>)groupsModel;
   }
 
   @GetMapping("/{id}")
-  public GroupModel findGroupById(@PathVariable Long id) {
-    var city = registerService.fetchByID(id);
-    var cityModel = assembler.apply(city);
-    return cityModel;
+  public GroupModel fetch(@PathVariable Long id) {
+    var group = registerService.fetchByID(id);
+    var groupModel = assembler.toModel(group);
+    return groupModel;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteGroupById(@PathVariable Long id) {
+  public void delete(@PathVariable Long id) {
     registerService.remove(id);
   }
 
   @PutMapping("/{id}")
-  public GroupModel updateGroupById(@PathVariable Long id,@RequestBody @Valid GroupInput cityInput) {
-    var toUpdate = disassembler.apply(cityInput);
+  public GroupModel update(@PathVariable Long id,@RequestBody @Valid GroupInput groupInput) {
+    var toUpdate = disassembler.toDomainObject(groupInput);
     var updatetd =  registerService.update(id, toUpdate);
-    var cityModel = assembler.apply(updatetd);
-    return cityModel;
+    var groupModel = assembler.toModel(updatetd);
+    return groupModel;
   }
 
 

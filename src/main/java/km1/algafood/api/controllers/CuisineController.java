@@ -31,38 +31,38 @@ public class CuisineController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CuisineModel saveCuisine(@RequestBody @Valid CuisineInput cuisineinput) {
-    var toRegister = disassembler.apply(cuisineinput);
+  public CuisineModel add(@RequestBody @Valid CuisineInput cuisineinput) {
+    var toRegister = disassembler.toDomainObject(cuisineinput);
     var registered =  registerService.register(toRegister);
-    var cuisineModel = assembler.apply(registered);
+    var cuisineModel = assembler.toModel(registered);
     return cuisineModel;
   }
 
   @GetMapping
-  public List<CuisineModel> findCuisines() {
+  public List<CuisineModel> list() {
     var cuisines = registerService.fetchAll();
-    var cuisinesModel = cuisines.stream().map(assembler).toList();
-    return cuisinesModel;
+    var cuisinesModel = assembler.toCollectionModel(cuisines);
+    return (List<CuisineModel>) cuisinesModel;
   }
 
   @GetMapping("/{id}")
-  public CuisineModel findCuisineById(@PathVariable Long id) {
+  public CuisineModel fetch(@PathVariable Long id) {
     var cuisine = registerService.fetchByID(id);
-    var cuisineModel = assembler.apply(cuisine);
+    var cuisineModel = assembler.toModel(cuisine);
     return cuisineModel;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteCuisineById(@PathVariable Long id) {
+  public void delete(@PathVariable Long id) {
     registerService.remove(id);
   }
 
   @PutMapping("/{id}")
-  public CuisineModel updateCuisineById(@PathVariable Long id, @RequestBody @Valid CuisineInput cuisineInput) {
-    var toUpdate = disassembler.apply(cuisineInput);
+  public CuisineModel update(@PathVariable Long id, @RequestBody @Valid CuisineInput cuisineInput) {
+    var toUpdate = disassembler.toDomainObject(cuisineInput);
     var updated = registerService.update(id, toUpdate);
-    var cuisineModel = assembler.apply(updated);
+    var cuisineModel = assembler.toModel(updated);
     return cuisineModel;
   }
 }

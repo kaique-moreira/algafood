@@ -31,38 +31,38 @@ public class PaymentMethodController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public PaymentMethodModel savePaymentMethod(@RequestBody @Valid PaymentMethodInput cuisineinput) {
-    var toRegister = disassembler.apply(cuisineinput);
+  public PaymentMethodModel add(@RequestBody @Valid PaymentMethodInput cuisineinput) {
+    var toRegister = disassembler.toDomainObject(cuisineinput);
     var registered =  registerService.register(toRegister);
-    var cuisineModel = assembler.apply(registered);
-    return cuisineModel;
+    var patmentMethodModel = assembler.toModel(registered);
+    return patmentMethodModel;
   }
 
   @GetMapping
-  public List<PaymentMethodModel> findPaymentMethods() {
-    var cuisines = registerService.fetchAll();
-    var cuisinesModel = cuisines.stream().map(assembler).toList();
-    return cuisinesModel;
+  public List<PaymentMethodModel> list() {
+    var paymentMethods = registerService.fetchAll();
+    var patmentMethodsModel = assembler.toCollectionModel(paymentMethods);
+    return (List<PaymentMethodModel>) patmentMethodsModel;
   }
 
   @GetMapping("/{id}")
-  public PaymentMethodModel findPaymentMethodById(@PathVariable Long id) {
+  public PaymentMethodModel fetch(@PathVariable Long id) {
     var cuisine = registerService.fetchByID(id);
-    var cuisineModel = assembler.apply(cuisine);
-    return cuisineModel;
+    var patmentMethodModel = assembler.toModel(cuisine);
+    return patmentMethodModel;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deletePaymentMethodById(@PathVariable Long id) {
+  public void delete(@PathVariable Long id) {
     registerService.remove(id);
   }
 
   @PutMapping("/{id}")
-  public PaymentMethodModel updatePaymentMethodById(@PathVariable Long id, @RequestBody @Valid PaymentMethodInput cuisineInput) {
-    var toUpdate = disassembler.apply(cuisineInput);
+  public PaymentMethodModel update(@PathVariable Long id, @RequestBody @Valid PaymentMethodInput cuisineInput) {
+    var toUpdate = disassembler.toDomainObject(cuisineInput);
     var updated = registerService.update(id, toUpdate);
-    var cuisineModel = assembler.apply(updated);
-    return cuisineModel;
+    var patmentMethodModel = assembler.toModel(updated);
+    return patmentMethodModel;
   }
 }

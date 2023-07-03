@@ -32,40 +32,38 @@ public class CityController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CityModel saveCity(@RequestBody @Valid CityInput cityInput) {
-    var toRegister = disassembler.apply(cityInput);
+  public CityModel addCity(@RequestBody @Valid CityInput cityInput) {
+    var toRegister = disassembler.toDomainObject(cityInput);
     var registered = registerService.register(toRegister);
-    var cityModel = assembler.apply(registered);
+    var cityModel = assembler.toModel(registered);
     return cityModel;
   }
 
   @GetMapping
-  public List<CityModel> findCities() {
+  public List<CityModel> list() {
     var cities = registerService.fetchAll();
-    var citiesModel = cities.stream().map(assembler).toList();
-    return citiesModel;
+    var citiesModel = assembler.toCollectionModel(cities);
+    return (List<CityModel>) citiesModel;
   }
 
   @GetMapping("/{id}")
-  public CityModel findCityById(@PathVariable Long id) {
+  public CityModel fetch(@PathVariable Long id) {
     var city = registerService.fetchByID(id);
-    var cityModel = assembler.apply(city);
+    var cityModel = assembler.toModel(city);
     return cityModel;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteCityById(@PathVariable Long id) {
+  public void removeCityById(@PathVariable Long id) {
     registerService.remove(id);
   }
 
   @PutMapping("/{id}")
-  public CityModel updateCityById(@PathVariable Long id,@RequestBody @Valid CityInput cityInput) {
-    var toUpdate = disassembler.apply(cityInput);
+  public CityModel update(@PathVariable Long id,@RequestBody @Valid CityInput cityInput) {
+    var toUpdate = disassembler.toDomainObject(cityInput);
     var updatetd =  registerService.update(id, toUpdate);
-    var cityModel = assembler.apply(updatetd);
+    var cityModel = assembler.toModel(updatetd);
     return cityModel;
   }
-
-
 }

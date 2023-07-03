@@ -1,22 +1,31 @@
 package km1.algafood.api.assemblers;
 
-import java.util.function.Function;
-
+import java.util.Collection;
+import java.util.stream.Collectors;
+import km1.algafood.api.models.StateModel;
+import km1.algafood.domain.models.State;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import km1.algafood.api.models.StateModel;
-import km1.algafood.domain.models.State;
-import lombok.AllArgsConstructor;
-
 @Component
-@AllArgsConstructor
-public class StateModelAssembler implements Function<State, StateModel> {
+public class StateModelAssembler {
 
   private final ModelMapper modelMapper;
 
-  @Override
-  public StateModel apply(State t) {
-    return modelMapper.map(t, StateModel.class);
+  public StateModelAssembler(ModelMapper modelMapper) {
+    this.modelMapper = modelMapper;
+  }
+
+  public StateModel toModel(State source) {
+    return modelMapper.map(source, StateModel.class);
+  }
+
+  public Collection<StateModel> toCollectionModel(Collection<State> sourceCollection) {
+    return sourceCollection.stream()
+        .map(source -> modelMapper.map(source, StateModel.class))
+        .collect(Collectors.toList());
   }
 }
+
+
+

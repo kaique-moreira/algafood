@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import km1.algafood.api.assemblers.StateModelAssembler;
 import km1.algafood.api.assemblers.StateInputDisassembler;
-import km1.algafood.api.models.StateModel;
+import km1.algafood.api.assemblers.StateModelAssembler;
 import km1.algafood.api.models.StateInput;
+import km1.algafood.api.models.StateModel;
 import km1.algafood.domain.services.StateRegisterService;
 import lombok.AllArgsConstructor;
 
@@ -32,38 +32,38 @@ public class StateController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public StateModel saveState(@RequestBody @Valid StateInput stateInput) {
-    var toRegister = disassembler.apply(stateInput);
+  public StateModel add(@RequestBody @Valid StateInput stateInput) {
+    var toRegister = disassembler.toDomainObject(stateInput);
     var registered = registerService.register(toRegister);
-    var stateModel = assembler.apply(registered);
+    var stateModel = assembler.toModel(registered);
     return stateModel;
   }
 
   @GetMapping
-  public List<StateModel> findStates() {
+  public List<StateModel> list() {
     var states =  registerService.fetchAll();
-    var statesModel = states.stream().map(assembler).toList();
-    return statesModel;
+    var statesModel = assembler.toCollectionModel(states);
+    return (List<StateModel>)statesModel;
   }
 
   @GetMapping("/{id}")
-  public StateModel findStateById(@PathVariable Long id) {
+  public StateModel fetch(@PathVariable Long id) {
     var state =  registerService.fetchByID(id);
-    var stateModel = assembler.apply(state);
+    var stateModel = assembler.toModel(state);
     return stateModel;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteStateModelById(@PathVariable Long id) {
+  public void delete(@PathVariable Long id) {
     registerService.remove(id);
   }
 
   @PutMapping("/{id}")
-  public StateModel updateStateById(@PathVariable Long id,@RequestBody @Valid StateInput stateInput) {
-    var toUpdate = disassembler.apply(stateInput);
+  public StateModel update(@PathVariable Long id,@RequestBody @Valid StateInput stateInput) {
+    var toUpdate = disassembler.toDomainObject(stateInput);
     var updated =  registerService.update(id, toUpdate);
-    var stateModel = assembler.apply(updated);
+    var stateModel = assembler.toModel(updated);
     return stateModel;
   }
 }

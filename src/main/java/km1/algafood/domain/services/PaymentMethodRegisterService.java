@@ -7,21 +7,20 @@ import km1.algafood.domain.exceptions.PaymentMethodHasDependents;
 import km1.algafood.domain.exceptions.PaymentMethodNotFountException;
 import km1.algafood.domain.models.PaymentMethod;
 import km1.algafood.domain.repositories.PaymentMethodRepository;
+import lombok.AllArgsConstructor;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PaymentMethodRegisterService implements RegisterService<PaymentMethod> {
+@AllArgsConstructor
+public class PaymentMethodRegisterService{
 
   private final PaymentMethodRepository repository;
 
-  public PaymentMethodRegisterService(PaymentMethodRepository repository) {
-    this.repository = repository;
-  }
 
-  @Override
   @Transactional
   public PaymentMethod register(PaymentMethod entity) throws DomainException {
     try {
@@ -32,20 +31,17 @@ public class PaymentMethodRegisterService implements RegisterService<PaymentMeth
     return entity;
   }
 
-  @Override
   public List<PaymentMethod> fetchAll() throws DomainException {
     List<PaymentMethod> cuisines = repository.findAll();
     return cuisines;
   }
 
-  @Override
   public PaymentMethod fetchByID(Long id) throws DomainException {
     PaymentMethod cuisine =
         repository.findById(id).orElseThrow(() -> new PaymentMethodNotFountException(id));
     return cuisine;
   }
 
-  @Override
   @Transactional
   public void remove(Long id) throws DomainException {
     try {
@@ -58,7 +54,6 @@ public class PaymentMethodRegisterService implements RegisterService<PaymentMeth
     }
   }
 
-  @Override
   @Transactional
   public PaymentMethod update(Long id, PaymentMethod entity) throws DomainException {
     PaymentMethod cuisine = this.fetchByID(id);
