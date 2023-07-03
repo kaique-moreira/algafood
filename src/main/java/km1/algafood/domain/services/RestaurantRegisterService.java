@@ -22,6 +22,7 @@ public class RestaurantRegisterService {
   private final RestaurantRepository repository;
   private final CuisineRegisterService cuisineRegisterService;
   private final CityRegisterService cityRegisterService;
+  private final PaymentMethodRegisterService paymentMethodRegisterService;
 
   @Transactional
   public Restaurant register(Restaurant entity) throws DomainException {
@@ -67,6 +68,21 @@ public class RestaurantRegisterService {
     return restaurant;
   }
 
+  @Transactional
+  public void desassociatePaymentMethod(Long restaurantId, Long paymentMethodId)
+      throws DomainException {
+    var restaurant = this.fetchByID(restaurantId);
+    var toRemove = paymentMethodRegisterService.fetchByID(paymentMethodId);
+    restaurant.removePaymentMethod(toRemove);
+  }
+
+  @Transactional
+  public void associatePaymentMethod(Long restaurantId, Long paymentMethodId)
+      throws DomainException {
+    var restaurant = this.fetchByID(restaurantId);
+    var toAdd = paymentMethodRegisterService.fetchByID(paymentMethodId);
+    restaurant.addPaymentMethod(toAdd);
+  }
 
   @Transactional
   public void active(Long id) throws DomainException {

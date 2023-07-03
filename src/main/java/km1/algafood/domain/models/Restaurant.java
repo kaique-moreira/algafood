@@ -1,7 +1,5 @@
 package km1.algafood.domain.models;
 
-
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -17,7 +15,9 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -65,7 +65,7 @@ public class Restaurant {
       joinColumns = @JoinColumn(name = "restaurant_id"),
       inverseJoinColumns = @JoinColumn(name = "payment_method_id"))
   @Builder.Default
-  private List<PaymentMethod> paymentMethod = new ArrayList<>();
+  private Set<PaymentMethod> paymentMethod = new HashSet();
 
   @OneToMany(mappedBy = "restaurant")
   @Builder.Default
@@ -74,6 +74,14 @@ public class Restaurant {
   @Builder.Default private Boolean active = Boolean.TRUE;
 
   @Builder.Default private Boolean opened = Boolean.TRUE;
+
+  public boolean addPaymentMethod(PaymentMethod paymentMethod) {
+    return this.getPaymentMethod().add(paymentMethod);
+  }
+
+  public boolean removePaymentMethod(PaymentMethod paymentMethod) {
+    return this.getPaymentMethod().remove(paymentMethod);
+  }
   public void active() {
     setActive(true);
   }
@@ -81,10 +89,16 @@ public class Restaurant {
   public void disactive() {
     setActive(false);
   }
+
   public void open() {
     setOpened(true);
   }
+
   public void close() {
     setOpened(false);
+  }
+
+  public boolean acceptPaymentMethod(PaymentMethod paymentMethod) {
+    return this.paymentMethod.contains(paymentMethod);
   }
 }
