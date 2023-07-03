@@ -23,6 +23,7 @@ public class RestaurantRegisterService {
   private final CuisineRegisterService cuisineRegisterService;
   private final CityRegisterService cityRegisterService;
   private final PaymentMethodRegisterService paymentMethodRegisterService;
+  private final UserRegisterService userRegisterService;
 
   @Transactional
   public Restaurant register(Restaurant entity) throws DomainException {
@@ -82,6 +83,20 @@ public class RestaurantRegisterService {
     var restaurant = this.fetchByID(restaurantId);
     var toAdd = paymentMethodRegisterService.fetchByID(paymentMethodId);
     restaurant.addPaymentMethod(toAdd);
+  }
+
+  @Transactional
+  public void associateUser(Long restaurantId, Long userId) {
+    var restaurant = this.fetchByID(restaurantId);
+    var toAdd = userRegisterService.fetchByID(userId);
+    restaurant.addMember(toAdd);
+  }
+
+  @Transactional
+  public void desassociateUser(Long restaurantId, Long userId) {
+    var restaurant = this.fetchByID(restaurantId);
+    var toRemove = userRegisterService.fetchByID(userId);
+    restaurant.removeMember(toRemove);
   }
 
   @Transactional

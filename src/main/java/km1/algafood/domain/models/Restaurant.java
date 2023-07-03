@@ -67,6 +67,14 @@ public class Restaurant {
   @Builder.Default
   private Set<PaymentMethod> paymentMethod = new HashSet();
 
+  @ManyToMany
+  @JoinTable(
+      name = "restaurant_user",
+      joinColumns = @JoinColumn(name = "restaurant_id"),
+      inverseJoinColumns = @JoinColumn(name = "user_id"))
+  @Builder.Default
+  private Set<User> members = new HashSet();
+
   @OneToMany(mappedBy = "restaurant")
   @Builder.Default
   private List<Product> products = new ArrayList<>();
@@ -96,6 +104,14 @@ public class Restaurant {
 
   public void close() {
     setOpened(false);
+  }
+
+  public boolean removeMember(User toRemove) {
+    return this.getMembers().remove(toRemove);
+  }
+
+  public boolean addMember(User toAdd) {
+    return this.getMembers().add(toAdd);
   }
 
   public boolean acceptPaymentMethod(PaymentMethod paymentMethod) {

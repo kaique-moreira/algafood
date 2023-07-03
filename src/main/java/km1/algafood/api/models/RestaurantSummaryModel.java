@@ -1,7 +1,5 @@
 package km1.algafood.api.models;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,12 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RestaurantModel {
+public class RestaurantSummaryModel {
   private Long id;
   private String name;
-  private BigDecimal shippingFee;
-  private CuisineModel cuisine;
-  private Boolean active;
-  private Boolean opened;
-  private AddresModel addresModel;
 }
