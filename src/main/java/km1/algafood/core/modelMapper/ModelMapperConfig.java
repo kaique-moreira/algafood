@@ -8,7 +8,6 @@ import km1.algafood.api.models.AddresModel;
 import km1.algafood.api.models.input.OrderItemInput;
 import km1.algafood.domain.models.Addres;
 import km1.algafood.domain.models.OrderItem;
-
 @Configuration
 public class ModelMapperConfig {
 
@@ -27,4 +26,5 @@ public class ModelMapperConfig {
 
     return modelMapper;
   }
+
 }

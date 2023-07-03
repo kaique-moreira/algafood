@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import jakarta.validation.Valid;
 import km1.algafood.api.assemblers.RestaurantInputDisassembler;
 import km1.algafood.api.assemblers.RestaurantModelAssembler;
 import km1.algafood.api.models.RestaurantModel;
 import km1.algafood.api.models.input.RestaurantInput;
+import km1.algafood.api.models.view.RestaurantView;
 import km1.algafood.domain.services.RestaurantRegisterService;
 import lombok.AllArgsConstructor;
 
@@ -40,7 +43,16 @@ public class RestaurantController {
   }
 
   @GetMapping
-  public List<RestaurantModel> list() {
+  @JsonView({RestaurantView.Summary.class})
+  public List<RestaurantModel> listSummary() {
+    var cities = registerService.fetchAll();
+    var citiesModel = assembler.toCollectionModel(cities);
+    return (List<RestaurantModel>) citiesModel;
+  }
+
+  @GetMapping(params = "projection=summary")
+  @JsonView({RestaurantView.OnlyName.class})
+  public List<RestaurantModel> listOnlyName() {
     var cities = registerService.fetchAll();
     var citiesModel = assembler.toCollectionModel(cities);
     return (List<RestaurantModel>) citiesModel;

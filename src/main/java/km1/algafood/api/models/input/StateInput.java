@@ -1,0 +1,16 @@
+package km1.algafood.api.models.input;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class StateInput {
+  @NotBlank
+  private String name;
+}
