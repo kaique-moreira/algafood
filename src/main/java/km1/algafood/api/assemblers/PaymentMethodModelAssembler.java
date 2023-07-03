@@ -1,20 +1,30 @@
 package km1.algafood.api.assemblers;
 
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import km1.algafood.api.models.PaymentMethodModel;
 import km1.algafood.domain.models.PaymentMethod;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
-public class PaymentMethodModelAssembler implements Function<PaymentMethod, PaymentMethodModel> {
+public class PaymentMethodModelAssembler {
 
   private final ModelMapper modelMapper;
 
-  @Override
-  public PaymentMethodModel apply(PaymentMethod t) {
-    return modelMapper.map(t, PaymentMethodModel.class);
+  public PaymentMethodModelAssembler(ModelMapper modelMapper) {
+    this.modelMapper = modelMapper;
+  }
+
+  public PaymentMethodModel toModel(PaymentMethod source) {
+    return modelMapper.map(source, PaymentMethodModel.class);
+  }
+
+  public Collection<PaymentMethodModel> toCollectionModel(Collection<PaymentMethod> sourceCollection) {
+    return sourceCollection.stream()
+        .map(source -> modelMapper.map(source, PaymentMethodModel.class))
+        .collect(Collectors.toList());
   }
 }
+
+

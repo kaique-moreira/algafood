@@ -1,22 +1,29 @@
 package km1.algafood.api.assemblers;
 
-import java.util.function.Function;
-
+import java.util.Collection;
+import java.util.stream.Collectors;
+import km1.algafood.api.models.RestaurantInput;
+import km1.algafood.domain.models.Restaurant;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import km1.algafood.api.models.RestaurantInput;
-import km1.algafood.domain.models.Restaurant;
-import lombok.AllArgsConstructor;
-
 @Component
-@AllArgsConstructor
-public class RestaurantInputDisassembler implements Function<RestaurantInput, Restaurant> {
+public class RestaurantInputDisassembler {
 
   private final ModelMapper modelMapper;
 
-  @Override
-  public Restaurant apply(RestaurantInput restaurantInput) {
-    return modelMapper.map(restaurantInput, Restaurant.class);
+  public RestaurantInputDisassembler(ModelMapper modelMapper) {
+    this.modelMapper = modelMapper;
+  }
+
+  public Restaurant toDomainObject(RestaurantInput source) {
+    return modelMapper.map(source, Restaurant.class);
+  }
+
+  public Collection<Restaurant> toCollectionDomainObject(Collection<RestaurantInput> sourceCollection) {
+    return sourceCollection.stream()
+        .map(source -> modelMapper.map(source, Restaurant.class))
+        .collect(Collectors.toList());
   }
 }
+

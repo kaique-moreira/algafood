@@ -1,22 +1,29 @@
 package km1.algafood.api.assemblers;
 
-import java.util.function.Function;
-
+import java.util.Collection;
+import java.util.stream.Collectors;
+import km1.algafood.api.models.CuisineModel;
+import km1.algafood.domain.models.Cuisine;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import km1.algafood.api.models.CuisineModel;
-import km1.algafood.domain.models.Cuisine;
-import lombok.AllArgsConstructor;
-
 @Component
-@AllArgsConstructor
-public class CuisineModelAssembler implements Function<Cuisine, CuisineModel> {
+public class CuisineModelAssembler {
 
   private final ModelMapper modelMapper;
 
-  @Override
-  public CuisineModel apply(Cuisine t) {
-    return modelMapper.map(t, CuisineModel.class);
+  public CuisineModelAssembler(ModelMapper modelMapper) {
+    this.modelMapper = modelMapper;
+  }
+
+  public CuisineModel toModel(Cuisine source) {
+    return modelMapper.map(source, CuisineModel.class);
+  }
+
+  public Collection<CuisineModel> toCollectionModel(Collection<Cuisine> sourceCollection) {
+    return sourceCollection.stream()
+        .map(source -> modelMapper.map(source, CuisineModel.class))
+        .collect(Collectors.toList());
   }
 }
+
