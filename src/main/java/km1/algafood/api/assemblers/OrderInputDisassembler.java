@@ -2,10 +2,12 @@ package km1.algafood.api.assemblers;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-import km1.algafood.api.models.OrderInput;
-import km1.algafood.domain.models.Order;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+
+import km1.algafood.api.models.input.OrderInput;
+import km1.algafood.domain.models.Order;
 
 @Component
 public class OrderInputDisassembler {

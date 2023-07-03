@@ -38,3 +38,8 @@ out/
 
 ### ENV ###
 .env
+
+### TESTS ###
+requests.http
+
+### TESTS ###

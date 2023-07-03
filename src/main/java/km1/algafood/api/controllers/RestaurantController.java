@@ -1,13 +1,7 @@
 package km1.algafood.api.controllers;
 
-import jakarta.validation.Valid;
 import java.util.List;
-import km1.algafood.api.assemblers.RestaurantInputDisassembler;
-import km1.algafood.api.assemblers.RestaurantModelAssembler;
-import km1.algafood.api.models.RestaurantInput;
-import km1.algafood.api.models.RestaurantModel;
-import km1.algafood.domain.services.RestaurantRegisterService;
-import lombok.AllArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import km1.algafood.api.assemblers.RestaurantInputDisassembler;
+import km1.algafood.api.assemblers.RestaurantModelAssembler;
+import km1.algafood.api.models.RestaurantModel;
+import km1.algafood.api.models.input.RestaurantInput;
+import km1.algafood.domain.services.RestaurantRegisterService;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/restaurants")

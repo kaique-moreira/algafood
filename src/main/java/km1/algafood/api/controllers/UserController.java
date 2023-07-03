@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import km1.algafood.api.assemblers.UserInputDisassembler;
 import km1.algafood.api.assemblers.UserModelAssembler;
-import km1.algafood.api.models.PasswordInput;
-import km1.algafood.api.models.UserInput;
 import km1.algafood.api.models.UserModel;
+import km1.algafood.api.models.input.PasswordInput;
+import km1.algafood.api.models.input.UserInput;
 import km1.algafood.domain.services.UserRegisterService;
 import lombok.AllArgsConstructor;
 

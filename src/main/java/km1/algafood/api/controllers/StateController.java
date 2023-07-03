@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import km1.algafood.api.assemblers.StateInputDisassembler;
 import km1.algafood.api.assemblers.StateModelAssembler;
-import km1.algafood.api.models.StateInput;
 import km1.algafood.api.models.StateModel;
+import km1.algafood.api.models.input.StateInput;
 import km1.algafood.domain.services.StateRegisterService;
 import lombok.AllArgsConstructor;
 

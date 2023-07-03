@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import km1.algafood.api.assemblers.ProductInputDisassembler;
 import km1.algafood.api.assemblers.ProductModelAssembler;
-import km1.algafood.api.models.ProductInput;
 import km1.algafood.api.models.ProductModel;
+import km1.algafood.api.models.input.ProductInput;
 import km1.algafood.domain.services.ProductRegisterService;
 import lombok.AllArgsConstructor;
 

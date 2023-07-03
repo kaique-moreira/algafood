@@ -1,12 +1,13 @@
 package km1.algafood.core.modelMapper;
 
-import km1.algafood.api.models.AddresModel;
-import km1.algafood.api.models.OrderItemInput;
-import km1.algafood.domain.models.Addres;
-import km1.algafood.domain.models.OrderItem;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import km1.algafood.api.models.AddresModel;
+import km1.algafood.api.models.input.OrderItemInput;
+import km1.algafood.domain.models.Addres;
+import km1.algafood.domain.models.OrderItem;
 
 @Configuration
 public class ModelMapperConfig {

@@ -2,10 +2,12 @@ package km1.algafood.api.assemblers;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-import km1.algafood.api.models.StateInput;
-import km1.algafood.domain.models.State;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+
+import km1.algafood.api.models.input.StateInput;
+import km1.algafood.domain.models.State;
 
 @Component
 public class StateInputDisassembler {

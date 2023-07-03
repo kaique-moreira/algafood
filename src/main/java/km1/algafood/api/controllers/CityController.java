@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import km1.algafood.api.assemblers.CityModelAssembler;
 import km1.algafood.api.assemblers.CityInputDisassembler;
+import km1.algafood.api.assemblers.CityModelAssembler;
 import km1.algafood.api.models.CityModel;
-import km1.algafood.api.models.CityInput;
+import km1.algafood.api.models.input.CityInput;
 import km1.algafood.domain.services.CityRegisterService;
 import lombok.AllArgsConstructor;
 

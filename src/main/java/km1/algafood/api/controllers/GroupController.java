@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import km1.algafood.api.assemblers.GroupModelAssembler;
 import km1.algafood.api.assemblers.GroupInputDisassembler;
+import km1.algafood.api.assemblers.GroupModelAssembler;
 import km1.algafood.api.models.GroupModel;
-import km1.algafood.api.models.GroupInput;
+import km1.algafood.api.models.input.GroupInput;
 import km1.algafood.domain.services.GroupRegisterService;
 import lombok.AllArgsConstructor;
 

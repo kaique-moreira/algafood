@@ -2,10 +2,12 @@ package km1.algafood.api.assemblers;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-import km1.algafood.api.models.CuisineInput;
-import km1.algafood.domain.models.Cuisine;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+
+import km1.algafood.api.models.input.CuisineInput;
+import km1.algafood.domain.models.Cuisine;
 
 @Component
 public class CuisineInputDisassembler {
