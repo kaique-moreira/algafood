@@ -3,8 +3,6 @@ package km1.algafood.api.models;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-
 import km1.algafood.domain.models.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +15,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonFilter("orderFilter")
+// @JsonFilter("orderFilter")
 public class OrderSummaryModel {
   private String code;
   private BigDecimal subtotal;
@@ -25,7 +23,7 @@ public class OrderSummaryModel {
   private BigDecimal total;
   private OrderStatus status;
   private OffsetDateTime confimedDate;
-  private RestaurantSummaryModel restaurante;
+  private RestaurantSummaryModel restaurant;
   private UserModel client;
 
 }

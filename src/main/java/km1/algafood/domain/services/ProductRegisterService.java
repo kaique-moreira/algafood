@@ -1,6 +1,7 @@
 package km1.algafood.domain.services;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,15 @@ public class ProductRegisterService {
 
 
   @Transactional
-  public Collection<Product> fetchByRestaurantId(Long restaurantId) {
-    return repository.findByRestaurantId(restaurantId);
+  public List<Product> fetchByRestaurantId(Long restaurantId) {
+    var restaurant = rRegisterService.fetchByID(restaurantId);
+    return repository.findByRestaurant(restaurant);
+  }
+
+  @Transactional
+  public List<Product> fetchActivesByRestaurantId(Long restaurantId) {
+    var restaurant = rRegisterService.fetchByID(restaurantId);
+    return repository.findActivesByRestaurant(restaurant);
   }
 
 

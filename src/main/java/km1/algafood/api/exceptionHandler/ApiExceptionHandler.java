@@ -1,15 +1,8 @@
 package km1.algafood.api.exceptionHandler;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import km1.algafood.api.exceptionHandler.Problem.ProblemBuilder;
-import km1.algafood.domain.exceptions.DomainException;
-import km1.algafood.domain.exceptions.EntityHasDependents;
-import km1.algafood.domain.exceptions.EntityNotFoundException;
-import lombok.Setter;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
@@ -21,9 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,6 +25,14 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
+import km1.algafood.api.exceptionHandler.Problem.ProblemBuilder;
+import km1.algafood.domain.exceptions.DomainException;
+import km1.algafood.domain.exceptions.EntityHasDependents;
+import km1.algafood.domain.exceptions.EntityNotFoundException;
+import lombok.Setter;
 
 @EnableWebMvc
 @RestControllerAdvice
@@ -43,6 +44,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
           + "the problem persists, contact your system administrator.";
 
   @Autowired private MessageSource messageSource;
+  
+  @Override
+  protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatusCode status,
+          WebRequest request) {
+      ex.printStackTrace();
+      return handleValidationInternal(ex, headers, status, request, ex.getBindingResult());
+  }
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -50,37 +58,60 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
       HttpHeaders headers,
       HttpStatusCode status,
       WebRequest request) {
-    ProblemType problemType = ProblemType.INVALID_FILDS;
-    String detail = "";
-    BindingResult bidingResult = ex.getBindingResult();
-    List<Problem.Object> problemObjects =
-        bidingResult.getAllErrors().stream()
-            .map(this::extracted)
-            .toList();
-
-    Problem problem =
-        createProblemBuilder((HttpStatus) status, problemType, detail)
-            .detail(detail)
-            .type(problemType.getUri())
-            .title(problemType.getTitle())
-            .objects(problemObjects)
-            .build();
-
-    return handleExceptionInternal(ex, problem, headers, status, request);
+    return handleValidationInternal(ex, headers, status, request, ex.getBindingResult());
   }
 
-  private Problem.Object extracted(ObjectError objectError) {
-    String message =
-        messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+private ResponseEntity<Object> handleValidationInternal(Exception ex, HttpHeaders headers,
+			HttpStatusCode status, WebRequest request, BindingResult bindingResult) {
+		ProblemType problemType = ProblemType.INVALID_FILDS;
+	    String detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente.";
+	    
+	    List<Problem.Object> problemObjects = bindingResult.getAllErrors().stream()
+	    		.map(objectError -> {
 
-    String name = objectError.getObjectName();
+	    			String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+	    			
+	    			String name = objectError.getObjectName();
+	    			
+	    			if (objectError instanceof FieldError) {
+	    				name = ((FieldError) objectError).getField();
+	    			}
+	    			
+	    			return Problem.Object.builder()
+	    				.name(name)
+	    				.userMessage(message)
+	    				.build();
+	    		})
+	    		.collect(Collectors.toList());
+	    
+	    Problem problem = createProblemBuilder(status, problemType, detail)
+	        .detail(detail)
+	        .objects(problemObjects)
+	        .build();
+	    
+	    return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+  // private ResponseEntity<Object> handleValidationInternal(BindException ex, HttpHeaders headers,
+  //     HttpStatusCode status, WebRequest request) {
+  //   ex.printStackTrace();
+  //   ProblemType problemType = ProblemType.INVALID_FILDS;
+  //   String detail = "";
+  //   BindingResult bidingResult = ex.getBindingResult();
+  //   List<Problem.Object> problemObjects =
+  //       bidingResult.getAllErrors().stream()
+  //           .map(this::createObject)
+  //           .toList();
 
-    if (objectError instanceof FieldError) {
-      name = ((FieldError) objectError).getField();
-    }
+  //   Problem problem =
+  //       createProblemBuilder((HttpStatus) status, problemType, detail)
+  //           .detail(detail)
+  //           .type(problemType.getUri())
+  //           .title(problemType.getTitle())
+  //           .objects(problemObjects)
+  //           .build();
 
-    return Problem.Object.builder().name(name).userMessage(message).build();
-  }
+  //   return handleExceptionInternal(ex, problem, headers, status, request);
+  // }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Object> handleUncaught(Exception ex, WebRequest request) {
@@ -240,7 +271,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   private ProblemBuilder createProblemBuilder(
-      HttpStatus status, ProblemType problemType, String detail) {
+      HttpStatusCode status, ProblemType problemType, String detail) {
     return Problem.builder()
         .timestamp(OffsetDateTime.now())
         .status(status.value())
@@ -249,3 +280,4 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         .detail(detail);
   }
 }
+
