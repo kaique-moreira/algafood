@@ -1,13 +1,6 @@
 package km1.algafood.domain.services;
 
 import java.util.List;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import km1.algafood.domain.exceptions.DomainException;
 import km1.algafood.domain.exceptions.RestaurantHasDependents;
 import km1.algafood.domain.exceptions.RestaurantNotFountException;
@@ -16,16 +9,20 @@ import km1.algafood.domain.models.Cuisine;
 import km1.algafood.domain.models.Restaurant;
 import km1.algafood.domain.repositories.RestaurantRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-public class RestaurantRegisterService implements RegisterService<Restaurant> {
+public class RestaurantRegisterService {
 
   private final RestaurantRepository repository;
   private final CuisineRegisterService cuisineRegisterService;
   private final CityRegisterService cityRegisterService;
 
-  @Override
   @Transactional
   public Restaurant register(Restaurant entity) throws DomainException {
     Long cuisineId = entity.getCuisine().getId();
@@ -35,19 +32,17 @@ public class RestaurantRegisterService implements RegisterService<Restaurant> {
     City city = cityRegisterService.fetchByID(cityId);
 
     entity.setCuisine(cuisine);
-    entity.getAddres().setCity(city);    
+    entity.getAddres().setCity(city);
 
     entity = repository.save(entity);
     return entity;
   }
 
-  @Override
   public List<Restaurant> fetchAll() throws DomainException {
     List<Restaurant> restaurants = repository.findAll();
     return restaurants;
   }
 
-  @Override
   @Transactional
   public void remove(Long id) throws DomainException {
     try {
@@ -60,30 +55,60 @@ public class RestaurantRegisterService implements RegisterService<Restaurant> {
     }
   }
 
-  @Override
   @Transactional
   public Restaurant update(Long id, Restaurant entity) throws DomainException {
-    Restaurant restaurant = this.fetchByID(id);
+    var restaurant = this.fetchByID(id);
     BeanUtils.copyProperties(entity, restaurant, "id");
     return this.register(restaurant);
   }
 
-  @Override
   public Restaurant fetchByID(Long id) throws DomainException {
-    Restaurant restaurant =
-        repository.findById(id).orElseThrow(() -> new RestaurantNotFountException(id));
+    var restaurant = repository.findById(id).orElseThrow(() -> new RestaurantNotFountException(id));
     return restaurant;
   }
 
+
   @Transactional
-  public void active(Long id) {
-    Restaurant restaurant = this.fetchByID(id);
+  public void active(Long id) throws DomainException {
+    var restaurant = this.fetchByID(id);
     restaurant.active();
   }
 
   @Transactional
-  public void disactive(Long id) {
-    Restaurant restaurant = this.fetchByID(id);
+  public void active(List<Long> ids) throws DomainException {
+    try {
+      ids.forEach(this::active);
+
+    } catch (RestaurantNotFountException e) {
+      throw new DomainException(e.getMessage(), e);
+    }
+  }
+
+  @Transactional
+  public void disactive(Long id) throws DomainException {
+    var restaurant = this.fetchByID(id);
     restaurant.disactive();
+  }
+
+  @Transactional
+  public void disactive(List<Long> ids) throws DomainException {
+    try {
+      ids.forEach(this::disactive);
+
+    } catch (RestaurantNotFountException e) {
+      throw new DomainException(e.getMessage(), e);
+    }
+  }
+
+  @Transactional
+  public void opening(Long id) throws DomainException {
+    var restaurant = this.fetchByID(id);
+    restaurant.open();
+  }
+
+  @Transactional
+  public void closure(Long id) throws DomainException {
+    var restaurant = this.fetchByID(id);
+    restaurant.close();
   }
 }

@@ -2,13 +2,10 @@ package km1.algafood.api.controllers;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import km1.algafood.api.assemblers.RestaurantModelAssembler;
 import km1.algafood.api.assemblers.RestaurantInputDisassembler;
+import km1.algafood.api.assemblers.RestaurantModelAssembler;
 import km1.algafood.api.models.RestaurantInput;
 import km1.algafood.api.models.RestaurantModel;
-import km1.algafood.domain.exceptions.CityNotFountException;
-import km1.algafood.domain.exceptions.CuisineNotFountException;
-import km1.algafood.domain.exceptions.DomainException;
 import km1.algafood.domain.services.RestaurantRegisterService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,29 +30,24 @@ public class RestaurantController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public RestaurantModel saveRestaurant(@RequestBody @Valid RestaurantInput restaurantInput) {
-    try {
-    var toRegister = disassembler.apply(restaurantInput);
+  public RestaurantModel add(@RequestBody @Valid RestaurantInput restaurantInput) {
+    var toRegister = disassembler.toDomainObject(restaurantInput);
     var registered = registerService.register(toRegister);
-    var restaurantModel = assembler.apply(registered);
+    var restaurantModel = assembler.toModel(registered);
     return restaurantModel;
-      
-    } catch (CuisineNotFountException | CityNotFountException e) {
-      throw new DomainException(e.getMessage());
-    }
   }
 
   @GetMapping
-  public List<RestaurantModel> findCities() {
+  public List<RestaurantModel> list() {
     var cities = registerService.fetchAll();
-    var citiesModel = cities.stream().map(assembler).toList();
-    return citiesModel;
+    var citiesModel = assembler.toCollectionModel(cities);
+    return (List<RestaurantModel>) citiesModel;
   }
 
   @GetMapping("/{id}")
-  public RestaurantModel findRestaurantById(@PathVariable Long id) {
+  public RestaurantModel fetch(@PathVariable Long id) {
     var restaurant = registerService.fetchByID(id);
-    var restaurantModel = assembler.apply(restaurant);
+    var restaurantModel = assembler.toModel(restaurant);
     return restaurantModel;
   }
 
@@ -66,17 +58,12 @@ public class RestaurantController {
   }
 
   @PutMapping("/{id}")
-  public RestaurantModel updateRestaurantById(
+  public RestaurantModel update(
       @PathVariable Long id, @RequestBody @Valid RestaurantInput restaurantInput) {
-    try {
-      var toUpdate = disassembler.apply(restaurantInput);
-      var updatetd = registerService.update(id, toUpdate);
-      var restaurantModel = assembler.apply(updatetd);
-      return restaurantModel;
-
-    } catch (CuisineNotFountException | CityNotFountException  e) {
-      throw new DomainException(e.getMessage());
-    }
+    var toUpdate = disassembler.toDomainObject(restaurantInput);
+    var updatetd = registerService.update(id, toUpdate);
+    var restaurantModel = assembler.toModel(updatetd);
+    return restaurantModel;
   }
 
   @PutMapping("/{id}/active")
@@ -89,5 +76,29 @@ public class RestaurantController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void disactive(@PathVariable Long id) {
     registerService.disactive(id);
+  }
+
+  @PutMapping("/active")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void active(@RequestBody List<Long> id) {
+    registerService.active(id);
+  }
+
+  @DeleteMapping("/activations")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void disactive(@RequestBody List<Long> id) {
+    registerService.disactive(id);
+  }
+
+  @PutMapping("/{id}/activations")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void open(@PathVariable Long id) {
+    registerService.opening(id);
+  }
+
+  @PutMapping("/{id}/closure")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void closure(@PathVariable Long id) {
+    registerService.closure(id);
   }
 }

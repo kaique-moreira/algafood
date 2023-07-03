@@ -1,12 +1,6 @@
 package km1.algafood.domain.models;
 
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -20,11 +14,17 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "tb_restaurant")
@@ -71,14 +71,20 @@ public class Restaurant {
   @Builder.Default
   private List<Product> products = new ArrayList<>();
 
-  @Builder.Default
-  private Boolean active = Boolean.TRUE;
+  @Builder.Default private Boolean active = Boolean.TRUE;
 
-  public void active(){
+  @Builder.Default private Boolean opened = Boolean.TRUE;
+  public void active() {
     setActive(true);
   }
 
-  public void  disactive(){
+  public void disactive() {
     setActive(false);
+  }
+  public void open() {
+    setOpened(true);
+  }
+  public void close() {
+    setOpened(false);
   }
 }
