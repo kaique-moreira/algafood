@@ -90,6 +90,15 @@ public class Restaurant {
   public boolean removePaymentMethod(PaymentMethod paymentMethod) {
     return this.getPaymentMethod().remove(paymentMethod);
   }
+
+  public boolean addProduct(Product toAdd) {
+    return this.getProducts().add(toAdd);
+  }
+
+  public boolean removeProduct(Product toRemove) {
+    return this.getProducts().remove(toRemove);
+  }
+
   public void active() {
     setActive(true);
   }
