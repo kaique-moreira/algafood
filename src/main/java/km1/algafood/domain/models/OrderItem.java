@@ -1,7 +1,5 @@
 package km1.algafood.domain.models;
 
-import java.math.BigDecimal;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,8 +35,22 @@ public class OrderItem {
   @ManyToOne
   @JoinColumn(nullable = false)
   private Order order;
-  
+
   @ManyToOne
   @JoinColumn(nullable = false)
   private Product product;
+
+  public void calcTotalPrice() {
+    var unityPrice = this.unityPrice;
+    var quantity = this.quantity;
+
+    if (unityPrice == null) {
+      unityPrice = BigDecimal.ZERO;
+    }
+    if (quantity == null) {
+       quantity = 0;
+    }
+
+    setTotalPrice(getUnityPrice().multiply(BigDecimal.valueOf(getQuantity())));
+  }
 }
