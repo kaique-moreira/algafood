@@ -1,6 +1,7 @@
 package km1.algafood.api.assemblers;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import km1.algafood.api.models.CuisineModel;
 import km1.algafood.domain.models.Cuisine;
@@ -20,7 +21,7 @@ public class CuisineModelAssembler {
     return modelMapper.map(source, CuisineModel.class);
   }
 
-  public Collection<CuisineModel> toCollectionModel(Collection<Cuisine> sourceCollection) {
+  public List<CuisineModel> toCollectionModel(Collection<Cuisine> sourceCollection) {
     return sourceCollection.stream()
         .map(source -> modelMapper.map(source, CuisineModel.class))
         .collect(Collectors.toList());

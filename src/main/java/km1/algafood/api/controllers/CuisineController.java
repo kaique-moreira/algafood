@@ -1,7 +1,8 @@
 package km1.algafood.api.controllers;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,10 +43,11 @@ public class CuisineController {
   }
 
   @GetMapping
-  public List<CuisineModel> list() {
-    var cuisines = repository.findAll();
-    var cuisinesModel = assembler.toCollectionModel(cuisines);
-    return (List<CuisineModel>) cuisinesModel;
+  public Page<CuisineModel> list(Pageable pageable) {
+    var cuisinesPage = repository.findAll(pageable);
+    var cuisinesModel = assembler.toCollectionModel(cuisinesPage.getContent());
+    var cuisinesModelPage = new PageImpl<CuisineModel>(cuisinesModel);
+    return cuisinesModelPage;
   }
 
   @GetMapping("/{id}")
