@@ -23,7 +23,7 @@ public class RestaurantUserController {
   @GetMapping
   public List<UserModel> list(@PathVariable Long restaurantId) {
     return (List<UserModel>)
-        userModelAssembler.toCollectionModel(restaurantRegisterService.fetchByID(restaurantId).getMembers());
+        userModelAssembler.toCollectionModel(restaurantRegisterService.tryFetch(restaurantId).getMembers());
   }
 
   @PutMapping("/{userId}")

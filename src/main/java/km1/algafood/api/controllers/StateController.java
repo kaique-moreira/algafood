@@ -18,6 +18,7 @@ import km1.algafood.api.assemblers.StateInputDisassembler;
 import km1.algafood.api.assemblers.StateModelAssembler;
 import km1.algafood.api.models.StateModel;
 import km1.algafood.api.models.input.StateInput;
+import km1.algafood.domain.repositories.StateRepository;
 import km1.algafood.domain.services.StateRegisterService;
 import lombok.AllArgsConstructor;
 
@@ -29,6 +30,7 @@ public class StateController {
   private final StateRegisterService registerService;
   private final StateInputDisassembler disassembler;
   private final StateModelAssembler assembler;
+  private final StateRepository repository;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -41,29 +43,30 @@ public class StateController {
 
   @GetMapping
   public List<StateModel> list() {
-    var states =  registerService.fetchAll();
+    var states =  repository.findAll();
     var statesModel = assembler.toCollectionModel(states);
     return (List<StateModel>)statesModel;
   }
 
   @GetMapping("/{id}")
-  public StateModel fetch(@PathVariable Long id) {
-    var state =  registerService.fetchByID(id);
+  public StateModel fetch(@PathVariable Long stateId) {
+    var state =  registerService.tryFetch(stateId);
     var stateModel = assembler.toModel(state);
     return stateModel;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable Long id) {
-    registerService.remove(id);
+  public void delete(@PathVariable Long stateId) {
+    registerService.tryRemove(stateId);
   }
 
   @PutMapping("/{id}")
-  public StateModel update(@PathVariable Long id,@RequestBody @Valid StateInput stateInput) {
-    var toUpdate = disassembler.toDomainObject(stateInput);
-    var updated =  registerService.update(id, toUpdate);
-    var stateModel = assembler.toModel(updated);
+  public StateModel update(@PathVariable Long stateId,@RequestBody @Valid StateInput stateInput) {
+    var state = registerService.tryFetch(stateId);
+    disassembler.copyToDomainObject(state, stateInput);
+    state = registerService.register(state);
+    var stateModel = assembler.toModel(state);
     return stateModel;
   }
 }

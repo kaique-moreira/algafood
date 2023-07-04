@@ -45,7 +45,7 @@ public class CuisineRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldReturnCuisine_whenTryFetchValidCuisine() {
-    var cuisine = underTest.fetchByID(VALID_ID);
+    var cuisine = underTest.tryFetch(VALID_ID);
     assertThat(cuisine, notNullValue(Cuisine.class));
     assertThat(cuisine.getId(), is(VALID_ID));
   }
@@ -61,7 +61,7 @@ public class CuisineRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowCuisineNotFound_whenTryFetchValidCuisine() {
-    assertThrows(CuisineNotFountException.class, () -> underTest.fetchByID(INVALID_ID));
+    assertThrows(CuisineNotFountException.class, () -> underTest.tryFetch(INVALID_ID));
   }
 
   @Test @Sql({TRUNCATE_TABLES, TEST_DATA}) void shouldThrowDomainException_whenTryRegisterCuisineWithNullName() {
@@ -72,20 +72,20 @@ public class CuisineRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowCuisineHasDependents_whenTryRemoveCuisineWhileHasDependents() {
-    assertThrows(DomainException.class, () -> underTest.remove(1l));
+    assertThrows(DomainException.class, () -> underTest.retryRemovel));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowCuisineNotFound_whenTryRemoveUnregisteredCuisine() {
-    assertThrows(CuisineNotFountException.class, () -> underTest.remove(INVALID_ID));
+    assertThrows(CuisineNotFountException.class, () -> underTest.retryRemoveNVALID_ID));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldRemoveCuisine_whenTryRemoveValidCuisine() {
-    underTest.remove(WITHOUT_DEPENDENTS_ID);
-    assertThrows(CuisineNotFountException.class, () -> underTest.fetchByID(WITHOUT_DEPENDENTS_ID));
+    underTest.retryRemoveITHOUT_DEPENDENTS_ID);
+    assertThrows(CuisineNotFountException.class, () -> underTest.tryFetch(WITHOUT_DEPENDENTS_ID));
   }
 
   @Test

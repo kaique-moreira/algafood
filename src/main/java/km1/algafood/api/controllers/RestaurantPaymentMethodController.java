@@ -24,7 +24,7 @@ public class RestaurantPaymentMethodController {
 
   @GetMapping
   public List<PaymentMethodModel> list(@PathVariable Long restaurantId){
-    return  (List<PaymentMethodModel>) pmModelAssembler.toCollectionModel(rRegisterService.fetchByID(restaurantId).getPaymentMethod());
+    return  (List<PaymentMethodModel>) pmModelAssembler.toCollectionModel(rRegisterService.tryFetch(restaurantId).getPaymentMethod());
 
   }
 

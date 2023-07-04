@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import jakarta.validation.Valid;
 import km1.algafood.api.models.input.CuisineInput;
 import km1.algafood.domain.models.Cuisine;
 
@@ -27,5 +28,9 @@ public class CuisineInputDisassembler {
         .map(source -> modelMapper.map(source, Cuisine.class))
         .collect(Collectors.toList());
   }
+
+public void copyToDomainObject(Cuisine cuisine, @Valid CuisineInput cuisineInput) {
+    modelMapper.map(cuisineInput, cuisine);
+}
 }
 

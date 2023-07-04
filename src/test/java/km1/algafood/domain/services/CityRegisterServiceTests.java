@@ -39,7 +39,7 @@ public class CityRegisterServiceTests {
 
     assertThrows(
       CityNotFountException.class, 
-      () -> service.fetchByID(1l)
+      () -> service.tryFetch(1l)
     );
   }
 
@@ -51,7 +51,7 @@ public class CityRegisterServiceTests {
 
     assertThrows(
       CityNotFountException.class, 
-      () -> service.remove(1l)
+      () -> service.rtryRemove1l)
     );
   }
 
@@ -62,7 +62,7 @@ public class CityRegisterServiceTests {
 
     assertThrows(
       CityHasDependents.class,
-    () -> service.remove(1l)
+    () -> service.rtryRemove1l)
     );
   }
 
@@ -111,7 +111,7 @@ public class CityRegisterServiceTests {
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
 
-    City actual = service.fetchByID(1l);
+    City actual = service.tryFetch(1l);
     assertThat(actual, isCityEqualTo(registered));
   }
 
@@ -121,7 +121,7 @@ public class CityRegisterServiceTests {
     when(repository.findById(1l)).thenReturn(Optional.empty());
 
       assertThrows(CityNotFountException.class, 
-        () -> service.fetchByID(1l)
+        () -> service.tryFetch(1l)
       );
   }
 

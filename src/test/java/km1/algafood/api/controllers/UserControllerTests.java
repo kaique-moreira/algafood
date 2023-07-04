@@ -66,14 +66,14 @@ public class UserControllerTests {
 
   @Test
   void shouldReturnNotFound_whenGetIsCalledWithUnregisteredId() {
-    when(registerService.fetchByID(VALID_ID)).thenThrow(UserNotFountException.class);
+    when(registerService.tryFetch(VALID_ID)).thenThrow(UserNotFountException.class);
 
     given().accept(ContentType.JSON).when().get(PATH_VALID_ID).then().status(HttpStatus.NOT_FOUND);
   }
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenGetIsCalledWithUnregisteredId() {
-    when(registerService.fetchByID(VALID_ID)).thenThrow(UserNotFountException.class);
+    when(registerService.tryFetch(VALID_ID)).thenThrow(UserNotFountException.class);
 
     Problem actual =
         given().accept(ContentType.JSON).when().get(PATH_VALID_ID).thenReturn().as(Problem.class);
@@ -83,7 +83,7 @@ public class UserControllerTests {
 
   @Test
   void shouldReturnNotFound_whenDeleteIsCalledWitchUnregisteredId() {
-    doThrow(UserNotFountException.class).when(registerService).remove(VALID_ID);
+    doThrow(UserNotFountException.class).when(registerService).tryRemove(VALID_ID);
 
     given()
         .accept(ContentType.JSON)
@@ -95,7 +95,7 @@ public class UserControllerTests {
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenDeleteIsCalledWithUnregisteredId() {
-    doThrow(UserNotFountException.class).when(registerService).remove(1l);
+    doThrow(UserNotFountException.class).when(registerService).tryRemove(1l);
 
     Problem actual =
         given()
@@ -110,7 +110,7 @@ public class UserControllerTests {
 
   @Test
   void shouldReturnConflict_whenDeleteIsCalledWhileEntityHasDependents() {
-    doThrow(UserHasDependents.class).when(registerService).remove(1l);
+    doThrow(UserHasDependents.class).when(registerService).tryRemove(1l);
 
     given()
         .accept(ContentType.JSON)
@@ -122,7 +122,7 @@ public class UserControllerTests {
 
   @Test
   void shouldReturnConflictProblemDetails_whenDeleteIsCalledWhileEntityHasDependents() {
-    doThrow(UserHasDependents.class).when(registerService).remove(1l);
+    doThrow(UserHasDependents.class).when(registerService).tryRemove(1l);
 
     Problem actual =
         given()
@@ -280,7 +280,7 @@ public class UserControllerTests {
 
     when(assembler.apply(registered)).thenReturn(expected);
 
-    when(registerService.fetchByID(1l)).thenReturn(registered);
+    when(registerService.tryFetch(1l)).thenReturn(registered);
 
     UserModel actual =
         given()

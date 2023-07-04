@@ -19,6 +19,7 @@ import km1.algafood.api.assemblers.UserModelAssembler;
 import km1.algafood.api.models.UserModel;
 import km1.algafood.api.models.input.PasswordInput;
 import km1.algafood.api.models.input.UserInput;
+import km1.algafood.domain.repositories.UserRepository;
 import km1.algafood.domain.services.UserRegisterService;
 import lombok.AllArgsConstructor;
 
@@ -30,6 +31,7 @@ public class UserController {
   private final UserRegisterService registerService;
   private final UserInputDisassembler disassembler;
   private final UserModelAssembler assembler;
+  private final UserRepository repository;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -42,14 +44,14 @@ public class UserController {
 
   @GetMapping
   public List<UserModel> list() {
-    var users = registerService.fetchAll();
+    var users = repository.findAll();
     var usersModel = assembler.toCollectionModel(users);
     return (List<UserModel>) usersModel;
   }
 
   @GetMapping("/{id}")
-  public UserModel fetch(@PathVariable Long id) {
-    var user = registerService.fetchByID(id);
+  public UserModel fetch(@PathVariable Long UserId) {
+    var user = registerService.tryFetch(UserId);
     var userModel = assembler.toModel(user);
     return userModel;
   }
@@ -57,14 +59,15 @@ public class UserController {
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@PathVariable Long id) {
-    registerService.remove(id);
+    registerService.tryRemove(id);
   }
 
   @PutMapping("/{id}")
-  public UserModel update(@PathVariable Long id,@RequestBody @Valid UserInput userInput) {
-    var toUpdate = disassembler.toDomainObject(userInput);
-    var updatetd =  registerService.update(id, toUpdate);
-    var userModel = assembler.toModel(updatetd);
+  public UserModel update(@PathVariable Long userId,@RequestBody @Valid UserInput userInput) {
+    var user = registerService.tryFetch(userId);
+    disassembler.copyToDomainObject(user, userInput);
+    user = registerService.register(user);
+    var userModel = assembler.toModel(user);
     return userModel;
   }
 

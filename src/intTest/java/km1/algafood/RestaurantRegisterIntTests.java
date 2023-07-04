@@ -45,7 +45,7 @@ public class RestaurantRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldReturnRestaurant_whenTryFetchValidRestaurant() {
-    var restaurant = underTest.fetchByID(VALID_ID);
+    var restaurant = underTest.tryFetch(VALID_ID);
     assertThat(restaurant, notNullValue(Restaurant.class));
     assertThat(restaurant.getId(), is(VALID_ID));
   }
@@ -61,7 +61,7 @@ public class RestaurantRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowRestaurantNotFound_whenTryFetchValidRestaurant() {
-    assertThrows(RestaurantNotFountException.class, () -> underTest.fetchByID(INVALID_ID));
+    assertThrows(RestaurantNotFountException.class, () -> underTest.tryFetch(INVALID_ID));
   }
 
   @Test @Sql({TRUNCATE_TABLES, TEST_DATA}) void shouldThrowDomainException_whenTryRegisterRestaurantWithNullName() {
@@ -85,7 +85,7 @@ public class RestaurantRegisterIntTests {
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldRemoveRestaurant_whenTryRemoveValidRestaurant() {
     underTest.remove(WITHOUT_DEPENDENTS_ID);
-    assertThrows(RestaurantNotFountException.class, () -> underTest.fetchByID(WITHOUT_DEPENDENTS_ID));
+    assertThrows(RestaurantNotFountException.class, () -> underTest.tryFetch(WITHOUT_DEPENDENTS_ID));
   }
 
   @Test

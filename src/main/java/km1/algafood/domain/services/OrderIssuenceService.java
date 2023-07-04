@@ -58,9 +58,9 @@ public class OrderIssuenceService {
   }
 
   private void validateOrder(Order order) {
-    var restaurant = restaurantRegisterService.fetchByID(order.getRestaurant().getId());
-    var client = userRegisterService.fetchByID(order.getClient().getId());
-    var city = cityRegisterService.fetchByID(order.getDeliveryAddres().getCity().getId());
+    var restaurant = restaurantRegisterService.tryFetch(order.getRestaurant().getId());
+    var client = userRegisterService.tryFetch(order.getClient().getId());
+    var city = cityRegisterService.tryFetch(order.getDeliveryAddres().getCity().getId());
     var paymentMethod = paymentMethodRegisterService.fetchByID(order.getPaymentMethod().getId());
 
     order.setRestaurant(restaurant);

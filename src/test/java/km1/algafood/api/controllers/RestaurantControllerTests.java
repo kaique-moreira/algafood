@@ -71,14 +71,14 @@ public class RestaurantControllerTests {
 
   @Test
   void shouldReturnNotFound_whenGetIsCalledWithUnregisteredId() {
-    when(registerService.fetchByID(VALID_ID)).thenThrow(RestaurantNotFountException.class);
+    when(registerService.tryFetch(VALID_ID)).thenThrow(RestaurantNotFountException.class);
 
     given().accept(ContentType.JSON).when().get(PATH_VALID_ID).then().status(HttpStatus.NOT_FOUND);
   }
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenGetIsCalledWithUnregisteredId() {
-    when(registerService.fetchByID(VALID_ID)).thenThrow(RestaurantNotFountException.class);
+    when(registerService.tryFetch(VALID_ID)).thenThrow(RestaurantNotFountException.class);
 
     Problem actual =
         given().accept(ContentType.JSON).when().get(PATH_VALID_ID).thenReturn().as(Problem.class);
@@ -300,7 +300,7 @@ public class RestaurantControllerTests {
 
     when(assembler.apply(registered)).thenReturn(expected);
 
-    when(registerService.fetchByID(1l)).thenReturn(registered);
+    when(registerService.tryFetch(1l)).thenReturn(registered);
 
     RestaurantModel actual =
         given()

@@ -1,8 +1,5 @@
 package km1.algafood.domain.services;
 
-import java.util.List;
-
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -13,54 +10,35 @@ import km1.algafood.domain.exceptions.CityNotFountException;
 import km1.algafood.domain.exceptions.DomainException;
 import km1.algafood.domain.models.City;
 import km1.algafood.domain.repositories.CityRepository;
+import lombok.AllArgsConstructor;
 
 @Service
-public class CityRegisterService implements RegisterService<City> {
+@AllArgsConstructor
+public class CityRegisterService {
 
   private final CityRepository repository;
 
-  public CityRegisterService(CityRepository repository) {
-    this.repository = repository;
+  @Transactional
+  public City register(City city) throws DomainException {
+    return repository.save(city);
   }
 
-  @Override
-  @Transactional
-  public City register(City entity) throws DomainException {
-    return repository.save(entity);
-  }
 
-  @Override
   @Transactional
-  public List<City> fetchAll() throws DomainException {
-    List<City> cities = repository.findAll();
-    return cities;
-  }
-
-  @Override
-  @Transactional
-  public void remove(Long id) throws DomainException {
+  public void tryRemove(Long cityId) throws DomainException {
     try {
-      repository.deleteById(id);
+      repository.deleteById(cityId);
       repository.flush();
     } catch (EmptyResultDataAccessException e) {
-      throw new CityNotFountException(id);
+      throw new CityNotFountException(cityId);
     } catch (DataIntegrityViolationException e) {
-      throw new CityHasDependents(id);
+      throw new CityHasDependents(cityId);
     }
   }
 
-  @Override
   @Transactional
-  public City update(Long id, City entity) throws DomainException {
-    City cuisine = this.fetchByID(id);
-    BeanUtils.copyProperties(entity, cuisine, "id");
-    return this.register(entity);
-  }
-
-  @Override
-  @Transactional
-  public City fetchByID(Long id) throws DomainException {
-    City city = repository.findById(id).orElseThrow(() -> new CityNotFountException(id));
+  public City tryFetch(Long cityId) throws DomainException {
+    City city = repository.findById(cityId).orElseThrow(() -> new CityNotFountException(cityId));
     return city;
   }
 }

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import jakarta.validation.Valid;
 import km1.algafood.api.models.input.StateInput;
 import km1.algafood.domain.models.State;
 
@@ -27,5 +28,9 @@ public class StateInputDisassembler {
         .map(source -> modelMapper.map(source, State.class))
         .collect(Collectors.toList());
   }
+
+public void copyToDomainObject(State state, @Valid StateInput stateInput) {
+    modelMapper.map(stateInput, state);
+}
 }
 

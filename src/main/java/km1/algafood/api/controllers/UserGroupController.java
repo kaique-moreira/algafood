@@ -23,7 +23,7 @@ public class UserGroupController {
   @GetMapping
   public List<GroupModel> list(@PathVariable Long userId) {
     return (List<GroupModel>)
-        groupModelAssembler.toCollectionModel(userRegisterService.fetchByID(userId).getGroups());
+        groupModelAssembler.toCollectionModel(userRegisterService.tryFetch(userId).getGroups());
   }
 
   @PutMapping("/{groupId}")

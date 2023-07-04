@@ -18,6 +18,7 @@ import km1.algafood.api.assemblers.CuisineInputDisassembler;
 import km1.algafood.api.assemblers.CuisineModelAssembler;
 import km1.algafood.api.models.CuisineModel;
 import km1.algafood.api.models.input.CuisineInput;
+import km1.algafood.domain.repositories.CuisineRepository;
 import km1.algafood.domain.services.CuisineRegisterService;
 import lombok.AllArgsConstructor;
 
@@ -29,6 +30,7 @@ public class CuisineController {
   private final CuisineRegisterService registerService;
   private final CuisineInputDisassembler disassembler;
   private final CuisineModelAssembler assembler;
+  private final CuisineRepository repository;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -41,29 +43,30 @@ public class CuisineController {
 
   @GetMapping
   public List<CuisineModel> list() {
-    var cuisines = registerService.fetchAll();
+    var cuisines = repository.findAll();
     var cuisinesModel = assembler.toCollectionModel(cuisines);
     return (List<CuisineModel>) cuisinesModel;
   }
 
   @GetMapping("/{id}")
   public CuisineModel fetch(@PathVariable Long id) {
-    var cuisine = registerService.fetchByID(id);
+    var cuisine = registerService.tryFetch(id);
     var cuisineModel = assembler.toModel(cuisine);
     return cuisineModel;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable Long id) {
-    registerService.remove(id);
+  public void delete(@PathVariable Long cuisineId) {
+    registerService.tryRemove(cuisineId);
   }
 
   @PutMapping("/{id}")
-  public CuisineModel update(@PathVariable Long id, @RequestBody @Valid CuisineInput cuisineInput) {
-    var toUpdate = disassembler.toDomainObject(cuisineInput);
-    var updated = registerService.update(id, toUpdate);
-    var cuisineModel = assembler.toModel(updated);
+  public CuisineModel update(@PathVariable Long cuisineId, @RequestBody @Valid CuisineInput cuisineInput) {
+    var cuisine = registerService.tryFetch(cuisineId);
+    disassembler.copyToDomainObject(cuisine, cuisineInput);
+    cuisine =  registerService.register(cuisine);
+    var cuisineModel = assembler.toModel(cuisine);
     return cuisineModel;
   }
 }

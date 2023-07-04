@@ -1,6 +1,5 @@
 package km1.algafood.domain.services;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -21,20 +20,20 @@ public class ProductRegisterService {
 
   @Transactional
   public Product register(Long restaurantId, Product product) {
-    product.setRestaurant(rRegisterService.fetchByID(restaurantId));
+    product.setRestaurant(rRegisterService.tryFetch(restaurantId));
     return repository.save(product);
   }
 
 
   @Transactional
   public List<Product> fetchByRestaurantId(Long restaurantId) {
-    var restaurant = rRegisterService.fetchByID(restaurantId);
+    var restaurant = rRegisterService.tryFetch(restaurantId);
     return repository.findByRestaurant(restaurant);
   }
 
   @Transactional
   public List<Product> fetchActivesByRestaurantId(Long restaurantId) {
-    var restaurant = rRegisterService.fetchByID(restaurantId);
+    var restaurant = rRegisterService.tryFetch(restaurantId);
     return repository.findActivesByRestaurant(restaurant);
   }
 

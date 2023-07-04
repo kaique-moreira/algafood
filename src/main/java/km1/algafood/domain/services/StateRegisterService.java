@@ -1,8 +1,5 @@
 package km1.algafood.domain.services;
 
-import java.util.List;
-
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -13,59 +10,41 @@ import km1.algafood.domain.exceptions.StateHasDependents;
 import km1.algafood.domain.exceptions.StateNotFountException;
 import km1.algafood.domain.models.State;
 import km1.algafood.domain.repositories.StateRepository;
+import lombok.AllArgsConstructor;
 
 @Service
-public class StateRegisterService implements RegisterService<State> {
+@AllArgsConstructor
+public class StateRegisterService {
 
   private final StateRepository repository;
 
-  public StateRegisterService(StateRepository repository) {
-    this.repository = repository;
-  }
 
-  @Override
   @Transactional
-  public State register(State entity) throws DomainException {
+  public State register(State state) throws DomainException {
     try{
-      entity = repository.save(entity);
+      state = repository.save(state);
     }catch (DataIntegrityViolationException e){
       throw new DomainException(e.getMessage());
     }
-    return entity;
+    return state;
   }
 
-  @Override
   @Transactional
-  public List<State> fetchAll() throws DomainException {
-    List<State> states = repository.findAll();
-    return states;
-  }
-
-  @Override
-  @Transactional
-  public void remove(Long id) throws DomainException {
+  public void tryRemove(Long stateId) throws DomainException {
     try {
-      repository.deleteById(id);
+      repository.deleteById(stateId);
 
     } catch (EmptyResultDataAccessException e) {
-      throw new StateNotFountException(id);
+      throw new StateNotFountException(stateId);
     } catch (DataIntegrityViolationException e) {
-      throw new StateHasDependents(id);
+      throw new StateHasDependents(stateId);
     }
   }
 
-  @Override
-  @Transactional
-  public State update(Long id, State entity) throws DomainException {
-    State state = this.fetchByID(id);
-    BeanUtils.copyProperties(entity, state, "id");
-    return this.register(state);
-  }
 
-  @Override
   @Transactional
-  public State fetchByID(Long id) throws DomainException {
-    State state = repository.findById(id).orElseThrow(() -> new StateNotFountException(id));
+  public State tryFetch(Long stateId) throws DomainException {
+    State state = repository.findById(stateId).orElseThrow(() -> new StateNotFountException(stateId));
     return state;
   }
 }

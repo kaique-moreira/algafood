@@ -1,8 +1,5 @@
 package km1.algafood.domain.services;
 
-import java.util.List;
-
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -15,7 +12,7 @@ import km1.algafood.domain.models.Cuisine;
 import km1.algafood.domain.repositories.CuisineRepository;
 
 @Service
-public class CuisineRegisterService implements RegisterService<Cuisine> {
+public class CuisineRegisterService {
 
   private final CuisineRepository repository;
 
@@ -23,49 +20,31 @@ public class CuisineRegisterService implements RegisterService<Cuisine> {
     this.repository = repository;
   }
 
-  @Override
   @Transactional
-  public Cuisine register(Cuisine entity) throws DomainException {
+  public Cuisine register(Cuisine cuisine) throws DomainException {
     try {
-      entity = repository.save(entity);    
+      cuisine = repository.save(cuisine);    
     } catch (DataIntegrityViolationException e) {
       throw new DomainException(e.getMessage());
     }
-    return entity;
+    return cuisine;
   }
 
-  @Override
   @Transactional
-  public List<Cuisine> fetchAll() throws DomainException {
-    List<Cuisine> cuisines = repository.findAll();
-    return cuisines;
-  }
-
-  @Override
-  @Transactional
-  public void remove(Long id) throws DomainException {
+  public void tryRemove(Long cuisineId) throws DomainException {
     try {
-      repository.deleteById(id);
+      repository.deleteById(cuisineId);
       repository.flush();
     } catch (EmptyResultDataAccessException e) {
-      throw new CuisineNotFountException(id);
+      throw new CuisineNotFountException(cuisineId);
     } catch (DataIntegrityViolationException e) {
-      throw new CuisineHasDependents(id);
+      throw new CuisineHasDependents(cuisineId);
     }
   }
 
-  @Override
   @Transactional
-  public Cuisine update(Long id, Cuisine entity) throws DomainException {
-    Cuisine cuisine = this.fetchByID(id);
-    BeanUtils.copyProperties(entity, cuisine, "id");
-    return this.register(cuisine);
-  }
-
-  @Override
-  @Transactional
-  public Cuisine fetchByID(Long id) throws DomainException {
-    Cuisine cuisine = repository.findById(id).orElseThrow(() -> new CuisineNotFountException(id));
+  public Cuisine tryFetch(Long cuisineId) throws DomainException {
+    Cuisine cuisine = repository.findById(cuisineId).orElseThrow(() -> new CuisineNotFountException(cuisineId));
     return cuisine;
   }
 }

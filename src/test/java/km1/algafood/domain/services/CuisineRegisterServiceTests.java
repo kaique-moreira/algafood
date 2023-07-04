@@ -41,7 +41,7 @@ public class CuisineRegisterServiceTests {
     when(repository.findById(INVALID_ID)).thenReturn(Optional.empty());
     assertThrows(
       CuisineNotFountException.class, 
-      () -> service.fetchByID(INVALID_ID)
+      () -> service.tryFetch(INVALID_ID)
     );
   }
 
@@ -53,7 +53,7 @@ public class CuisineRegisterServiceTests {
 
     assertThrows(
       CuisineNotFountException.class, 
-      () -> service.remove(INVALID_ID)
+      () -> service.rtryRemoveINVALID_ID)
     );
   }
 
@@ -64,7 +64,7 @@ public class CuisineRegisterServiceTests {
 
     assertThrows(
       CuisineHasDependents.class,
-    () -> service.remove(VALID_ID)
+    () -> service.rtryRemoveVALID_ID)
     );
   }
 
@@ -113,7 +113,7 @@ public class CuisineRegisterServiceTests {
     when(repository.findById(VALID_ID))
       .thenReturn(Optional.of(registered));
 
-    Cuisine actual = service.fetchByID(VALID_ID);
+    Cuisine actual = service.tryFetch(VALID_ID);
     assertThat(actual, isCuisineEqualTo(registered));
   }
 
@@ -123,7 +123,7 @@ public class CuisineRegisterServiceTests {
     when(repository.findById(VALID_ID)).thenReturn(Optional.empty());
 
       assertThrows(CuisineNotFountException.class, 
-        () -> service.fetchByID(VALID_ID)
+        () -> service.tryFetch(VALID_ID)
       );
   }
 

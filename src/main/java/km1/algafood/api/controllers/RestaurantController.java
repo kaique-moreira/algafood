@@ -21,6 +21,7 @@ import km1.algafood.api.assemblers.RestaurantModelAssembler;
 import km1.algafood.api.models.RestaurantModel;
 import km1.algafood.api.models.input.RestaurantInput;
 import km1.algafood.api.models.view.RestaurantView;
+import km1.algafood.domain.repositories.RestaurantRepository;
 import km1.algafood.domain.services.RestaurantRegisterService;
 import lombok.AllArgsConstructor;
 
@@ -32,6 +33,7 @@ public class RestaurantController {
   private final RestaurantRegisterService registerService;
   private final RestaurantInputDisassembler disassembler;
   private final RestaurantModelAssembler assembler;
+  private final RestaurantRepository repository;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -45,7 +47,7 @@ public class RestaurantController {
   @GetMapping
   @JsonView({RestaurantView.Summary.class})
   public List<RestaurantModel> listSummary() {
-    var cities = registerService.fetchAll();
+    var cities = repository.findAll();
     var citiesModel = assembler.toCollectionModel(cities);
     return (List<RestaurantModel>) citiesModel;
   }
@@ -53,30 +55,31 @@ public class RestaurantController {
   @GetMapping(params = "projection=summary")
   @JsonView({RestaurantView.OnlyName.class})
   public List<RestaurantModel> listOnlyName() {
-    var cities = registerService.fetchAll();
+    var cities = repository.findAll();
     var citiesModel = assembler.toCollectionModel(cities);
     return (List<RestaurantModel>) citiesModel;
   }
 
-  @GetMapping("/{id}")
-  public RestaurantModel fetch(@PathVariable Long id) {
-    var restaurant = registerService.fetchByID(id);
+  @GetMapping("/{restaurantId}")
+  public RestaurantModel fetch(@PathVariable Long restaurantId) {
+    var restaurant = registerService.tryFetch(restaurantId);
     var restaurantModel = assembler.toModel(restaurant);
     return restaurantModel;
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/{restaurantId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteRestaurantById(@PathVariable Long id) {
-    registerService.remove(id);
+  public void deleteRestaurantById(@PathVariable Long restaurantId) {
+    registerService.tryRemove(restaurantId);
   }
 
   @PutMapping("/{id}")
   public RestaurantModel update(
-      @PathVariable Long id, @RequestBody @Valid RestaurantInput restaurantInput) {
-    var toUpdate = disassembler.toDomainObject(restaurantInput);
-    var updatetd = registerService.update(id, toUpdate);
-    var restaurantModel = assembler.toModel(updatetd);
+      @PathVariable Long restaurantId, @RequestBody @Valid RestaurantInput restaurantInput) {
+    var restaurant = registerService.tryFetch(restaurantId);
+    disassembler.copyToDomainObject(restaurant, restaurantInput);
+    restaurant = registerService.register(restaurant);
+    var restaurantModel = assembler.toModel(restaurant);
     return restaurantModel;
   }
 

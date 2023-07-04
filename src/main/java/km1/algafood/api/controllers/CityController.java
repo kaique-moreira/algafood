@@ -18,6 +18,7 @@ import km1.algafood.api.assemblers.CityInputDisassembler;
 import km1.algafood.api.assemblers.CityModelAssembler;
 import km1.algafood.api.models.CityModel;
 import km1.algafood.api.models.input.CityInput;
+import km1.algafood.domain.repositories.CityRepository;
 import km1.algafood.domain.services.CityRegisterService;
 import lombok.AllArgsConstructor;
 
@@ -29,6 +30,7 @@ public class CityController {
   private final CityRegisterService registerService;
   private final CityInputDisassembler disassembler;
   private final CityModelAssembler assembler;
+  private final CityRepository repository;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -41,29 +43,30 @@ public class CityController {
 
   @GetMapping
   public List<CityModel> list() {
-    var cities = registerService.fetchAll();
+    var cities = repository.findAll();
     var citiesModel = assembler.toCollectionModel(cities);
     return (List<CityModel>) citiesModel;
   }
 
   @GetMapping("/{id}")
   public CityModel fetch(@PathVariable Long id) {
-    var city = registerService.fetchByID(id);
+    var city = registerService.tryFetch(id);
     var cityModel = assembler.toModel(city);
     return cityModel;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void removeCityById(@PathVariable Long id) {
-    registerService.remove(id);
+  public void removeCityById(@PathVariable Long cityId) {
+    registerService.tryRemove(cityId);
   }
 
   @PutMapping("/{id}")
-  public CityModel update(@PathVariable Long id,@RequestBody @Valid CityInput cityInput) {
-    var toUpdate = disassembler.toDomainObject(cityInput);
-    var updatetd =  registerService.update(id, toUpdate);
-    var cityModel = assembler.toModel(updatetd);
+  public CityModel update(@PathVariable Long cityId,@RequestBody @Valid CityInput cityInput) {
+    var city = registerService.tryFetch(cityId);
+    disassembler.copyToDomainObject(city, cityInput);
+    city = registerService.register(city);
+    var cityModel = assembler.toModel(city);
     return cityModel;
   }
 }

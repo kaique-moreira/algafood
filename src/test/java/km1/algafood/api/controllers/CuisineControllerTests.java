@@ -60,14 +60,14 @@ public class CuisineControllerTests {
 
   @Test
   void shouldReturnNotFound_whenGetIsCalledWithUnregisteredId() {
-    when(registerService.fetchByID(VALID_ID)).thenThrow(CuisineNotFountException.class);
+    when(registerService.tryFetch(VALID_ID)).thenThrow(CuisineNotFountException.class);
 
     given().accept(ContentType.JSON).when().get(PATH_VALID_ID).then().status(HttpStatus.NOT_FOUND);
   }
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenGetIsCalledWithUnregisteredId() {
-    when(registerService.fetchByID(VALID_ID)).thenThrow(CuisineNotFountException.class);
+    when(registerService.tryFetch(VALID_ID)).thenThrow(CuisineNotFountException.class);
 
     Problem actual =
         given().accept(ContentType.JSON).when().get(PATH_VALID_ID).thenReturn().as(Problem.class);
@@ -77,7 +77,7 @@ public class CuisineControllerTests {
 
   @Test
   void shouldReturnNotFound_whenDeleteIsCalledWitchUnregisteredId() {
-    doThrow(CuisineNotFountException.class).when(registerService).remove(VALID_ID);
+    doThrow(CuisineNotFountException.class).when(registerService).retryRemoveALID_ID);
 
     given()
         .accept(ContentType.JSON)
@@ -89,7 +89,7 @@ public class CuisineControllerTests {
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenDeleteIsCalledWithUnregisteredId() {
-    doThrow(CuisineNotFountException.class).when(registerService).remove(1l);
+    doThrow(CuisineNotFountException.class).when(registerService).retryRemovel);
 
     Problem actual =
         given()
@@ -104,7 +104,7 @@ public class CuisineControllerTests {
 
   @Test
   void shouldReturnConflict_whenDeleteIsCalledWhileEntityHasDependents() {
-    doThrow(CuisineHasDependents.class).when(registerService).remove(1l);
+    doThrow(CuisineHasDependents.class).when(registerService).retryRemovel);
 
     given()
         .accept(ContentType.JSON)
@@ -116,7 +116,7 @@ public class CuisineControllerTests {
 
   @Test
   void shouldReturnConflictProblemDetails_whenDeleteIsCalledWhileEntityHasDependents() {
-    doThrow(CuisineHasDependents.class).when(registerService).remove(1l);
+    doThrow(CuisineHasDependents.class).when(registerService).retryRemovel);
 
     Problem actual =
         given()
@@ -274,7 +274,7 @@ public class CuisineControllerTests {
 
     when(assembler.apply(registered)).thenReturn(expected);
 
-    when(registerService.fetchByID(1l)).thenReturn(registered);
+    when(registerService.tryFetch(1l)).thenReturn(registered);
 
     CuisineModel actual =
         given()

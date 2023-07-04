@@ -39,7 +39,7 @@ public class RestaurantRegisterServiceTests {
     when(repository.findById(VALID_ID)).thenReturn(Optional.empty());
     when(repository.findById(VALID_ID)).thenReturn(Optional.empty());
 
-    assertThrows(RestaurantNotFountException.class, () -> service.fetchByID(VALID_ID));
+    assertThrows(RestaurantNotFountException.class, () -> service.tryFetch(VALID_ID));
   }
 
   @Test
@@ -61,8 +61,8 @@ public class RestaurantRegisterServiceTests {
     Restaurant valid = aRestaurant().build();
     Restaurant registered = aRestaurant().withValidId().build();
 
-    when(cuisineRegisterService.fetchByID(valid.getCuisine().getId())).thenReturn(valid.getCuisine());
-    when(cityRegisterService.fetchByID(valid.getAddres().getCity().getId())).thenReturn(valid.getAddres().getCity());
+    when(cuisineRegisterService.tryFetch(valid.getCuisine().getId())).thenReturn(valid.getCuisine());
+    when(cityRegisterService.tryFetch(valid.getAddres().getCity().getId())).thenReturn(valid.getAddres().getCity());
     when(repository.save(valid)).thenReturn(registered);
 
     Restaurant actual = service.register(valid);
@@ -96,7 +96,7 @@ public class RestaurantRegisterServiceTests {
 
     when(repository.findById(VALID_ID)).thenReturn(Optional.of(registered));
 
-    Restaurant actual = service.fetchByID(VALID_ID);
+    Restaurant actual = service.tryFetch(VALID_ID);
     assertThat(actual, isRestaurantEqualTo(registered));
   }
 
@@ -105,7 +105,7 @@ public class RestaurantRegisterServiceTests {
 
     when(repository.findById(VALID_ID)).thenReturn(Optional.empty());
 
-    assertThrows(RestaurantNotFountException.class, () -> service.fetchByID(VALID_ID));
+    assertThrows(RestaurantNotFountException.class, () -> service.tryFetch(VALID_ID));
   }
 
   @Test

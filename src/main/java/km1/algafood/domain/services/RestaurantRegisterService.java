@@ -9,7 +9,6 @@ import km1.algafood.domain.models.Cuisine;
 import km1.algafood.domain.models.Restaurant;
 import km1.algafood.domain.repositories.RestaurantRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -26,53 +25,44 @@ public class RestaurantRegisterService {
   private final UserRegisterService userRegisterService;
 
   @Transactional
-  public Restaurant register(Restaurant entity) throws DomainException {
-    Long cuisineId = entity.getCuisine().getId();
-    Cuisine cuisine = cuisineRegisterService.fetchByID(cuisineId);
+  public Restaurant register(Restaurant restaurant) throws DomainException {
+    Long cuisineId = restaurant.getCuisine().getId();
+    Cuisine cuisine = cuisineRegisterService.tryFetch(cuisineId);
 
-    Long cityId = entity.getAddres().getCity().getId();
-    City city = cityRegisterService.fetchByID(cityId);
+    Long cityId = restaurant.getAddres().getCity().getId();
+    City city = cityRegisterService.tryFetch(cityId);
 
-    entity.setCuisine(cuisine);
-    entity.getAddres().setCity(city);
+    restaurant.setCuisine(cuisine);
+    restaurant.getAddres().setCity(city);
 
-    entity = repository.save(entity);
-    return entity;
-  }
-
-  public List<Restaurant> fetchAll() throws DomainException {
-    List<Restaurant> restaurants = repository.findAll();
-    return restaurants;
+    restaurant = repository.save(restaurant);
+    return restaurant;
   }
 
   @Transactional
-  public void remove(Long id) throws DomainException {
+  public void tryRemove(Long restaurantId) throws DomainException {
     try {
-      repository.deleteById(id);
+      repository.deleteById(restaurantId);
       repository.flush();
     } catch (EmptyResultDataAccessException e) {
-      throw new RestaurantNotFountException(id);
+      throw new RestaurantNotFountException(restaurantId);
     } catch (DataIntegrityViolationException e) {
-      throw new RestaurantHasDependents(id);
+      throw new RestaurantHasDependents(restaurantId);
     }
   }
 
-  @Transactional
-  public Restaurant update(Long id, Restaurant entity) throws DomainException {
-    var restaurant = this.fetchByID(id);
-    BeanUtils.copyProperties(entity, restaurant, "id");
-    return this.register(restaurant);
-  }
-
-  public Restaurant fetchByID(Long id) throws DomainException {
-    var restaurant = repository.findById(id).orElseThrow(() -> new RestaurantNotFountException(id));
+  public Restaurant tryFetch(Long restaurantId) throws DomainException {
+    var restaurant =
+        repository
+            .findById(restaurantId)
+            .orElseThrow(() -> new RestaurantNotFountException(restaurantId));
     return restaurant;
   }
 
   @Transactional
   public void desassociatePaymentMethod(Long restaurantId, Long paymentMethodId)
       throws DomainException {
-    var restaurant = this.fetchByID(restaurantId);
+    var restaurant = this.tryFetch(restaurantId);
     var toRemove = paymentMethodRegisterService.fetchByID(paymentMethodId);
     restaurant.removePaymentMethod(toRemove);
   }
@@ -80,28 +70,28 @@ public class RestaurantRegisterService {
   @Transactional
   public void associatePaymentMethod(Long restaurantId, Long paymentMethodId)
       throws DomainException {
-    var restaurant = this.fetchByID(restaurantId);
+    var restaurant = this.tryFetch(restaurantId);
     var toAdd = paymentMethodRegisterService.fetchByID(paymentMethodId);
     restaurant.addPaymentMethod(toAdd);
   }
 
   @Transactional
   public void associateUser(Long restaurantId, Long userId) {
-    var restaurant = this.fetchByID(restaurantId);
-    var toAdd = userRegisterService.fetchByID(userId);
+    var restaurant = this.tryFetch(restaurantId);
+    var toAdd = userRegisterService.tryFetch(userId);
     restaurant.addMember(toAdd);
   }
 
   @Transactional
   public void desassociateUser(Long restaurantId, Long userId) {
-    var restaurant = this.fetchByID(restaurantId);
-    var toRemove = userRegisterService.fetchByID(userId);
+    var restaurant = this.tryFetch(restaurantId);
+    var toRemove = userRegisterService.tryFetch(userId);
     restaurant.removeMember(toRemove);
   }
 
   @Transactional
   public void active(Long id) throws DomainException {
-    var restaurant = this.fetchByID(id);
+    var restaurant = this.tryFetch(id);
     restaurant.active();
   }
 
@@ -117,7 +107,7 @@ public class RestaurantRegisterService {
 
   @Transactional
   public void disactive(Long id) throws DomainException {
-    var restaurant = this.fetchByID(id);
+    var restaurant = this.tryFetch(id);
     restaurant.disactive();
   }
 
@@ -133,13 +123,13 @@ public class RestaurantRegisterService {
 
   @Transactional
   public void opening(Long id) throws DomainException {
-    var restaurant = this.fetchByID(id);
+    var restaurant = this.tryFetch(id);
     restaurant.open();
   }
 
   @Transactional
   public void closure(Long id) throws DomainException {
-    var restaurant = this.fetchByID(id);
+    var restaurant = this.tryFetch(id);
     restaurant.close();
   }
 }

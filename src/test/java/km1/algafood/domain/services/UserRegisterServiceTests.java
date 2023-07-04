@@ -37,21 +37,21 @@ public class UserRegisterServiceTests {
   @Test
   void shouldThrowUserNotFoundException_whenTryFetchWithUnregisteredUserID() {
     when(repository.findById(INVALID_ID)).thenReturn(Optional.empty());
-    assertThrows(UserNotFountException.class, () -> service.fetchByID(INVALID_ID));
+    assertThrows(UserNotFountException.class, () -> service.tryFetch(INVALID_ID));
   }
 
   @Test
   void shouldThrowUserNotFoundException_whenTryRemoveWithUnregisteredUserID() {
     doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(INVALID_ID);
 
-    assertThrows(UserNotFountException.class, () -> service.remove(INVALID_ID));
+    assertThrows(UserNotFountException.class, () -> service.tryRemove(INVALID_ID));
   }
 
   @Test
   void shouldThrowUserHasDependents_whenTryRemoveWhileUserHasDependents() {
     doThrow(DataIntegrityViolationException.class).when(repository).deleteById(VALID_ID);
 
-    assertThrows(UserHasDependents.class, () -> service.remove(VALID_ID));
+    assertThrows(UserHasDependents.class, () -> service.tryRemove(VALID_ID));
   }
 
   @Test
@@ -92,7 +92,7 @@ public class UserRegisterServiceTests {
 
     when(repository.findById(VALID_ID)).thenReturn(Optional.of(registered));
 
-    User actual = service.fetchByID(VALID_ID);
+    User actual = service.tryFetch(VALID_ID);
     assertThat(actual, isUserEqualTo(registered));
   }
 
@@ -101,7 +101,7 @@ public class UserRegisterServiceTests {
 
     when(repository.findById(VALID_ID)).thenReturn(Optional.empty());
 
-    assertThrows(UserNotFountException.class, () -> service.fetchByID(VALID_ID));
+    assertThrows(UserNotFountException.class, () -> service.tryFetch(VALID_ID));
   }
 
   @Test

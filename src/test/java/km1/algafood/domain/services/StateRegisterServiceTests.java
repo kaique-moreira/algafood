@@ -39,7 +39,7 @@ public class StateRegisterServiceTests {
 
     assertThrows(
       StateNotFountException.class, 
-      () -> service.fetchByID(1l)
+      () -> service.tryFetch(1l)
     );
   }
 
@@ -51,7 +51,7 @@ public class StateRegisterServiceTests {
 
     assertThrows(
       StateNotFountException.class, 
-      () -> service.remove(1l)
+      () -> service.tryRemove(1l)
     );
   }
 
@@ -62,7 +62,7 @@ public class StateRegisterServiceTests {
 
     assertThrows(
       StateHasDependents.class,
-    () -> service.remove(1l)
+    () -> service.tryRemove(1l)
     );
   }
 
@@ -111,7 +111,7 @@ public class StateRegisterServiceTests {
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
 
-    State actual = service.fetchByID(1l);
+    State actual = service.tryFetch(1l);
     assertThat(actual, isStateEqualTo(registered));
   }
 
@@ -121,7 +121,7 @@ public class StateRegisterServiceTests {
     when(repository.findById(1l)).thenReturn(Optional.empty());
 
       assertThrows(StateNotFountException.class, 
-        () -> service.fetchByID(1l)
+        () -> service.tryFetch(1l)
       );
   }
 

@@ -65,13 +65,13 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnNotFound_whenGetIsCalledWithUnregisteredId() {
-    when(registerService.fetchByID(VALID_ID)).thenThrow(CityNotFountException.class);
+    when(registerService.tryFetch(VALID_ID)).thenThrow(CityNotFountException.class);
     given().accept(ContentType.JSON).when().get(PATH_VALID_ID).then().status(HttpStatus.NOT_FOUND);
   }
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenGetIsCalledWithUnregisteredId() {
-    when(registerService.fetchByID(VALID_ID)).thenThrow(CityNotFountException.class);
+    when(registerService.tryFetch(VALID_ID)).thenThrow(CityNotFountException.class);
 
     Problem actual =
         given().accept(ContentType.JSON).when().get(PATH_VALID_ID).thenReturn().as(Problem.class);
@@ -81,7 +81,7 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnNotFound_whenDeleteIsCalledWitchUnregisteredId() {
-    doThrow(CityNotFountException.class).when(registerService).remove(VALID_ID);
+    doThrow(CityNotFountException.class).when(registerService).retryRemoveALID_ID);
 
     given()
         .accept(ContentType.JSON)
@@ -93,7 +93,7 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenDeleteIsCalledWithUnregisteredId() {
-    doThrow(CityNotFountException.class).when(registerService).remove(INVALID_ID);
+    doThrow(CityNotFountException.class).when(registerService).retryRemoveNVALID_ID);
 
     Problem actual =
         given()
@@ -108,7 +108,7 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnConflict_whenDeleteIsCalledWhileEntityHasDependents() {
-    doThrow(CityHasDependents.class).when(registerService).remove(VALID_ID);
+    doThrow(CityHasDependents.class).when(registerService).retryRemoveALID_ID);
 
     given()
         .accept(ContentType.JSON)
@@ -120,7 +120,7 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnConflictProblemDetails_whenDeleteIsCalledWhileEntityHasDependents() {
-    doThrow(CityHasDependents.class).when(registerService).remove(VALID_ID);
+    doThrow(CityHasDependents.class).when(registerService).retryRemoveALID_ID);
 
     Problem actual =
         given()
@@ -278,7 +278,7 @@ public class CityControllerTests {
 
     when(assembler.apply(registered)).thenReturn(expected);
 
-    when(registerService.fetchByID(VALID_ID)).thenReturn(registered);
+    when(registerService.tryFetch(VALID_ID)).thenReturn(registered);
 
     CityModel actual =
         given().accept(ContentType.JSON).when().get(PATH_VALID_ID).thenReturn().as(CityModel.class);
