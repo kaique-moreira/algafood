@@ -1,7 +1,8 @@
 package km1.algafood.api.controllers;
 
-import java.util.Collection;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,10 +41,11 @@ public class OrderController {
   }
 
   @GetMapping
-  public Collection<OrderSummaryModel> list(OrderFilter filter ) {
-    var orders = repository.findAll(OrderSpecs.withFilter(filter));
-    var ordersModel = summaryAssembler.toCollectionModel(orders);
-    return ordersModel;
+  public Page<OrderSummaryModel> list(Pageable pageable, OrderFilter filter) {
+    var ordersPage = repository.findAll(OrderSpecs.withFilter(filter), pageable);
+    var ordersModel = summaryAssembler.toCollectionModel(ordersPage.getContent());
+    var ordersModelPage = new PageImpl<OrderSummaryModel>(ordersModel);
+    return ordersModelPage;
   }
 
   // @GetMapping

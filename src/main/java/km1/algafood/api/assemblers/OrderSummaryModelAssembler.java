@@ -1,6 +1,7 @@
 package km1.algafood.api.assemblers;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -22,7 +23,7 @@ public class OrderSummaryModelAssembler {
     return modelMapper.map(source, OrderSummaryModel.class);
   }
 
-  public Collection<OrderSummaryModel> toCollectionModel(Collection<Order> sourceCollection) {
+  public List<OrderSummaryModel> toCollectionModel(Collection<Order> sourceCollection) {
     return sourceCollection.stream()
         .map(source -> modelMapper.map(source, OrderSummaryModel.class))
         .collect(Collectors.toList());
