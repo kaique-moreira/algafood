@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.collect.ImmutableMap;
+
 import km1.algafood.api.assemblers.OrderInputDisassembler;
 import km1.algafood.api.assemblers.OrderModelAssembler;
 import km1.algafood.api.assemblers.OrderSummaryModelAssembler;
 import km1.algafood.api.models.OrderModel;
 import km1.algafood.api.models.OrderSummaryModel;
 import km1.algafood.api.models.input.OrderInput;
+import km1.algafood.core.data.PageableTranslator;
 import km1.algafood.domain.models.User;
 import km1.algafood.domain.repositories.OrderRepository;
 import km1.algafood.domain.repositories.filter.OrderFilter;
@@ -42,6 +45,7 @@ public class OrderController {
 
   @GetMapping
   public Page<OrderSummaryModel> list(Pageable pageable, OrderFilter filter) {
+    pageable = translatePageable(pageable);
     var ordersPage = repository.findAll(OrderSpecs.withFilter(filter), pageable);
     var ordersModel = summaryAssembler.toCollectionModel(ordersPage.getContent());
     var ordersModelPage = new PageImpl<OrderSummaryModel>(ordersModel);
@@ -71,5 +75,15 @@ public class OrderController {
   @GetMapping("/{orderCode}")
   public OrderModel fetch(@PathVariable String orderCode) {
     return assembler.toModel(registerService.fetchByCode(orderCode));
+  }
+
+  private Pageable translatePageable(Pageable pageable){
+    var map = ImmutableMap.of(
+      "clientName", "client.name",
+      "restaurant.name", "restaurant.name",
+      "total", "total",
+      "code", "code" 
+    );
+    return PageableTranslator.translate(pageable, map);
   }
 }

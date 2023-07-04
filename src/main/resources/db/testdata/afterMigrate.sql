@@ -87,7 +87,7 @@ insert into restaurant_user (restaurant_id, user_id) values (1, 5), (3, 5);
 insert into tb_order (id, code, restaurant_id, user_client_id, payment_method_id, addres_city_id, addres_postal_code, 
     addres_street, addres_number, addres_complement, addres_district,
     status, created_date, subtotal, shipping_fee, total)
-values (1, '2986f934-d866-483d-a562-35fa4ec36169', 1, 1, 1, 1, '38400-000', 'Rua Floriano Peixoto', '500', 'Apto 801', 'Brasil',
+values (1, '2986f934-d866-483d-a562-35fa4ec36169', 1, 2, 1, 1, '38400-000', 'Rua Floriano Peixoto', '500', 'Apto 801', 'Brasil',
 'CREATED', NOW(), 298.90, 10, 308.90),
 (2, '6aa69296-ee8c-404e-a3ef-c84de0c88a56', 4, 1, 2, 1, '38400-111', 'Rua Acre', '300', 'Casa 2', 'Centro',
 'CREATED', NOW(), 79, 0, 79);
