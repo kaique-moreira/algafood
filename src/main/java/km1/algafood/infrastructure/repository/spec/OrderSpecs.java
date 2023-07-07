@@ -1,10 +1,12 @@
 package km1.algafood.infrastructure.repository.spec;
 
-import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import km1.algafood.domain.models.Order;
-import km1.algafood.domain.repositories.filter.OrderFilter;
+
 import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.Predicate;
+import km1.algafood.domain.filter.OrderFilter;
+import km1.algafood.domain.models.Order;
 
 public class OrderSpecs {
   public static Specification<Order> withFilter(OrderFilter filter) {

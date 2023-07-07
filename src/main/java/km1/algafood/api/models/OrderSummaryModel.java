@@ -22,7 +22,7 @@ public class OrderSummaryModel {
   private BigDecimal shippingFee;
   private BigDecimal total;
   private OrderStatus status;
-  private OffsetDateTime confimedDate;
+  private OffsetDateTime confirmDate;
   private RestaurantSummaryModel restaurant;
   private UserModel client;
 

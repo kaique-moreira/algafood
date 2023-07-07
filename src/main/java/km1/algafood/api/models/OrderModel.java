@@ -24,7 +24,7 @@ public class OrderModel {
   private BigDecimal total;
   private AddresModel deliveryAddres;
   private OrderStatus status;
-  private OffsetDateTime confimedDate;
+  private OffsetDateTime confirmDate;
   private OffsetDateTime cancelDate;
   private OffsetDateTime deliveryDate;
   private PaymentMethodModel paymentMethod;
