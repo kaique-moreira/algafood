@@ -1,17 +1,6 @@
 package km1.algafood.api.controllers;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.google.common.collect.ImmutableMap;
-
+import java.util.Map;
 import km1.algafood.api.assemblers.OrderInputDisassembler;
 import km1.algafood.api.assemblers.OrderModelAssembler;
 import km1.algafood.api.assemblers.OrderSummaryModelAssembler;
@@ -25,6 +14,15 @@ import km1.algafood.domain.repositories.OrderRepository;
 import km1.algafood.domain.services.OrderIssuenceService;
 import km1.algafood.infrastructure.repository.spec.OrderSpecs;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -77,13 +75,13 @@ public class OrderController {
     return assembler.toModel(registerService.fetchByCode(orderCode));
   }
 
-  private Pageable translatePageable(Pageable pageable){
-    var map = ImmutableMap.of(
-      "clientName", "client.name",
-      "restaurant.name", "restaurant.name",
-      "total", "total",
-      "code", "code" 
-    );
+  private Pageable translatePageable(Pageable pageable) {
+    var map =
+        Map.of(
+            "clientName", "client.name",
+            "restaurant.name", "restaurant.name",
+            "total", "total",
+            "code", "code");
     return PageableTranslator.translate(pageable, map);
   }
 }
