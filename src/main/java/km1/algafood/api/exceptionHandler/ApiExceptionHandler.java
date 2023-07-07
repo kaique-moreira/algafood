@@ -18,12 +18,11 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -32,11 +31,8 @@ import km1.algafood.api.exceptionHandler.Problem.ProblemBuilder;
 import km1.algafood.domain.exceptions.DomainException;
 import km1.algafood.domain.exceptions.EntityHasDependents;
 import km1.algafood.domain.exceptions.EntityNotFoundException;
-import lombok.Setter;
 
-@EnableWebMvc
-@RestControllerAdvice
-@Setter
+@ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
   public static final String DEFAULT_ERROR_MESSAGE =
