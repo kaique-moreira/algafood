@@ -15,5 +15,4 @@ public class CuisineDto {
   private Long id;
   private String name;
   private List<RestaurantDto> restaurants;
-  
 }

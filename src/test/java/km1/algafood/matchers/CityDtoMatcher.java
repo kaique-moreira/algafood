@@ -20,7 +20,7 @@ public class CityDtoMatcher extends TypeSafeMatcher<CityDto> {
   @Override
   protected boolean matchesSafely(CityDto item) {
     boolean isEqualIds = expected.getId() == item.getId();
-    boolean isEqualNames = expected.getName() == item.getName();
+    boolean isEqualNames = expected.getName().equals(item.getName());
     return isEqualIds && isEqualNames;
   }
 
