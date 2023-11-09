@@ -13,42 +13,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import km1.algafood.domain.models.Restaurant;
+import km1.algafood.api.assemblers.RestaurantDtoAssembler;
+import km1.algafood.api.assemblers.RestaurantInputDisassembler;
+import km1.algafood.api.models.RestaurantDto;
+import km1.algafood.api.models.RestaurantInput;
 import km1.algafood.domain.services.RestaurantRegisterService;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/restaurants")
+@AllArgsConstructor
 public class RestaurantController {
   private final RestaurantRegisterService registerService;
-
-  public RestaurantController(RestaurantRegisterService registerService) {
-    this.registerService = registerService;
-  }
+  private final RestaurantInputDisassembler disassembler;
+  private final RestaurantDtoAssembler assembler;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public Restaurant saveRestaurant(@RequestBody Restaurant restaurant) {
-    return registerService.register(restaurant);
+  public RestaurantDto saveRestaurant(@RequestBody RestaurantInput restaurantInput) {
+    var toRegister = disassembler.apply(restaurantInput);
+    var registered =  registerService.register(toRegister);
+    var restaurantDto = assembler.apply(registered);
+    return restaurantDto;
   }
 
   @GetMapping
-  public List<Restaurant> findRestaurants() {
-    return registerService.fetchAll();
+  public List<RestaurantDto> findRestaurants() {
+    var restaurants =  registerService.fetchAll();
+    var restaurantsDto = restaurants.stream().map(assembler).toList();
+    return restaurantsDto;
   }
 
   @GetMapping("/{id}")
-  public Restaurant findRestaurantById(@PathVariable Long id) {
-    return registerService.fetchByID(id);
+  public RestaurantDto findRestaurantById(@PathVariable Long id) {
+    var restaurant = registerService.fetchByID(id);
+    var restaurantDto = assembler.apply(restaurant);
+    return restaurantDto;
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteRestaurantById(@PathVariable Long id) {
+  public void deleteRestaurantDtoById(@PathVariable Long id) {
     registerService.remove(id);
   }
 
   @PutMapping("/{id}")
-  public Restaurant updateRestaurantById(@PathVariable Long id,@RequestBody Restaurant restaurant) {
-    return registerService.update(id, restaurant);
+  public RestaurantDto updateRestaurantById(@PathVariable Long id,@RequestBody RestaurantInput restaurantInput) {
+    var toUpdate = disassembler.apply(restaurantInput);
+    var updated =  registerService.update(id, toUpdate);
+    var restaurantDto = assembler.apply(updated);
+    return restaurantDto;
   }
 }

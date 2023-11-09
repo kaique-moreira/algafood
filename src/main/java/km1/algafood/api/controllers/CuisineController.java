@@ -32,8 +32,8 @@ public class CuisineController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public CuisineDto saveCuisine(@RequestBody  @Valid CuisineInput cuisineinput) {
-    var cuisine = disassembler.apply(cuisineinput);
-    var registered =  registerService.register(cuisine);
+    var toRegister = disassembler.apply(cuisineinput);
+    var registered =  registerService.register(toRegister);
     var cuisineDto = assembler.apply(registered);
     return cuisineDto;
   }
@@ -60,8 +60,8 @@ public class CuisineController {
 
   @PutMapping("/{id}")
   public CuisineDto updateCuisineById(@PathVariable Long id, @RequestBody @Valid CuisineInput cuisineInput) {
-    var cuisine = disassembler.apply(cuisineInput);
-    var updated = registerService.update(id, cuisine);
+    var toUpdate = disassembler.apply(cuisineInput);
+    var updated = registerService.update(id, toUpdate);
     var cuisineDto = assembler.apply(updated);
     return cuisineDto;
   }

@@ -7,12 +7,12 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 
 @AllArgsConstructor
-public class StateInputDisassembler implements Function<State, StateInput> {
+public class StateInputDisassembler implements Function<StateInput, State> {
 
   private final ModelMapper modelMapper;
 
   @Override
-  public StateInput apply(State t) {
-    return modelMapper.map(t, StateInput.class);
+  public State apply(StateInput stateInput) {
+    return modelMapper.map(stateInput, State.class);
   }
 }

@@ -7,12 +7,12 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 
 @AllArgsConstructor
-public class RestaurantInputDisassembler implements Function<Restaurant, RestaurantInput> {
+public class RestaurantInputDisassembler implements Function<RestaurantInput, Restaurant> {
 
   private final ModelMapper modelMapper;
 
   @Override
-  public RestaurantInput apply(Restaurant t) {
-    return modelMapper.map(t, RestaurantInput.class);
+  public Restaurant apply(RestaurantInput restaurantInput) {
+    return modelMapper.map(restaurantInput, Restaurant.class);
   }
 }

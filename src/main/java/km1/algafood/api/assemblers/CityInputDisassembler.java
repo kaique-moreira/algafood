@@ -7,12 +7,12 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 
 @AllArgsConstructor
-public class CityInputDisassembler implements Function<City, CityInput> {
+public class CityInputDisassembler implements Function<CityInput, City> {
 
   private final ModelMapper modelMapper;
 
   @Override
-  public CityInput apply(City t) {
-    return modelMapper.map(t, CityInput.class);
+  public City apply(CityInput cityInput) {
+    return modelMapper.map(cityInput, City.class);
   }
 }
