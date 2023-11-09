@@ -1,20 +1,18 @@
 package km1.algafood.domain.services;
 
-import static km1.algafood.utils.CuisineBuilderFactory.*;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static km1.algafood.matchers.CuisineMatcher.isCuisineEqualTo;
+import static km1.algafood.utils.CuisineBuilderFactory.registeredCuisine;
+import static km1.algafood.utils.CuisineBuilderFactory.validCuisine;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-import static km1.algafood.matchers.CuisineMatcher.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import km1.algafood.domain.exceptions.CuisineHasDependents;
-import km1.algafood.domain.exceptions.CuisineNotFountException;
-import km1.algafood.domain.models.Cuisine;
-import km1.algafood.domain.repositories.CuisineRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +20,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+
+import km1.algafood.domain.exceptions.CuisineHasDependents;
+import km1.algafood.domain.exceptions.CuisineNotFountException;
+import km1.algafood.domain.models.Cuisine;
+import km1.algafood.domain.repositories.CuisineRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class CuisineRegisterServiceTests {
@@ -102,7 +105,7 @@ public class CuisineRegisterServiceTests {
   }
 
   @Test
-  void shouldRetunRegisterd_whenFetchWithValidCuisineId(){
+  void shouldRetunRegistered_whenFetchWithValidCuisineId(){
     Cuisine registered = registeredCuisine().build();
 
     when(repository.findById(1l))
