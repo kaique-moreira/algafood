@@ -8,7 +8,6 @@ import km1.algafood.api.exceptionHandler.Problem;
 import km1.algafood.utils.ProblemBuilderFactory;
 
 public class ProblemBuilderTest {
-  //TODO create problem Builder tests
 @Test 
  void test (){
     Problem p = ProblemBuilderFactory.notFoundProblem().build();
