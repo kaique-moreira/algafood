@@ -1,5 +1,5 @@
 package km1.algafood.domain.models;
 
-public class CuisineBuilderTests {
+public class StateBuilderTests {
   //TODO test cuisine builder 
 }
