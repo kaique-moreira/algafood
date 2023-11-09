@@ -1,12 +1,11 @@
 package km1.algafood;
 
-import static km1.algafood.utils.RestaurantBuilderFactory.validRestaurant;
+import static km1.algafood.utils.RestaurantTestBuilder.aRestaurant;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.math.BigDecimal;
-
-import static  org.hamcrest.MatcherAssert.*;
-import static  org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-import km1.algafood.domain.exceptions.RestaurantNotFountException;
 import km1.algafood.domain.exceptions.DomainException;
-import km1.algafood.domain.models.Cuisine;
+import km1.algafood.domain.exceptions.RestaurantNotFountException;
 import km1.algafood.domain.models.Restaurant;
 import km1.algafood.domain.services.RestaurantRegisterService;
 
@@ -39,13 +37,7 @@ public class RestaurantRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldRegisterRestaurant_whenTryRegisterValidRestaurant() {
-    var restaurant = Restaurant.builder()
-      .name("test")
-      .shippingFee(BigDecimal.valueOf(1l))
-      .cuisine(Cuisine.builder()
-        .id(1l)
-        .build())
-      .build();
+    var restaurant = aRestaurant().build();
     Restaurant registered = underTest.register(restaurant);
     assertThat(registered.getId(), notNullValue());
   }
@@ -73,7 +65,7 @@ public class RestaurantRegisterIntTests {
   }
 
   @Test @Sql({TRUNCATE_TABLES, TEST_DATA}) void shouldThrowDomainException_whenTryRegisterRestaurantWithNullName() {
-    Restaurant restaurant = validRestaurant().name(null).build();
+    Restaurant restaurant = aRestaurant().withNullName().build();
     assertThrows(DomainException.class, () -> underTest.register(restaurant));
   }
 
@@ -99,27 +91,21 @@ public class RestaurantRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowDomainException_whenTryUpdateRestaurantWithNullName() {
-    var toUpdate = Restaurant.builder().build();
+    var toUpdate = aRestaurant().build();
     assertThrows(DomainException.class, () -> underTest.update(VALID_ID,toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowRestaurantNotFoundException_whenTryUpdateUnregisteredRestaurant() {
-    var toUpdate = Restaurant.builder().build();
+    var toUpdate = aRestaurant().build();
     assertThrows(DomainException.class, () -> underTest.update(INVALID_ID,toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldReturnUpdatedRestaurant_whenTryUpdateValidRestaurant() {
-    var toUpdate = Restaurant.builder()
-    .name("test")
-    .shippingFee(BigDecimal.valueOf(1l))
-    .cuisine(Cuisine.builder()
-      .id(1l)
-      .build())
-    .build();
+    var toUpdate = aRestaurant().build();
     var updated = underTest.update(VALID_ID, toUpdate);
     assertThat(updated.getName(),is(toUpdate.getName()));
     assertThat(updated.getId(),is(VALID_ID));

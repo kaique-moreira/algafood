@@ -1,6 +1,6 @@
 package km1.algafood;
 
-import static km1.algafood.utils.CuisineBuilderFactory.validCuisine;
+import static km1.algafood.utils.CuisineTestBuilder.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -37,7 +37,7 @@ public class CuisineRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldRegisterCuisine_whenTryRegisterValidCuisine() {
-    Cuisine toRegister  = Cuisine.builder().name("").build();
+    Cuisine toRegister  = aCuisine().build();
     Cuisine registered = underTest.register(toRegister);
     assertThat(registered.getId(), notNullValue());
   }
@@ -65,7 +65,7 @@ public class CuisineRegisterIntTests {
   }
 
   @Test @Sql({TRUNCATE_TABLES, TEST_DATA}) void shouldThrowDomainException_whenTryRegisterCuisineWithNullName() {
-    Cuisine cuisine = validCuisine().name(null).build();
+    Cuisine cuisine = aCuisine().withNullName().build();
     assertThrows(DomainException.class, () -> underTest.register(cuisine));
   }
 
@@ -91,21 +91,21 @@ public class CuisineRegisterIntTests {
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowDomainException_whenTryUpdateCuisineWithNullName() {
-    var toUpdate = Cuisine.builder().build();
+    var toUpdate = aCuisine().withNullName().build();
     assertThrows(DomainException.class, () -> underTest.update(VALID_ID,toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldThrowCuisineNotFoundException_whenTryUpdateUnregisteredCuisine() {
-    var toUpdate = Cuisine.builder().build();
+    var toUpdate = aCuisine().build();
     assertThrows(DomainException.class, () -> underTest.update(INVALID_ID,toUpdate));
   }
 
   @Test
   @Sql({TRUNCATE_TABLES, TEST_DATA})
   void shouldReturnUpdatedCuisine_whenTryUpdateValidCuisine() {
-    var toUpdate = Cuisine.builder().name("test").build();
+    var toUpdate = aCuisine().build();
     var updated = underTest.update(VALID_ID, toUpdate);
     assertThat(updated.getName(),is(toUpdate.getName()));
     assertThat(updated.getId(),is(VALID_ID));
