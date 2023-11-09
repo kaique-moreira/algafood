@@ -4,7 +4,8 @@ package km1.algafood.api.exceptionHandler;
 public enum ProblemType {
   RESOURCE_NOT_FOUND("/resource-not-found", "Resource not found"),
   RESOURCE_HAS_DEPENDENTS("/resource-has-dependents", "Resource has dependents"),
-  DOMAIN_ERROR("/domain-error", "violation of a domain rule");
+  DOMAIN_ERROR("/domain-error", "violation of a domain rule"), 
+  INVALID_FILDS("","");
 
   private String title;
   private String uri;
