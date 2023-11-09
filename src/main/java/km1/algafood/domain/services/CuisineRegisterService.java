@@ -24,7 +24,13 @@ public class CuisineRegisterService implements RegisterService<Cuisine> {
 
   @Override
   public Cuisine register(Cuisine entity) throws DomainException {
-    Cuisine cuisine = repository.save(entity);
+    Cuisine cuisine;
+    try {
+      cuisine = repository.save(entity);
+      
+    } catch (DataIntegrityViolationException e) {
+      throw new DomainException(e.getMessage());
+    }
     return cuisine;
   }
 
@@ -49,7 +55,7 @@ public class CuisineRegisterService implements RegisterService<Cuisine> {
   public Cuisine update(Long id, Cuisine entity) throws DomainException {
     Cuisine cuisine = this.fetchByID(id);
     BeanUtils.copyProperties(entity, cuisine, "id");
-    return repository.save(cuisine);
+    return this.register(cuisine);
   }
 
   @Override
