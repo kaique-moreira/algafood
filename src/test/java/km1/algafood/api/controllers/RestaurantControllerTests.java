@@ -7,6 +7,9 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
 import static km1.algafood.matchers.RestaurantModelMatcher.isRestaurantModelEqualTo;
+import static km1.algafood.utils.AddresTestBuilder.aAddres;
+import static km1.algafood.utils.CityTestBuilder.aCity;
+import static km1.algafood.utils.CuisineTestBuilder.aCuisine;
 import static km1.algafood.utils.JsonConversionUtils.toJson;
 import static km1.algafood.utils.RestaurantTestBuilder.aRestaurant;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,20 +18,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.http.HttpStatus;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.restassured.http.ContentType;
+import java.util.Collections;
 import km1.algafood.api.assemblers.RestaurantInputDisassembler;
 import km1.algafood.api.assemblers.RestaurantModelAssembler;
 import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
@@ -39,6 +31,14 @@ import km1.algafood.domain.exceptions.RestaurantHasDependents;
 import km1.algafood.domain.exceptions.RestaurantNotFountException;
 import km1.algafood.domain.models.Restaurant;
 import km1.algafood.domain.services.RestaurantRegisterService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.http.HttpStatus;
 
 @ExtendWith(MockitoExtension.class)
 public class RestaurantControllerTests {
@@ -268,7 +268,6 @@ public class RestaurantControllerTests {
         .status(HttpStatus.BAD_REQUEST);
   }
 
-
   @Test
   void shouldReturnSavedRestaurant_whenPostIsCalledWithValidRestaurant() {
     RestaurantInput input = aRestaurant().buildInput();
@@ -379,5 +378,224 @@ public class RestaurantControllerTests {
         .delete(PATH_VALID_ID.concat("/active"))
         .then()
         .status(HttpStatus.NOT_FOUND);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithBlankRestaurantInputName() {
+    RestaurantInput input = aRestaurant().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithBlankRestaurantInputName() {
+    RestaurantInput input = aRestaurant().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithNullRestaurantInputShippingFee() {
+    RestaurantInput input = aRestaurant().withNullShippingFee().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithNullRestaurantInputShippingFee() {
+    RestaurantInput input = aRestaurant().withNullShippingFee().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithNegativeRestaurantInputShippingFee() {
+    RestaurantInput input = aRestaurant().withNegativeShippingFee().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithNegativeRestaurantInputShippingFee() {
+    RestaurantInput input = aRestaurant().withNegativeShippingFee().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithNullRestaurantInputCuisineID() {
+    RestaurantInput input = aRestaurant().withCuisine(aCuisine().withNullId().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithNullRestaurantInputCuisineID() {
+    RestaurantInput input = aRestaurant().withCuisine(aCuisine().withNullId().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithBlankAddresStreetRestaurantInput() {
+    RestaurantInput input =
+        aRestaurant().withAddres(aAddres().withBlankStreet().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithBlankAddresStreetRestaurantInput() {
+    RestaurantInput input =
+        aRestaurant().withAddres(aAddres().withBlankStreet().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithBlankAddresNumberRestaurantInput() {
+    RestaurantInput input =
+        aRestaurant().withAddres(aAddres().withBlankNumber().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithBlankAddresNumberRestaurantInput() {
+    RestaurantInput input =
+        aRestaurant().withAddres(aAddres().withBlankNumber().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithBlankAddresDistrictRestaurantInput() {
+    RestaurantInput input =
+        aRestaurant().withAddres(aAddres().withBlankDistrict().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithBlankAddresDistrictRestaurantInput() {
+    RestaurantInput input =
+        aRestaurant().withAddres(aAddres().withBlankDistrict().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithNullAddresCityIdRestaurantInput() {
+    RestaurantInput input =
+        aRestaurant()
+            .withAddres(aAddres().withCity(aCity().withNullId().build()).build())
+            .buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
   }
 }

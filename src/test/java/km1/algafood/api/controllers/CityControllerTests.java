@@ -7,6 +7,7 @@ import static km1.algafood.matchers.CityModelMatcher.isCityModelEqualTo;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
 import static km1.algafood.utils.CityTestBuilder.aCity;
+import static km1.algafood.utils.StateTestBuilder.aState;
 import static km1.algafood.utils.JsonConversionUtils.toJson;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -23,6 +24,7 @@ import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
 import km1.algafood.api.exceptionHandler.Problem;
 import km1.algafood.api.models.CityInput;
 import km1.algafood.api.models.CityModel;
+import km1.algafood.core.validation.ValidationConfig;
 import km1.algafood.domain.exceptions.CityHasDependents;
 import km1.algafood.domain.exceptions.CityNotFountException;
 import km1.algafood.domain.models.City;
@@ -55,6 +57,8 @@ public class CityControllerTests {
 
   @BeforeEach
   public void setup() {
+    ValidationConfig validationConfig = new ValidationConfig();
+    exceptionHandler.setMessageSource(validationConfig.messageSource());
     standaloneSetup(controller, exceptionHandler);
     basePath = BASE_PATH;
   }
@@ -308,4 +312,59 @@ public class CityControllerTests {
         .status(HttpStatus.NO_CONTENT);
   }
 
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithBlankNameCity(){
+    CityInput input = aCity().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithNullStateIDCityInput(){
+    CityInput input = aCity().withState(aState().withNullId().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithBlankNameCity(){
+    CityInput input = aCity().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+@Test
+  void shouldReturnBadRequest_whenPutIsCalledWithNullStateIDCityInput(){
+    CityInput input = aCity().withState(aState().withNullId().build()).buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
 }

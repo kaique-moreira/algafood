@@ -3,6 +3,7 @@ package km1.algafood.api.models;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,5 +30,6 @@ public class AddresInput {
   private String district;
 
   @Valid
+  @NotNull
   private CityIdInput city; 
 }

@@ -1,16 +1,18 @@
 package km1.algafood.utils;
 
+import static km1.algafood.utils.StateTestBuilder.aState;
+
 import km1.algafood.api.models.CityInput;
 import km1.algafood.api.models.CityModel;
 import km1.algafood.api.models.CitySummary;
-import km1.algafood.api.models.StateModel;
 import km1.algafood.api.models.StateIdImput;
+import km1.algafood.api.models.StateModel;
 import km1.algafood.domain.models.City;
 import km1.algafood.domain.models.State;
 
 public class CityTestBuilder {
   private City city =
-      City.builder().name("São Paulo").state(State.builder().id(1l).build()).build();
+      City.builder().name("São Paulo").state(aState().build()).build();
 
   public static CityTestBuilder aCity() {
     return new CityTestBuilder();
@@ -23,6 +25,21 @@ public class CityTestBuilder {
 
   public CityTestBuilder withNullName() {
     this.city.setName(null);
+    return this;
+  }
+
+  public CityTestBuilder withBlankName() {
+    this.city.setName("");
+    return this;
+  }
+
+  public CityTestBuilder withState(State state) {
+     this.city.setState(state);;
+    return this;
+  }
+
+  public CityTestBuilder withNullId(){
+    this.city.setId(null);
     return this;
   }
 

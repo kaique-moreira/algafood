@@ -89,7 +89,7 @@ public class PaymentMethodControllerTests {
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenDeleteIsCalledWithUnregisteredId() {
-    doThrow(PaymentMethodNotFountException.class).when(registerService).remove(1l);
+    doThrow(PaymentMethodNotFountException.class).when(registerService).remove(INVALID_ID);
 
     Problem actual =
         given()
@@ -104,7 +104,7 @@ public class PaymentMethodControllerTests {
 
   @Test
   void shouldReturnConflict_whenDeleteIsCalledWhileEntityHasDependents() {
-    doThrow(PaymentMethodHasDependents.class).when(registerService).remove(1l);
+    doThrow(PaymentMethodHasDependents.class).when(registerService).remove(VALID_ID);
 
     given()
         .accept(ContentType.JSON)
@@ -116,7 +116,7 @@ public class PaymentMethodControllerTests {
 
   @Test
   void shouldReturnConflictProblemDetails_whenDeleteIsCalledWhileEntityHasDependents() {
-    doThrow(PaymentMethodHasDependents.class).when(registerService).remove(1l);
+    doThrow(PaymentMethodHasDependents.class).when(registerService).remove(VALID_ID);
 
     Problem actual =
         given()
@@ -207,7 +207,7 @@ public class PaymentMethodControllerTests {
 
     when(disassembler.apply(input)).thenReturn(valid);
 
-    when(registerService.update(1l, valid)).thenReturn(registered);
+    when(registerService.update(VALID_ID, valid)).thenReturn(registered);
 
     given()
         .contentType(ContentType.JSON)
@@ -274,7 +274,7 @@ public class PaymentMethodControllerTests {
 
     when(assembler.apply(registered)).thenReturn(expected);
 
-    when(registerService.fetchByID(1l)).thenReturn(registered);
+    when(registerService.fetchByID(VALID_ID)).thenReturn(registered);
 
     PaymentMethodModel actual =
         given()
@@ -310,5 +310,33 @@ public class PaymentMethodControllerTests {
         .delete(PATH_VALID_ID)
         .then()
         .status(HttpStatus.NO_CONTENT);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPostIsCalledWithBlankNamePaymentMethod() {
+    PaymentMethodInput input = aPaymentMethod().withBlankDescription().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenPutIsCalledWithBlankNamePaymentMethod() {
+    PaymentMethodInput input = aPaymentMethod().withBlankDescription().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .put(PATH_VALID_ID)
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
   }
 }

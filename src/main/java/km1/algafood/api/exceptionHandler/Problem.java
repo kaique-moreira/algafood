@@ -4,8 +4,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpStatusCode;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Problem{
     private String type;
     private String title;
-    private HttpStatusCode status;
+    private Integer status;
     private String detail;
     private String instance;
     private OffsetDateTime timestamp;

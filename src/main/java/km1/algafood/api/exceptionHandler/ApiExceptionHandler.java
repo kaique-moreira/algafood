@@ -148,7 +148,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
           Problem.builder()
               .timestamp(OffsetDateTime.now())
               .title(((HttpStatus) status).getReasonPhrase())
-              .status(status)
+              .status(status.value())
               .detail(DEFAULT_ERROR_MESSAGE)
               .build();
     } else if (body instanceof String) {
@@ -156,7 +156,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
           Problem.builder()
               .timestamp(OffsetDateTime.now())
               .title((String) body)
-              .status(status)
+              .status(status.value())
               .detail(DEFAULT_ERROR_MESSAGE)
               .build();
     }
@@ -186,7 +186,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         createProblemBuilder(status, problemType, detail)
             .instance(request.getContextPath())
             .build();
-    System.out.println(problem);
 
     return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
   }
@@ -244,7 +243,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
       HttpStatus status, ProblemType problemType, String detail) {
     return Problem.builder()
         .timestamp(OffsetDateTime.now())
-        .status(status)
+        .status(status.value())
         .type(problemType.getUri())
         .title(problemType.getTitle())
         .detail(detail);

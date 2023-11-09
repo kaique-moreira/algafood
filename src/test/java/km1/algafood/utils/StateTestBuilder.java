@@ -5,7 +5,7 @@ import km1.algafood.api.models.StateInput;
 import km1.algafood.domain.models.State;
 
 public class StateTestBuilder {
-  private State state = State.builder().name("").build();
+  private State state = State.builder().name("test").build();
   public static StateTestBuilder aState(){
     return new StateTestBuilder();
   }
@@ -17,6 +17,17 @@ public class StateTestBuilder {
 
   public StateTestBuilder withNullName(){
     this.state.setName(null);
+    return this;
+  }
+
+
+  public StateTestBuilder withBlankName(){
+    this.state.setName(null);
+    return this;
+  }
+
+  public StateTestBuilder withNullId(){
+    this.state.setId(null);
     return this;
   }
 

@@ -17,8 +17,18 @@ public class CuisineTestBuilder {
     return this;
   }
 
+  public CuisineTestBuilder withNullId() {
+    this.cuisine.setId(null);
+    return this;
+  }
+
   public CuisineTestBuilder withNullName() {
     this.cuisine.setName(null);
+    return this;
+  }
+
+  public CuisineTestBuilder withBlankName() {
+    this.cuisine.setName("");
     return this;
   }
 
