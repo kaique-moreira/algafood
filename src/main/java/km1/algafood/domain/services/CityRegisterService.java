@@ -24,8 +24,12 @@ public class CityRegisterService implements RegisterService<City> {
 
   @Override
   public City register(City entity) throws DomainException {
-    City city = repository.save(entity);
-    return city;
+    try{
+      entity = repository.save(entity);
+    }catch(DataIntegrityViolationException e){
+      throw new DomainException(e.getMessage());
+    }
+    return entity;
   }
 
   @Override
@@ -49,7 +53,7 @@ public class CityRegisterService implements RegisterService<City> {
   public City update(Long id, City entity) throws DomainException {
     City cuisine = this.fetchByID(id);
     BeanUtils.copyProperties(entity, cuisine, "id");
-    return repository.save(cuisine);
+    return this.register(entity);
   }
 
   @Override

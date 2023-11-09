@@ -8,6 +8,7 @@ import km1.algafood.domain.models.Cuisine;
 public class CuisineMatcher extends TypeSafeMatcher<Cuisine> {
 
   private Cuisine expected;
+
   public CuisineMatcher(Cuisine expected) {
     this.expected = expected;
   } 

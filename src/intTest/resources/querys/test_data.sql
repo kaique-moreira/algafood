@@ -7,15 +7,14 @@ VALUES
 INSERT INTO tb_state (name)
 VALUES
   ('Minas Gerais'),
-  ('Rio de Janeiro'),
-  ('São Paulo');
+  ('São Paulo'),
+  ('Rio de Janeiro'); 
 
 INSERT INTO tb_city (name, state_id)
 VALUES
-  ('Belo Horizonte', (SELECT id FROM tb_state WHERE name = 'Minas Gerais')),
   ('São Paulo', (SELECT id FROM tb_state WHERE name = 'São Paulo')),
-  ('Rio de janeiro', (SELECT id FROM tb_state WHERE name = 'Rio de Janeiro'));
-
+  ('Belo Horizonte', (SELECT id FROM tb_state WHERE name = 'Minas Gerais')),
+  ('Betim', (SELECT id FROM tb_state WHERE name = 'Minas Gerais'));
 INSERT INTO tb_restaurant (
   name,
   shipping_fee,
@@ -47,9 +46,19 @@ INSERT INTO tb_restaurant (
     '1534',
     '',
     'Vila Gomes Cardim',
-    (SELECT id FROM tb_cuisine where name = 'Hamburgueria')
-  ); 
-
+    (SELECT id FROM tb_cuisine where name = 'Francesa')
+  ), 
+  (
+    'Test',
+    20,
+    (SELECT id FROM tb_city where name = 'São Paulo'),
+    '03310-000',
+    'R. Itapura',
+    '1534',
+    '',
+    'Vila Gomes Cardim',
+    (SELECT id FROM tb_cuisine where name = 'Francesa')
+  );
 INSERT INTO tb_payment_method (
   description
 ) VALUES

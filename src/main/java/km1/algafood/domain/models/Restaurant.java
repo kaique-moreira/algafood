@@ -54,7 +54,7 @@ public class Restaurant {
   private OffsetDateTime registerDate;
 
   @UpdateTimestamp
-  @Column(nullable = false, columnDefinition = "timestamp")
+  @Column(columnDefinition = "timestamp")
   private OffsetDateTime updateDate;
 
   @Embedded private Addres addres;
