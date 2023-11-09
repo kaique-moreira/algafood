@@ -5,10 +5,10 @@ import org.hamcrest.TypeSafeMatcher;
 
 import km1.algafood.api.models.RestaurantModel;
 
-public class RestaurantDtoMatcher extends TypeSafeMatcher<RestaurantModel> {
+public class RestaurantModelMatcher extends TypeSafeMatcher<RestaurantModel> {
 
   private RestaurantModel expected;
-  public RestaurantDtoMatcher(RestaurantModel expected) {
+  public RestaurantModelMatcher(RestaurantModel expected) {
     this.expected = expected;
   } 
 
@@ -24,8 +24,8 @@ public class RestaurantDtoMatcher extends TypeSafeMatcher<RestaurantModel> {
     return isEqualIds && isEqualNames;
   }
 
-  public static RestaurantDtoMatcher isRestaurantDtoEqualTo(RestaurantModel expected){
-    return new RestaurantDtoMatcher(expected);
+  public static RestaurantModelMatcher isRestaurantModelEqualTo(RestaurantModel expected){
+    return new RestaurantModelMatcher(expected);
   }
   
 }

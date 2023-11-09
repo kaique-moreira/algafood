@@ -11,7 +11,8 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StateDto {
-  private Long id;
+public class CityModel {
+  private Long id; 
   private String name;
+  private StateModel state;
 }

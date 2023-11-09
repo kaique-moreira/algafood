@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentMethodDto {
+public class PaymentMethodModel {
   Long id;
   String description;
 }

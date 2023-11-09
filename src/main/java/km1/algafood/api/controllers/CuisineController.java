@@ -1,9 +1,9 @@
 package km1.algafood.api.controllers;
 
 import java.util.List;
-import km1.algafood.api.assemblers.CuisineDtoAssembler;
+import km1.algafood.api.assemblers.CuisineModelAssembler;
 import km1.algafood.api.assemblers.CuisineInputDisassembler;
-import km1.algafood.api.models.CuisineDto;
+import km1.algafood.api.models.CuisineModel;
 import km1.algafood.api.models.CuisineInput;
 import km1.algafood.domain.services.CuisineRegisterService;
 import lombok.AllArgsConstructor;
@@ -27,29 +27,29 @@ public class CuisineController {
 
   private final CuisineRegisterService registerService;
   private final CuisineInputDisassembler disassembler;
-  private final CuisineDtoAssembler assembler;
+  private final CuisineModelAssembler assembler;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CuisineDto saveCuisine(@RequestBody @Valid CuisineInput cuisineinput) {
+  public CuisineModel saveCuisine(@RequestBody @Valid CuisineInput cuisineinput) {
     var toRegister = disassembler.apply(cuisineinput);
     var registered =  registerService.register(toRegister);
-    var cuisineDto = assembler.apply(registered);
-    return cuisineDto;
+    var cuisineModel = assembler.apply(registered);
+    return cuisineModel;
   }
 
   @GetMapping
-  public List<CuisineDto> findCuisines() {
+  public List<CuisineModel> findCuisines() {
     var cuisines = registerService.fetchAll();
-    var cuisinesDto = cuisines.stream().map(assembler).toList();
-    return cuisinesDto;
+    var cuisinesModel = cuisines.stream().map(assembler).toList();
+    return cuisinesModel;
   }
 
   @GetMapping("/{id}")
-  public CuisineDto findCuisineById(@PathVariable Long id) {
+  public CuisineModel findCuisineById(@PathVariable Long id) {
     var cuisine = registerService.fetchByID(id);
-    var cuisineDto = assembler.apply(cuisine);
-    return cuisineDto;
+    var cuisineModel = assembler.apply(cuisine);
+    return cuisineModel;
   }
 
   @DeleteMapping("/{id}")
@@ -59,10 +59,10 @@ public class CuisineController {
   }
 
   @PutMapping("/{id}")
-  public CuisineDto updateCuisineById(@PathVariable Long id, @RequestBody @Valid CuisineInput cuisineInput) {
+  public CuisineModel updateCuisineById(@PathVariable Long id, @RequestBody @Valid CuisineInput cuisineInput) {
     var toUpdate = disassembler.apply(cuisineInput);
     var updated = registerService.update(id, toUpdate);
-    var cuisineDto = assembler.apply(updated);
-    return cuisineDto;
+    var cuisineModel = assembler.apply(updated);
+    return cuisineModel;
   }
 }

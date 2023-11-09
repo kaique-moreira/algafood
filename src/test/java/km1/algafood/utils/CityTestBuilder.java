@@ -1,8 +1,9 @@
 package km1.algafood.utils;
 
-import km1.algafood.api.models.CityDto;
 import km1.algafood.api.models.CityInput;
-import km1.algafood.api.models.StateDto;
+import km1.algafood.api.models.CityModel;
+import km1.algafood.api.models.CitySummary;
+import km1.algafood.api.models.StateModel;
 import km1.algafood.api.models.StateIdImput;
 import km1.algafood.domain.models.City;
 import km1.algafood.domain.models.State;
@@ -36,10 +37,17 @@ public class CityTestBuilder {
         .build();
   }
 
-  public CityDto buildDto() {
-    return CityDto.builder()
+  public CityModel buildModel() {
+    return CityModel.builder()
         .name(this.city.getName())
-        .state(StateDto.builder().name(this.city.getState().getName()).build())
+        .state(StateModel.builder().name(this.city.getState().getName()).build())
+        .build();
+  }
+
+  public CitySummary buildSummary() {
+    return CitySummary.builder()
+        .name(this.city.getName())
+        .state(this.city.getState().getName())
         .build();
   }
 }

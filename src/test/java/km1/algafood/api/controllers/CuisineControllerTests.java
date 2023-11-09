@@ -3,7 +3,7 @@ package km1.algafood.api.controllers;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
-import static km1.algafood.matchers.CuisineDtoMatcher.isCuisineDtoEqualTo;
+import static km1.algafood.matchers.CuisineModelMatcher.isCuisineModelEqualTo;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
 import static km1.algafood.utils.CuisineTestBuilder.aCuisine;
@@ -17,11 +17,11 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import java.util.Collections;
-import km1.algafood.api.assemblers.CuisineDtoAssembler;
+import km1.algafood.api.assemblers.CuisineModelAssembler;
 import km1.algafood.api.assemblers.CuisineInputDisassembler;
 import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
 import km1.algafood.api.exceptionHandler.Problem;
-import km1.algafood.api.models.CuisineDto;
+import km1.algafood.api.models.CuisineModel;
 import km1.algafood.api.models.CuisineInput;
 import km1.algafood.domain.exceptions.CuisineHasDependents;
 import km1.algafood.domain.exceptions.CuisineNotFountException;
@@ -44,7 +44,7 @@ public class CuisineControllerTests {
 
   @Mock private CuisineRegisterService registerService;
   @Mock private CuisineInputDisassembler disassembler;
-  @Mock private CuisineDtoAssembler assembler;
+  @Mock private CuisineModelAssembler assembler;
   @InjectMocks private CuisineController controller;
   @InjectMocks private ApiExceptionHandler exceptionHandler;
 
@@ -176,7 +176,7 @@ public class CuisineControllerTests {
     CuisineInput input = aCuisine().buildInput();
     Cuisine valid = aCuisine().build();
     Cuisine registered = aCuisine().withValidId().build();
-    CuisineDto expected = aCuisine().withValidId().buildDto();
+    CuisineModel expected = aCuisine().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
@@ -184,7 +184,7 @@ public class CuisineControllerTests {
 
     when(registerService.update(VALID_ID, valid)).thenReturn(registered);
 
-    CuisineDto actual =
+    CuisineModel actual =
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -192,9 +192,9 @@ public class CuisineControllerTests {
             .when()
             .put(PATH_VALID_ID)
             .thenReturn()
-            .as(CuisineDto.class);
+            .as(CuisineModel.class);
 
-    assertThat(actual, isCuisineDtoEqualTo(expected));
+    assertThat(actual, isCuisineModelEqualTo(expected));
   }
 
   @Test
@@ -246,7 +246,7 @@ public class CuisineControllerTests {
     CuisineInput input = aCuisine().buildInput();
     Cuisine valid = aCuisine().build();
     Cuisine registered = aCuisine().withValidId().build();
-    CuisineDto expected = aCuisine().withValidId().buildDto();
+    CuisineModel expected = aCuisine().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
@@ -254,7 +254,7 @@ public class CuisineControllerTests {
 
     when(registerService.register(valid)).thenReturn(registered);
 
-    CuisineDto actual =
+    CuisineModel actual =
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -262,29 +262,29 @@ public class CuisineControllerTests {
             .when()
             .post()
             .thenReturn()
-            .as(CuisineDto.class);
+            .as(CuisineModel.class);
 
-    assertThat(actual, isCuisineDtoEqualTo(expected));
+    assertThat(actual, isCuisineModelEqualTo(expected));
   }
 
   @Test
   void shouldReturnCuisine_whenGetIsCalledWithValidCuisineId() {
     Cuisine registered = aCuisine().withValidId().build();
-    CuisineDto expected = aCuisine().withValidId().buildDto();
+    CuisineModel expected = aCuisine().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
     when(registerService.fetchByID(1l)).thenReturn(registered);
 
-    CuisineDto actual =
+    CuisineModel actual =
         given()
             .accept(ContentType.JSON)
             .when()
             .get(PATH_VALID_ID)
             .thenReturn()
-            .as(CuisineDto.class);
+            .as(CuisineModel.class);
 
-    assertThat(actual, isCuisineDtoEqualTo(expected));
+    assertThat(actual, isCuisineModelEqualTo(expected));
   }
 
   @Test
@@ -295,7 +295,7 @@ public class CuisineControllerTests {
   @Test
   void shouldReturnCuisineList_whenGetIsCalled() {
     Cuisine registered = aCuisine().withValidId().build();
-    when(assembler.apply(registered)).thenReturn(aCuisine().withValidId().buildDto());
+    when(assembler.apply(registered)).thenReturn(aCuisine().withValidId().buildModel());
 
     when(registerService.fetchAll()).thenReturn(Collections.singletonList(registered));
 

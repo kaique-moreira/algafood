@@ -1,6 +1,6 @@
 package km1.algafood.utils;
 
-import km1.algafood.api.models.StateDto;
+import km1.algafood.api.models.StateModel;
 import km1.algafood.api.models.StateInput;
 import km1.algafood.domain.models.State;
 
@@ -24,8 +24,8 @@ public class StateTestBuilder {
     return this.state;
   }
 
-  public StateDto buildDto(){
-    return StateDto.builder().name(this.state.getName()).id(this.state.getId()).build();
+  public StateModel buildModel(){
+    return StateModel.builder().name(this.state.getName()).id(this.state.getId()).build();
   }
 
   public StateInput buildInput(){

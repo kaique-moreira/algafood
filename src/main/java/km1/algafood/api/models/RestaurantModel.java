@@ -17,7 +17,7 @@ public class RestaurantModel {
   private Long id;
   private String name;
   private BigDecimal shippingFee;
-  private CuisineDto cuisine;
+  private CuisineModel cuisine;
   private Boolean active;
-  private AddresModel addresDto;
+  private AddresModel addresModel;
 }

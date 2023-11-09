@@ -3,7 +3,7 @@ package km1.algafood.api.controllers;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
-import static km1.algafood.matchers.PaymentMethodDtoMatcher.isPaymentMethodDtoEqualTo;
+import static km1.algafood.matchers.PaymentMethodModelMatcher.isPaymentMethodModelEqualTo;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
 import static km1.algafood.utils.PaymentMethodTestBuilder.aPaymentMethod;
@@ -17,11 +17,11 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import java.util.Collections;
-import km1.algafood.api.assemblers.PaymentMethodDtoAssembler;
+import km1.algafood.api.assemblers.PaymentMethodModelAssembler;
 import km1.algafood.api.assemblers.PaymentMethodInputDisassembler;
 import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
 import km1.algafood.api.exceptionHandler.Problem;
-import km1.algafood.api.models.PaymentMethodDto;
+import km1.algafood.api.models.PaymentMethodModel;
 import km1.algafood.api.models.PaymentMethodInput;
 import km1.algafood.domain.exceptions.PaymentMethodHasDependents;
 import km1.algafood.domain.exceptions.PaymentMethodNotFountException;
@@ -44,7 +44,7 @@ public class PaymentMethodControllerTests {
 
   @Mock private PaymentMethodRegisterService registerService;
   @Mock private PaymentMethodInputDisassembler disassembler;
-  @Mock private PaymentMethodDtoAssembler assembler;
+  @Mock private PaymentMethodModelAssembler assembler;
   @InjectMocks private PaymentMethodController controller;
   @InjectMocks private ApiExceptionHandler exceptionHandler;
 
@@ -176,7 +176,7 @@ public class PaymentMethodControllerTests {
     PaymentMethodInput input = aPaymentMethod().buildInput();
     PaymentMethod valid = aPaymentMethod().build();
     PaymentMethod registered = aPaymentMethod().withValidId().build();
-    PaymentMethodDto expected = aPaymentMethod().withValidId().buildDto();
+    PaymentMethodModel expected = aPaymentMethod().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
@@ -184,7 +184,7 @@ public class PaymentMethodControllerTests {
 
     when(registerService.update(VALID_ID, valid)).thenReturn(registered);
 
-    PaymentMethodDto actual =
+    PaymentMethodModel actual =
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -192,9 +192,9 @@ public class PaymentMethodControllerTests {
             .when()
             .put(PATH_VALID_ID)
             .thenReturn()
-            .as(PaymentMethodDto.class);
+            .as(PaymentMethodModel.class);
 
-    assertThat(actual, isPaymentMethodDtoEqualTo(expected));
+    assertThat(actual, isPaymentMethodModelEqualTo(expected));
   }
 
   @Test
@@ -246,7 +246,7 @@ public class PaymentMethodControllerTests {
     PaymentMethodInput input = aPaymentMethod().buildInput();
     PaymentMethod valid = aPaymentMethod().build();
     PaymentMethod registered = aPaymentMethod().withValidId().build();
-    PaymentMethodDto expected = aPaymentMethod().withValidId().buildDto();
+    PaymentMethodModel expected = aPaymentMethod().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
@@ -254,7 +254,7 @@ public class PaymentMethodControllerTests {
 
     when(registerService.register(valid)).thenReturn(registered);
 
-    PaymentMethodDto actual =
+    PaymentMethodModel actual =
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -262,29 +262,29 @@ public class PaymentMethodControllerTests {
             .when()
             .post()
             .thenReturn()
-            .as(PaymentMethodDto.class);
+            .as(PaymentMethodModel.class);
 
-    assertThat(actual, isPaymentMethodDtoEqualTo(expected));
+    assertThat(actual, isPaymentMethodModelEqualTo(expected));
   }
 
   @Test
   void shouldReturnPaymentMethod_whenGetIsCalledWithValidPaymentMethodId() {
     PaymentMethod registered = aPaymentMethod().withValidId().build();
-    PaymentMethodDto expected = aPaymentMethod().withValidId().buildDto();
+    PaymentMethodModel expected = aPaymentMethod().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
     when(registerService.fetchByID(1l)).thenReturn(registered);
 
-    PaymentMethodDto actual =
+    PaymentMethodModel actual =
         given()
             .accept(ContentType.JSON)
             .when()
             .get(PATH_VALID_ID)
             .thenReturn()
-            .as(PaymentMethodDto.class);
+            .as(PaymentMethodModel.class);
 
-    assertThat(actual, isPaymentMethodDtoEqualTo(expected));
+    assertThat(actual, isPaymentMethodModelEqualTo(expected));
   }
 
   @Test
@@ -295,7 +295,7 @@ public class PaymentMethodControllerTests {
   @Test
   void shouldReturnPaymentMethodList_whenGetIsCalled() {
     PaymentMethod registered = aPaymentMethod().withValidId().build();
-    when(assembler.apply(registered)).thenReturn(aPaymentMethod().withValidId().buildDto());
+    when(assembler.apply(registered)).thenReturn(aPaymentMethod().withValidId().buildModel());
 
     when(registerService.fetchAll()).thenReturn(Collections.singletonList(registered));
 
