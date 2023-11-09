@@ -1,13 +1,10 @@
 package km1.algafood.api.controllers;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
+import static km1.algafood.matchers.ProblemMatcher.*;
 import static km1.algafood.matchers.RestaurantDtoMatcher.isRestaurantDtoEqualTo;
-import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
-import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
-import static km1.algafood.utils.RestaurantTestBuilder.aRestaurant;
 import static km1.algafood.utils.JsonConversionUtils.toJson;
+import static km1.algafood.utils.RestaurantTestBuilder.aRestaurant;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,14 +12,16 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Collections;
 import km1.algafood.api.assemblers.RestaurantDtoAssembler;
 import km1.algafood.api.assemblers.RestaurantInputDisassembler;
 import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
 import km1.algafood.api.exceptionHandler.Problem;
-import km1.algafood.api.models.RestaurantDto;
 import km1.algafood.api.models.RestaurantInput;
+import km1.algafood.api.models.RestaurantModel;
 import km1.algafood.domain.exceptions.RestaurantHasDependents;
 import km1.algafood.domain.exceptions.RestaurantNotFountException;
 import km1.algafood.domain.models.Restaurant;
@@ -33,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,8 +54,14 @@ public class RestaurantControllerTests {
 
   @BeforeEach
   public void setup() {
-    standaloneSetup(controller, exceptionHandler);
+    ReloadableResourceBundleMessageSource messageSource =
+        new ReloadableResourceBundleMessageSource();
+    messageSource.setBasename("classpath:messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    exceptionHandler.setMessageSource(messageSource);
+    standaloneSetup(controller, exceptionHandler, messageSource);
     basePath = BASE_PATH;
+    enableLoggingOfRequestAndResponseIfValidationFails();
   }
 
   @Test
@@ -176,7 +182,7 @@ public class RestaurantControllerTests {
     RestaurantInput input = aRestaurant().buildInput();
     Restaurant valid = aRestaurant().build();
     Restaurant registered = aRestaurant().withValidId().build();
-    RestaurantDto expected = aRestaurant().withValidId().buildDto();
+    RestaurantModel expected = aRestaurant().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
@@ -184,7 +190,7 @@ public class RestaurantControllerTests {
 
     when(registerService.update(VALID_ID, valid)).thenReturn(registered);
 
-    RestaurantDto actual =
+    RestaurantModel actual =
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -192,7 +198,7 @@ public class RestaurantControllerTests {
             .when()
             .put(PATH_VALID_ID)
             .thenReturn()
-            .as(RestaurantDto.class);
+            .as(RestaurantModel.class);
 
     assertThat(actual, isRestaurantDtoEqualTo(expected));
   }
@@ -224,8 +230,9 @@ public class RestaurantControllerTests {
     RestaurantInput input = aRestaurant().buildInput();
     Restaurant valid = aRestaurant().build();
     Restaurant registered = aRestaurant().withValidId().build();
+    RestaurantModel model = aRestaurant().withValidId().buildModel();
 
-    when(assembler.apply(registered)).thenReturn(any());
+    when(assembler.apply(registered)).thenReturn(model);
 
     when(disassembler.apply(input)).thenReturn(valid);
 
@@ -242,19 +249,34 @@ public class RestaurantControllerTests {
   }
 
   @Test
+  void shouldReturnCreated_whenPostIsCalledWithValidRestaurant1() {
+
+    RestaurantInput input = aRestaurant().withBlankName().buildInput();
+
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(toJson(input))
+        .when()
+        .post()
+        .then()
+        .status(HttpStatus.BAD_REQUEST);
+  }
+
+
+  @Test
   void shouldReturnSavedRestaurant_whenPostIsCalledWithValidRestaurant() {
     RestaurantInput input = aRestaurant().buildInput();
     Restaurant valid = aRestaurant().build();
     Restaurant registered = aRestaurant().withValidId().build();
-    RestaurantDto expected = aRestaurant().withValidId().buildDto();
-
+    RestaurantModel expected = aRestaurant().withValidId().buildModel();
     when(assembler.apply(registered)).thenReturn(expected);
 
     when(disassembler.apply(input)).thenReturn(valid);
 
     when(registerService.register(valid)).thenReturn(registered);
 
-    RestaurantDto actual =
+    RestaurantModel actual =
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -262,7 +284,7 @@ public class RestaurantControllerTests {
             .when()
             .post()
             .thenReturn()
-            .as(RestaurantDto.class);
+            .as(RestaurantModel.class);
 
     assertThat(actual, isRestaurantDtoEqualTo(expected));
   }
@@ -270,19 +292,19 @@ public class RestaurantControllerTests {
   @Test
   void shouldReturnRestaurant_whenGetIsCalledWithValidRestaurantId() {
     Restaurant registered = aRestaurant().withValidId().build();
-    RestaurantDto expected = aRestaurant().withValidId().buildDto();
+    RestaurantModel expected = aRestaurant().withValidId().buildModel();
 
     when(assembler.apply(registered)).thenReturn(expected);
 
     when(registerService.fetchByID(1l)).thenReturn(registered);
 
-    RestaurantDto actual =
+    RestaurantModel actual =
         given()
             .accept(ContentType.JSON)
             .when()
             .get(PATH_VALID_ID)
             .thenReturn()
-            .as(RestaurantDto.class);
+            .as(RestaurantModel.class);
 
     assertThat(actual, isRestaurantDtoEqualTo(expected));
   }
@@ -295,7 +317,7 @@ public class RestaurantControllerTests {
   @Test
   void shouldReturnRestaurantList_whenGetIsCalled() {
     Restaurant registered = aRestaurant().withValidId().build();
-    when(assembler.apply(registered)).thenReturn(aRestaurant().withValidId().buildDto());
+    when(assembler.apply(registered)).thenReturn(aRestaurant().withValidId().buildModel());
 
     when(registerService.fetchAll()).thenReturn(Collections.singletonList(registered));
 
@@ -331,7 +353,7 @@ public class RestaurantControllerTests {
         .then()
         .status(HttpStatus.NO_CONTENT);
   }
-  
+
   @Test
   void shouldReturnNotFound_whenPutActiveIsCalledWithInValidRestaurantId() {
     doThrow(RestaurantNotFountException.class).when(registerService).active(VALID_ID);

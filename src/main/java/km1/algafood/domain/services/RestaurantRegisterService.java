@@ -11,26 +11,33 @@ import org.springframework.transaction.annotation.Transactional;
 import km1.algafood.domain.exceptions.DomainException;
 import km1.algafood.domain.exceptions.RestaurantHasDependents;
 import km1.algafood.domain.exceptions.RestaurantNotFountException;
+import km1.algafood.domain.models.City;
+import km1.algafood.domain.models.Cuisine;
 import km1.algafood.domain.models.Restaurant;
 import km1.algafood.domain.repositories.RestaurantRepository;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class RestaurantRegisterService implements RegisterService<Restaurant> {
 
   private final RestaurantRepository repository;
-
-  public RestaurantRegisterService(RestaurantRepository repository) {
-    this.repository = repository;
-  }
+  private final CuisineRegisterService cuisineRegisterService;
+  private final CityRegisterService cityRegisterService;
 
   @Override
   @Transactional
   public Restaurant register(Restaurant entity) throws DomainException {
-    try {
-      entity = repository.save(entity);
-    } catch (DataIntegrityViolationException e){
-      throw new DomainException(e.getMessage());
-    }
+    Long cuisineId = entity.getCuisine().getId();
+    Cuisine cuisine = cuisineRegisterService.fetchByID(cuisineId);
+
+    Long cityId = entity.getAddres().getCity().getId();
+    City city = cityRegisterService.fetchByID(cityId);
+
+    entity.setCuisine(cuisine);
+    entity.getAddres().setCity(city);    
+
+    entity = repository.save(entity);
     return entity;
   }
 
@@ -63,20 +70,20 @@ public class RestaurantRegisterService implements RegisterService<Restaurant> {
 
   @Override
   public Restaurant fetchByID(Long id) throws DomainException {
-    Restaurant restaurant = repository.findById(id).orElseThrow(() -> new RestaurantNotFountException(id));
+    Restaurant restaurant =
+        repository.findById(id).orElseThrow(() -> new RestaurantNotFountException(id));
     return restaurant;
   }
-  
+
   @Transactional
-  public void active(Long id){
+  public void active(Long id) {
     Restaurant restaurant = this.fetchByID(id);
     restaurant.active();
   }
 
- @Transactional
- public void disactive(Long id){
+  @Transactional
+  public void disactive(Long id) {
     Restaurant restaurant = this.fetchByID(id);
     restaurant.disactive();
   }
-
 }

@@ -13,10 +13,11 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RestaurantDto {
+public class RestaurantModel {
   private Long id;
   private String name;
   private BigDecimal shippingFee;
   private CuisineDto cuisine;
   private Boolean active;
+  private AddresModel addresDto;
 }
