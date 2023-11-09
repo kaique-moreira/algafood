@@ -3,7 +3,7 @@ package km1.algafood.domain.models;
 public class Addres {
   private String postalCode;
 
-  private String streat;
+  private String street;
 
   private String number;
 
@@ -19,7 +19,7 @@ public class Addres {
 
   public Addres(String postalCode, String streat, String number, String complement, String district, City city) {
     this.postalCode = postalCode;
-    this.streat = streat;
+    this.street = streat;
     this.number = number;
     this.complement = complement;
     this.district = district;
@@ -34,12 +34,12 @@ public class Addres {
     this.postalCode = postalCode;
   }
 
-  public String getStreat() {
-    return streat;
+  public String getStreet() {
+    return street;
   }
 
-  public void setStreat(String streat) {
-    this.streat = streat;
+  public void setStreet(String streat) {
+    this.street = streat;
   }
 
   public String getNumber() {
