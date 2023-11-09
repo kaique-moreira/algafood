@@ -97,7 +97,7 @@ public class CityRegisterServiceTests {
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
 
-    when(repository.save(registered))
+    when(repository.save(valid))
       .thenReturn(registered);
     
     City actual = service.update(1l, valid);

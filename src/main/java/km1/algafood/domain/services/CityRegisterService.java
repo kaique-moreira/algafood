@@ -26,12 +26,7 @@ public class CityRegisterService implements RegisterService<City> {
   @Override
   @Transactional
   public City register(City entity) throws DomainException {
-    try{
-      entity = repository.save(entity);
-    }catch(DataIntegrityViolationException e){
-      throw new DomainException(e.getMessage());
-    }
-    return entity;
+    return repository.save(entity);
   }
 
   @Override

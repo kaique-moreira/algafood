@@ -66,7 +66,6 @@ public class CityControllerTests {
   @Test
   void shouldReturnNotFound_whenGetIsCalledWithUnregisteredId() {
     when(registerService.fetchByID(VALID_ID)).thenThrow(CityNotFountException.class);
-
     given().accept(ContentType.JSON).when().get(PATH_VALID_ID).then().status(HttpStatus.NOT_FOUND);
   }
 
