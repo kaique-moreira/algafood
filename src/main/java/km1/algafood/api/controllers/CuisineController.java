@@ -15,13 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import km1.algafood.domain.models.Cuisine;
 import km1.algafood.domain.services.CuisineRegisterService;
-import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/cuisines")
-@AllArgsConstructor
 public class CuisineController {
+  
   private final CuisineRegisterService registerService;
+
+  public CuisineController(CuisineRegisterService registerService) {
+    this.registerService = registerService;
+  }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
