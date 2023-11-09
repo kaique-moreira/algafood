@@ -1,11 +1,15 @@
 package km1.algafood.api.assemblers;
 
 import java.util.function.Function;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
+
 import km1.algafood.api.models.StateDto;
 import km1.algafood.domain.models.State;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 
+@Component
 @AllArgsConstructor
 public class StateDtoAssembler implements Function<State, StateDto> {
 

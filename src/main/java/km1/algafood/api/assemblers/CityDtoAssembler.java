@@ -5,7 +5,9 @@ import km1.algafood.api.models.CityDto;
 import km1.algafood.domain.models.City;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 @AllArgsConstructor
 public class CityDtoAssembler implements Function<City, CityDto> {
 
