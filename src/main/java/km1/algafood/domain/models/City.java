@@ -1,8 +1,26 @@
 package km1.algafood.domain.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "tb_city")
 public class City {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(nullable = false)
   private String name;
+
+  @ManyToOne
+  @JoinColumn(nullable = false)
   private State state;
 
   public City() {}
@@ -37,7 +55,6 @@ public class City {
     this.state = state;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -48,22 +65,17 @@ public class City {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     City other = (City) obj;
     if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
+      if (other.id != null) return false;
+    } else if (!id.equals(other.id)) return false;
     return true;
   }
 
-  public static CityBuilder builder(){
+  public static CityBuilder builder() {
     return new CityBuilder();
   }
 

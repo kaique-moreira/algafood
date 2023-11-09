@@ -1,17 +1,35 @@
 package km1.algafood.domain.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "tb_group")
 public class Group {
-	private Long id;
-	
-	private String name;
-	
-	private List<Permission> permissions = new ArrayList<>();
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-  public Group() {
-  }
+  @Column(nullable = false)
+  private String name;
+
+  @ManyToMany
+  @JoinTable(
+      name = "group_permission",
+      joinColumns = @JoinColumn(name = "group_id"),
+      inverseJoinColumns = @JoinColumn(name = "permission_id"))
+  private List<Permission> permissions = new ArrayList<>();
+
+  public Group() {}
 
   public Group(Long id, String name, List<Permission> permissions) {
     this.id = id;
@@ -53,19 +71,13 @@ public class Group {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     Group other = (Group) obj;
     if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
+      if (other.id != null) return false;
+    } else if (!id.equals(other.id)) return false;
     return true;
   }
-
 }

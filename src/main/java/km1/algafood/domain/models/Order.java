@@ -1,34 +1,66 @@
 package km1.algafood.domain.models;
 
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.annotations.CreationTimestamp;
 
+@Entity
+@Table(name = "tb_order")
 public class Order {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   private BigDecimal subtotal;
   private BigDecimal shippingFee;
   private BigDecimal total;
-  private Addres enderecoEntrega;
+
+  @Embedded private Addres enderecoEntrega;
 
   private OrderStatus status;
-  private LocalDateTime createdDate;
+  @CreationTimestamp private LocalDateTime createdDate;
   private LocalDateTime confimedDate;
   private LocalDateTime cancelDate;
   private LocalDateTime deliveryDate;
 
-	private PaymentMethod formaPagamento;
-	
-	private Restaurant restaurante;
-	
-	private User cliente;
-	
-	private List<OrderItem> itens = new ArrayList<>();
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private PaymentMethod formaPagamento;
+
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private Restaurant restaurante;
+
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private User cliente;
+
+  @OneToMany(mappedBy = "order")
+  private List<OrderItem> itens = new ArrayList<>();
+
   public Order() {}
 
-  public Order(Long id, BigDecimal subtotal, BigDecimal shippingFee, BigDecimal total, Addres enderecoEntrega,
-      OrderStatus status, LocalDateTime createdDate, LocalDateTime confimedDate, LocalDateTime cancelDate,
+  public Order(
+      Long id,
+      BigDecimal subtotal,
+      BigDecimal shippingFee,
+      BigDecimal total,
+      Addres enderecoEntrega,
+      OrderStatus status,
+      LocalDateTime createdDate,
+      LocalDateTime confimedDate,
+      LocalDateTime cancelDate,
       LocalDateTime deliveryDate) {
     this.id = id;
     this.subtotal = subtotal;

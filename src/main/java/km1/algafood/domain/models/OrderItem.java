@@ -1,20 +1,43 @@
 package km1.algafood.domain.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
 
+@Entity
+@Table(name = "tb_order_item")
 public class OrderItem {
-	private Long id;
-	private BigDecimal unityPrice;
-	private BigDecimal totalPrice;
-	private Integer quantity;
-	private String note;
-	private Order order;
-	private Product product;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-  public OrderItem() {
-  }
+  private BigDecimal unityPrice;
+  private BigDecimal totalPrice;
+  private Integer quantity;
+  private String note;
 
-  public OrderItem(Long id, BigDecimal unityPrice, BigDecimal totalPrice, Integer quantity, String note, Order order,
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private Order order;
+  
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private Product product;
+
+  public OrderItem() {}
+
+  public OrderItem(
+      Long id,
+      BigDecimal unityPrice,
+      BigDecimal totalPrice,
+      Integer quantity,
+      String note,
+      Order order,
       Product product) {
     this.id = id;
     this.unityPrice = unityPrice;
@@ -91,20 +114,13 @@ public class OrderItem {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     OrderItem other = (OrderItem) obj;
     if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
+      if (other.id != null) return false;
+    } else if (!id.equals(other.id)) return false;
     return true;
   }
-
-
 }
