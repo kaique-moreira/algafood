@@ -1,6 +1,7 @@
 package km1.algafood.domain.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,14 +25,12 @@ public class CuisineRegisterService implements RegisterService<Cuisine> {
 
   @Override
   public Cuisine register(Cuisine entity) throws DomainException {
-    Cuisine cuisine;
     try {
-      cuisine = repository.save(entity);
-      
+      entity = repository.save(entity);    
     } catch (DataIntegrityViolationException e) {
       throw new DomainException(e.getMessage());
     }
-    return cuisine;
+    return entity;
   }
 
   @Override

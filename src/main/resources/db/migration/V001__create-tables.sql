@@ -1,6 +1,12 @@
 CREATE TABLE tb_cuisine (
   id SERIAL,
   name VARCHAR(60) NOT NULL,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE tb_state (
+  id SERIAL,
+  name VARCHAR(60) NOT NULL,
 
   PRIMARY KEY(id)
 );
@@ -14,19 +20,12 @@ CREATE TABLE tb_city (
   PRIMARY KEY(id)
 );
 
-CREATE TABLE tb_state (
-  id SERIAL,
-  name VARCHAR(60) NOT NULL,
-
-  PRIMARY KEY(id)
-);
-
 CREATE TABLE tb_restaurant (
 	id SERIAL,
 	name VARCHAR(80) NOT NULL,
 	shipping_fee DECIMAL(10,2) NOT NULL,
-  register_date TIMESTAMP NOT NULL,
-	update_date TIMESTAMP NOT NULL,
+  register_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	update_date TIMESTAMP NULL,
 	
 	addres_city_id BIGINT,
 	addres_postal_code VARCHAR(9),
@@ -44,7 +43,7 @@ CREATE TABLE tb_product (
 	id SERIAL,
 	name VARCHAR(100) NOT NULL,
 	description VARCHAR(60) NOT NULL,
-	price DECIMAL(10,2) NOT NULL,
+	price MONEY NOT NULL,
   active BOOLEAN NOT NULL,
   
   restaurant_id BIGINT NOT NULL,
@@ -55,9 +54,6 @@ CREATE TABLE tb_product (
 CREATE TABLE tb_payment_method (
 	id SERIAL,
 	description VARCHAR(60) NOT NULL,
-
-
-	restaurant_id BIGINT NOT NULL,
 
 	PRIMARY KEY (id)
 );
@@ -111,9 +107,9 @@ CREATE TABLE user_group (
 
 CREATE TABLE tb_order (
   id SERIAL,
-  subtotal DECIMAL(10,2) NOT NULL,
-  shipping_fee DECIMAL(10,2) NOT NULL,
-  total DECIMAL(10,2) NOT NULL,
+  subtotal MONEY NOT NULL,
+  shipping_fee MONEY NOT NULL,
+  total MONEY NOT NULL,
 
   restaurant_id BIGINT NOT NULL,
   user_client_id BIGINT NOT NULL,
@@ -127,7 +123,7 @@ CREATE TABLE tb_order (
 	addres_district VARCHAR(60),
 	
   status VARCHAR(10) NOT NULL,
-  created_date TIMESTAMP NOT NULL,
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   confirmed_date TIMESTAMP NULL,
   cancel_date TIMESTAMP NULL,
   delivery_date TIMESTAMP NULL,
