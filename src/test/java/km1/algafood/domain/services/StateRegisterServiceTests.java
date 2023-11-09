@@ -1,8 +1,8 @@
 package km1.algafood.domain.services;
 
 import static km1.algafood.matchers.StateMatcher.isStateEqualTo;
-import static km1.algafood.utils.StateBuilderFactory.registeredState;
-import static km1.algafood.utils.StateBuilderFactory.validState;
+import static km1.algafood.utils.StateTestBuilder.*;
+import static km1.algafood.utils.StateTestBuilder.aState;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,8 +68,8 @@ public class StateRegisterServiceTests {
 
   @Test
   void shouldReturnRegistered_whenTryRegisterValidState() {
-    State valid = validState().build();
-    State registered = registeredState().build();
+    State valid = aState().build();
+    State registered = aState().withValidId().build();
 
     when(repository.save(valid))
       .thenReturn(registered);
@@ -80,7 +80,7 @@ public class StateRegisterServiceTests {
 
   @Test
   void shouldThrowStateNotFound_whenTryUpdateWithUnregisteredStateId() {
-    State registered = registeredState().build();
+    State registered = aState().withValidId().build();
     when(repository.findById(1l)).thenReturn(Optional.empty());
 
     assertThrows(
@@ -91,8 +91,8 @@ public class StateRegisterServiceTests {
 
   @Test
   void shouldReturnRegistered_whenUpdateValidState() {
-    State valid = validState().build();
-    State registered = registeredState().build();
+    State valid = aState().build();
+    State registered = aState().withValidId().build();
     
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
@@ -106,7 +106,7 @@ public class StateRegisterServiceTests {
 
   @Test
   void shouldRetunRegistered_whenFetchWithValidStateId(){
-    State registered = registeredState().build();
+    State registered = aState().withValidId().build();
 
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
@@ -127,7 +127,7 @@ public class StateRegisterServiceTests {
 
   @Test
   void shouldReturnStateList_whenFetcAll(){
-    State registered = registeredState().build();
+    State registered = aState().withValidId().build();
     when(repository.findAll()).thenReturn(Collections.singletonList(registered));
     List<State> actual = service.fetchAll();
     assertThat(actual.size(), is(1));

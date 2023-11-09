@@ -1,8 +1,7 @@
 package km1.algafood.domain.services;
 
 import static km1.algafood.matchers.CuisineMatcher.isCuisineEqualTo;
-import static km1.algafood.utils.CuisineBuilderFactory.registeredCuisine;
-import static km1.algafood.utils.CuisineBuilderFactory.validCuisine;
+import static km1.algafood.utils.CuisineTestBuilder.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,17 +28,20 @@ import km1.algafood.domain.repositories.CuisineRepository;
 @ExtendWith(MockitoExtension.class)
 public class CuisineRegisterServiceTests {
 
+  private static final long INVALID_ID = 1l;
+
+  private static final long VALID_ID = 1l;
+
   @Mock CuisineRepository repository;
 
   @InjectMocks CuisineRegisterService service;
 
   @Test
   void shouldThrowCuisineNotFoundException_whenTryFetchWithUnregisteredCuisineID() {
-    when(repository.findById(1l)).thenReturn(Optional.empty());
-
+    when(repository.findById(INVALID_ID)).thenReturn(Optional.empty());
     assertThrows(
       CuisineNotFountException.class, 
-      () -> service.fetchByID(1l)
+      () -> service.fetchByID(INVALID_ID)
     );
   }
 
@@ -47,29 +49,29 @@ public class CuisineRegisterServiceTests {
   void shouldThrowCuisineNotFoundException_whenTryRemoveWithUnregisteredCuisineID() {
     doThrow(
       EmptyResultDataAccessException.class
-    ).when(repository).deleteById(1l);
+    ).when(repository).deleteById(INVALID_ID);
 
     assertThrows(
       CuisineNotFountException.class, 
-      () -> service.remove(1l)
+      () -> service.remove(INVALID_ID)
     );
   }
 
   @Test
   void shouldThrowCuisineHasDependents_whenTryRemoveWhileCuisineHasDependents() {
     doThrow(DataIntegrityViolationException.class)
-      .when(repository).deleteById(1l);
+      .when(repository).deleteById(VALID_ID);
 
     assertThrows(
       CuisineHasDependents.class,
-    () -> service.remove(1l)
+    () -> service.remove(VALID_ID)
     );
   }
 
   @Test
   void shouldReturnRegistered_whenTryRegisterValidCuisine() {
-    Cuisine valid = validCuisine().build();
-    Cuisine registered = registeredCuisine().build();
+    Cuisine valid = aCuisine().build() ;
+    Cuisine registered = aCuisine().withValidId().build();
 
     when(repository.save(valid))
       .thenReturn(registered);
@@ -80,54 +82,54 @@ public class CuisineRegisterServiceTests {
 
   @Test
   void shouldThrowCuisineNotFound_whenTryUpdateWithUnregisteredCuisineId() {
-    Cuisine registered = registeredCuisine().build();
-    when(repository.findById(1l)).thenReturn(Optional.empty());
+    Cuisine registered = aCuisine().withValidId().build();
+    when(repository.findById(INVALID_ID)).thenReturn(Optional.empty());
 
     assertThrows(
       CuisineNotFountException.class,
-    () -> service.update(1l, registered)
+    () -> service.update(INVALID_ID, registered)
     );
   }
 
   @Test
   void shouldReturnRegistered_whenUpdateValidCuisine() {
-    Cuisine valid = validCuisine().build();
-    Cuisine registered = registeredCuisine().build();
+    Cuisine valid = aCuisine().build();
+    Cuisine registered = aCuisine().withValidId().build();
     
-    when(repository.findById(1l))
+    when(repository.findById(VALID_ID))
       .thenReturn(Optional.of(registered));
 
     when(repository.save(registered))
       .thenReturn(registered);
     
-    Cuisine actual = service.update(1l, valid);
+    Cuisine actual = service.update(VALID_ID, valid);
     assertThat(actual, isCuisineEqualTo(registered));
   }
 
   @Test
   void shouldRetunRegistered_whenFetchWithValidCuisineId(){
-    Cuisine registered = registeredCuisine().build();
+    Cuisine registered = aCuisine().withValidId().build();
 
-    when(repository.findById(1l))
+    when(repository.findById(VALID_ID))
       .thenReturn(Optional.of(registered));
 
-    Cuisine actual = service.fetchByID(1l);
+    Cuisine actual = service.fetchByID(VALID_ID);
     assertThat(actual, isCuisineEqualTo(registered));
   }
 
   @Test
   void shouldThrowCuisineNotFound_whenFetchWithInvalidCuisineId(){
 
-    when(repository.findById(1l)).thenReturn(Optional.empty());
+    when(repository.findById(VALID_ID)).thenReturn(Optional.empty());
 
       assertThrows(CuisineNotFountException.class, 
-        () -> service.fetchByID(1l)
+        () -> service.fetchByID(VALID_ID)
       );
   }
 
   @Test
   void shouldReturnCuisineList_whenFetcAll(){
-    Cuisine registered = registeredCuisine().build();
+    Cuisine registered = aCuisine().withValidId().build();
     when(repository.findAll()).thenReturn(Collections.singletonList(registered));
     List<Cuisine> actual = service.fetchAll();
     assertThat(actual.size(), is(1));

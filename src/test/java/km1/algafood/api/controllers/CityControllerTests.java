@@ -5,12 +5,12 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
 import static km1.algafood.matchers.CityMatcher.isCityEqualTo;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
-import static km1.algafood.utils.CityBuilderFactory.*;
+import static km1.algafood.utils.CityTestBuilder.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-
+import static km1.algafood.utils.JsonConversionUtils.*;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.restassured.http.ContentType;
@@ -139,7 +138,7 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnNotFound_whenPutIsCalledWithInvalidId() {
-    City valid = validCity().build();
+    City valid = aCity().build();
     when( 
       registerService.update(
         1l,
@@ -163,7 +162,7 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenPutIsCalledWithInvalidId() {
-    City valid = validCity().build();
+    City valid = aCity().build();
     when(
       registerService.update(
         1l,
@@ -189,8 +188,8 @@ public class CityControllerTests {
    
   @Test
   void shouldReturnUpdatedCity_whenPutIsCalledWithValidCity() {
-    City valid = validCity().build();
-    City registered = registeredCity().build();
+    City valid = aCity().build();
+    City registered = aCity().withValidId().build();
     when(
       registerService.update(
         1l,
@@ -218,8 +217,8 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnOk_whenPutIsCalledWithValidCity() {
-    City valid = validCity().build();
-    City registered = registeredCity().build();
+    City valid = aCity().build();
+    City registered = aCity().withValidId().build();
     when(
       registerService.update(
         1l,
@@ -243,8 +242,8 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnCreated_whenPostIsCalledWithValidCity() {
-    City valid = validCity().build();
-    City registered = registeredCity().build();
+    City valid = aCity().build();
+    City registered = aCity().withValidId().build();
 
     when(
       registerService.register(
@@ -268,8 +267,8 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnSavedCity_whenPostIsCalledWithValidCity() {
-    City valid = validCity().build();
-    City registered = registeredCity().build();
+    City valid = aCity().build();
+    City registered = aCity().withValidId().build();
 
     when(
       registerService.register(
@@ -297,7 +296,7 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnCity_whenGetIsCalledWithValidCityId() {
-    City registered = registeredCity().build();
+    City registered = aCity().withValidId().build();
   
     when(
       registerService.fetchByID(1l)
@@ -327,7 +326,7 @@ public class CityControllerTests {
 
   @Test
   void shouldReturnCityList_whenGetIsCalled() {  
-    City registered = registeredCity().build();
+    City registered = aCity().withValidId().build();
     when(
       registerService.fetchAll()
     ).thenReturn(
@@ -352,14 +351,5 @@ public class CityControllerTests {
       .delete("/1")
     .then()
       .status(HttpStatus.NO_CONTENT);
-  }
-
-  public String toJson(Object object) {
-    try {
-      return mapper.writeValueAsString(object);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 }

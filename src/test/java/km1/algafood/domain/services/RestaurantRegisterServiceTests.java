@@ -1,8 +1,8 @@
 package km1.algafood.domain.services;
 
 import static km1.algafood.matchers.RestaurantMatcher.isRestaurantEqualTo;
-import static km1.algafood.utils.RestaurantBuilderFactory.registeredRestaurant;
-import static km1.algafood.utils.RestaurantBuilderFactory.validRestaurant;
+import static km1.algafood.utils.RestaurantTestBuilder.*;
+import static km1.algafood.utils.RestaurantTestBuilder.aRestaurant;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,8 +68,8 @@ public class RestaurantRegisterServiceTests {
 
   @Test
   void shouldReturnRegistered_whenTryRegisterValidRestaurant() {
-    Restaurant valid = validRestaurant().build();
-    Restaurant registered = registeredRestaurant().build();
+    Restaurant valid = aRestaurant().build();
+    Restaurant registered = aRestaurant().withValidId().build();
 
     when(repository.save(valid))
       .thenReturn(registered);
@@ -80,7 +80,7 @@ public class RestaurantRegisterServiceTests {
 
   @Test
   void shouldThrowRestaurantNotFound_whenTryUpdateWithUnregisteredRestaurantId() {
-    Restaurant registered = registeredRestaurant().build();
+    Restaurant registered = aRestaurant().withValidId().build();
     when(repository.findById(1l)).thenReturn(Optional.empty());
 
     assertThrows(
@@ -91,8 +91,8 @@ public class RestaurantRegisterServiceTests {
 
   @Test
   void shouldReturnRegistered_whenUpdateValidRestaurant() {
-    Restaurant valid = validRestaurant().build();
-    Restaurant registered = registeredRestaurant().build();
+    Restaurant valid = aRestaurant().build();
+    Restaurant registered = aRestaurant().withValidId().build();
     
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
@@ -106,7 +106,7 @@ public class RestaurantRegisterServiceTests {
 
   @Test
   void shouldRetunRegistered_whenFetchWithValidRestaurantId(){
-    Restaurant registered = registeredRestaurant().build();
+    Restaurant registered = aRestaurant().withValidId().build();
 
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
@@ -127,7 +127,7 @@ public class RestaurantRegisterServiceTests {
 
   @Test
   void shouldReturnRestaurantList_whenFetcAll(){
-    when(repository.findAll()).thenReturn(Collections.singletonList(registeredRestaurant().build()));
+    when(repository.findAll()).thenReturn(Collections.singletonList(aRestaurant().withValidId().build()));
     List<Restaurant> actual = service.fetchAll();
     assertThat(actual.size(), is(1));
   }

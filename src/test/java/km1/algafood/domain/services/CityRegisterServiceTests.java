@@ -1,8 +1,8 @@
 package km1.algafood.domain.services;
 
 import static km1.algafood.matchers.CityMatcher.isCityEqualTo;
-import static km1.algafood.utils.CityBuilderFactory.registeredCity;
-import static km1.algafood.utils.CityBuilderFactory.validCity;
+import static km1.algafood.utils.CityTestBuilder.*;
+import static km1.algafood.utils.CityTestBuilder.aCity;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,8 +68,8 @@ public class CityRegisterServiceTests {
 
   @Test
   void shouldReturnRegistered_whenTryRegisterValidCity() {
-    City valid = validCity().build();
-    City registered = registeredCity().build();
+    City valid = aCity().build();
+    City registered = aCity().withValidId().build();
 
     when(repository.save(valid))
       .thenReturn(registered);
@@ -80,7 +80,7 @@ public class CityRegisterServiceTests {
 
   @Test
   void shouldThrowCityNotFound_whenTryUpdateWithUnregisteredCityId() {
-    City registered = registeredCity().build();
+    City registered = aCity().withValidId().build();
     when(repository.findById(1l)).thenReturn(Optional.empty());
 
     assertThrows(
@@ -91,8 +91,8 @@ public class CityRegisterServiceTests {
 
   @Test
   void shouldReturnRegistered_whenUpdateValidCity() {
-    City valid = validCity().build();
-    City registered = registeredCity().build();
+    City valid = aCity().build();
+    City registered = aCity().withValidId().build();
     
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
@@ -106,7 +106,7 @@ public class CityRegisterServiceTests {
 
   @Test
   void shouldRetunRegistered_whenFetchWithValidCityId(){
-    City registered = registeredCity().build();
+    City registered = aCity().withValidId().build();
 
     when(repository.findById(1l))
       .thenReturn(Optional.of(registered));
@@ -127,7 +127,7 @@ public class CityRegisterServiceTests {
 
   @Test
   void shouldReturnCityList_whenFetcAll(){
-    City registered = registeredCity().build();
+    City registered = aCity().withValidId().build();
     when(repository.findAll()).thenReturn(Collections.singletonList(registered));
     List<City> actual = service.fetchAll();
     assertThat(actual.size(), is(1));
