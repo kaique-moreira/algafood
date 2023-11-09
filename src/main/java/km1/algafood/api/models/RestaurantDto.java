@@ -18,4 +18,5 @@ public class RestaurantDto {
   private String name;
   private BigDecimal shippingFee;
   private CuisineDto cuisine;
+  private Boolean active;
 }

@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CuisineInput {
-  @NotBlank
-  private String name;  
+  @NotBlank private String name;  
 }

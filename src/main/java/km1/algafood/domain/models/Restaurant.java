@@ -71,4 +71,14 @@ public class Restaurant {
   @Builder.Default
   private List<Product> products = new ArrayList<>();
 
+  @Builder.Default
+  private Boolean active = Boolean.TRUE;
+
+  public void active(){
+    setActive(true);
+  }
+
+  public void  disactive(){
+    setActive(false);
+  }
 }

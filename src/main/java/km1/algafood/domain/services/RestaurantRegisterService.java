@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import km1.algafood.domain.exceptions.DomainException;
 import km1.algafood.domain.exceptions.RestaurantHasDependents;
@@ -23,6 +24,7 @@ public class RestaurantRegisterService implements RegisterService<Restaurant> {
   }
 
   @Override
+  @Transactional
   public Restaurant register(Restaurant entity) throws DomainException {
     try {
       entity = repository.save(entity);
@@ -39,9 +41,11 @@ public class RestaurantRegisterService implements RegisterService<Restaurant> {
   }
 
   @Override
+  @Transactional
   public void remove(Long id) throws DomainException {
     try {
       repository.deleteById(id);
+      repository.flush();
     } catch (EmptyResultDataAccessException e) {
       throw new RestaurantNotFountException(id);
     } catch (DataIntegrityViolationException e) {
@@ -50,6 +54,7 @@ public class RestaurantRegisterService implements RegisterService<Restaurant> {
   }
 
   @Override
+  @Transactional
   public Restaurant update(Long id, Restaurant entity) throws DomainException {
     Restaurant restaurant = this.fetchByID(id);
     BeanUtils.copyProperties(entity, restaurant, "id");
@@ -61,4 +66,17 @@ public class RestaurantRegisterService implements RegisterService<Restaurant> {
     Restaurant restaurant = repository.findById(id).orElseThrow(() -> new RestaurantNotFountException(id));
     return restaurant;
   }
+  
+  @Transactional
+  public void active(Long id){
+    Restaurant restaurant = this.fetchByID(id);
+    restaurant.active();
+  }
+
+ @Transactional
+ public void disactive(Long id){
+    Restaurant restaurant = this.fetchByID(id);
+    restaurant.disactive();
+  }
+
 }
