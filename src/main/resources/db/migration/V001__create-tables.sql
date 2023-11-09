@@ -194,5 +194,3 @@ FOREIGN KEY (product_id) references tb_product (id);
 
 ALTER TABLE tb_order_item ADD constraint uk_order_item_product
 UNIQUE (order_id, product_id);
-
-
