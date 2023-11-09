@@ -1,10 +1,27 @@
+import java.time.Duration
+import com.bmuschko.gradle.docker.tasks.image.*
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.container.extras.*
+import com.bmuschko.gradle.docker.tasks.container.extras.*
+import org.flywaydb.gradle.task.*
+
+import com.github.dockerjava.api.command.*
+import com.github.dockerjava.api.command.*
+import groovy.transform.*
+import org.gradle.api.*
+import org.gradle.api.provider.*
+import org.gradle.api.tasks.*
+import org.gradle.api.tasks.*
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.0'
 	id 'io.spring.dependency-management' version '1.1.0'
   id 'jvm-test-suite'
-  id "org.flywaydb.flyway" version "9.8.1"
+  id 'org.flywaydb.flyway' version '9.8.1'
+  id 'com.bmuschko.docker-remote-api' version '9.1.0'
 }
+
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
@@ -18,13 +35,6 @@ configurations {
 	}
 }
  
-flyway {
-    url = 'jdbc:postgresql://172.17.0.2:5432/algafood'
-    user = 'postgres'
-    password = ''
-    cleanDisabled = false
-}
-
 testing {
     suites { 
         test { 
@@ -50,6 +60,8 @@ testing {
             targets { 
                 all {
                     testTask.configure {
+                      dependsOn startDBTestContainer, migrateDBTest
+                      finalizedBy stopDBTestContainer
                         shouldRunAfter(test)
                     }
                 }
@@ -69,7 +81,8 @@ testing {
             targets { 
                 all {
                     testTask.configure {
-                        shouldRunAfter(intTest)
+                  System.setProperty("spring.profiles.active", "test")
+                      shouldRunAfter(intTest)
                     }
                 }
             }
@@ -79,8 +92,8 @@ testing {
 
 repositories {
 	mavenCentral()
+  gradlePluginPortal()
 }
-
 
 dependencies {
   compileOnly 'org.projectlombok:lombok'
@@ -93,6 +106,12 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 }
 
+task migrateDBTest(type: FlywayMigrateTask) {
+    url = 'jdbc:postgresql://localhost:5432/algafood_test'
+    user = 'postgres'
+    password = ''
+}
+
 tasks.named('bootRun') {
     doFirst {
         file('.env').readLines().each() {
@@ -109,4 +128,49 @@ tasks.named('bootRun') {
             environment key, value
         }
     }
+}
+
+task pullDBImage(type: DockerPullImage) {
+    group = 'Docker'
+    image = 'postgres:latest'
+}
+
+task createDBTestContainer(type: DockerCreateContainer) {
+    group = 'Docker'
+    dependsOn pullDBImage
+    targetImageId  pullDBImage.getImage()
+    containerName = 'algafood_test'
+    hostConfig.portBindings = ['5432:5432']
+    withEnvVar('POSTGRES_HOST_AUTH_METHOD','trust')
+    withEnvVar('POSTGRES_DB', 'algafood_test')
+}
+
+task startDBTestContainer(type: DockerStartContainer) {
+   group = 'Docker'
+   dependsOn createDBTestContainer
+   targetContainerId  createDBTestContainer.getContainerName()
+}
+
+
+task waitForContainerStartup(type: DockerLogsContainer) {
+    dependsOn startDBTestContainer
+    targetContainerId  createDBTestContainer.getContainerName()
+    follow = true
+    tailAll = true
+
+    onNext { message ->
+        def foundMessage = message.toString()
+        if (foundMessage.contains("PostgreSQL init process complete; ready for start up.")) {
+            throw new StopExecutionException('CONTAINER-STARTED')
+        }
+    }
+    onComplete {
+      println
+    }
+    // finalizedBy migrateDBTest
+}
+
+task stopDBTestContainer(type: DockerStopContainer) {
+    group = 'Docker'
+    targetContainerId  createDBTestContainer.getContainerName() 
 }
