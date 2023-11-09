@@ -127,7 +127,8 @@ public class CuisineRegisterServiceTests {
 
   @Test
   void shouldReturnCuisineList_whenFetcAll(){
-    when(repository.findAll()).thenReturn(Collections.singletonList(registeredCuisine().build()));
+    Cuisine registered = registeredCuisine().build();
+    when(repository.findAll()).thenReturn(Collections.singletonList(registered));
     List<Cuisine> actual = service.fetchAll();
     assertThat(actual.size(), is(1));
   }

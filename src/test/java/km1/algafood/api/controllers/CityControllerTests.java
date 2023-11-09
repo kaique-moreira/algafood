@@ -3,10 +3,10 @@ package km1.algafood.api.controllers;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.basePath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
-import static km1.algafood.matchers.CuisineMatcher.isCuisineEqualTo;
+import static km1.algafood.matchers.CityMatcher.isCityEqualTo;
 import static km1.algafood.matchers.ProblemMatcher.isConflictProblem;
 import static km1.algafood.matchers.ProblemMatcher.isNotFoundProblem;
-import static km1.algafood.utils.CuisineBuilderFactory.*;
+import static km1.algafood.utils.CityBuilderFactory.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doThrow;
@@ -28,17 +28,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import km1.algafood.api.exceptionHandler.ApiExceptionHandler;
 import km1.algafood.api.exceptionHandler.Problem;
-import km1.algafood.domain.exceptions.CuisineHasDependents;
-import km1.algafood.domain.exceptions.CuisineNotFountException;
-import km1.algafood.domain.models.Cuisine;
-import km1.algafood.domain.services.CuisineRegisterService;
+import km1.algafood.domain.exceptions.CityHasDependents;
+import km1.algafood.domain.exceptions.CityNotFountException;
+import km1.algafood.domain.models.City;
+import km1.algafood.domain.services.CityRegisterService;
 
 @ExtendWith(MockitoExtension.class)
-public class CuisineControllerTests {
-  @Mock private CuisineRegisterService registerService;
-  @InjectMocks private CuisineController controller;
+public class CityControllerTests {
+  @Mock private CityRegisterService registerService;
+  @InjectMocks private CityController controller;
   @InjectMocks private ApiExceptionHandler exceptionHandler;
-  private final String BASE_PATH = "/api/v1/cuisines";
+  private final String BASE_PATH = "/api/v1/cities";
 
   ObjectMapper mapper = new ObjectMapper();
 
@@ -52,7 +52,7 @@ public class CuisineControllerTests {
   void shouldReturnNotFound_whenGetIsCalledWithUnregisteredId() {
     when(
       registerService.fetchByID(1l)
-    ).thenThrow(CuisineNotFountException.class);
+    ).thenThrow(CityNotFountException.class);
 
     given()
       .accept(ContentType.JSON)
@@ -65,7 +65,7 @@ public class CuisineControllerTests {
   void shouldReturnNotFoundProblemDetails_whenGetIsCalledWithUnregisteredId() {
     when(
       registerService.fetchByID(1l)
-    ).thenThrow(CuisineNotFountException.class);
+    ).thenThrow(CityNotFountException.class);
 
     Problem actual = given()
                       .accept(ContentType.JSON)
@@ -80,7 +80,7 @@ public class CuisineControllerTests {
   @Test
   void shouldReturnNotFound_whenDeleteIsCalledWitchUnregisteredId() {
     doThrow(
-      CuisineNotFountException.class
+      CityNotFountException.class
     ).when(registerService).remove(1l);
 
     given()
@@ -94,7 +94,7 @@ public class CuisineControllerTests {
   @Test
   void shouldReturnNotFoundProblemDetails_whenDeleteIsCalledWithUnregisteredId() {
     doThrow(
-      CuisineNotFountException.class
+      CityNotFountException.class
     ).when(registerService).remove(1l);
 
     Problem actual = given()
@@ -110,7 +110,7 @@ public class CuisineControllerTests {
   @Test
   void shouldReturnConflict_whenDeleteIsCalledWhileEntityHasDependents() {
     doThrow(
-      CuisineHasDependents.class
+      CityHasDependents.class
     ).when(registerService).remove(1l);
 
     given()
@@ -124,7 +124,7 @@ public class CuisineControllerTests {
   @Test
   void shouldReturnConflictProblemDetails_whenDeleteIsCalledWhileEntityHasDependents() {
     doThrow(
-      CuisineHasDependents.class
+      CityHasDependents.class
     ).when(registerService).remove(1l);
 
     Problem actual = given()
@@ -139,13 +139,13 @@ public class CuisineControllerTests {
 
   @Test
   void shouldReturnNotFound_whenPutIsCalledWithInvalidId() {
-    Cuisine valid = validCuisine().build();
+    City valid = validCity().build();
     when( 
       registerService.update(
         1l,
         valid
       )
-    ).thenThrow(CuisineNotFountException.class);
+    ).thenThrow(CityNotFountException.class);
 
     given()
       .contentType(ContentType.JSON)
@@ -163,13 +163,13 @@ public class CuisineControllerTests {
 
   @Test
   void shouldReturnNotFoundProblemDetails_whenPutIsCalledWithInvalidId() {
-    Cuisine valid = validCuisine().build();
+    City valid = validCity().build();
     when(
       registerService.update(
         1l,
         valid
       )
-    ).thenThrow(CuisineNotFountException.class);
+    ).thenThrow(CityNotFountException.class);
 
   Problem actual = given()
                       .contentType(ContentType.JSON)
@@ -188,9 +188,9 @@ public class CuisineControllerTests {
   }
    
   @Test
-  void shouldReturnUpdatedCuisine_whenPutIsCalledWithValidCuisine() {
-    Cuisine valid = validCuisine().build();
-    Cuisine registered = registeredCuisine().build();
+  void shouldReturnUpdatedCity_whenPutIsCalledWithValidCity() {
+    City valid = validCity().build();
+    City registered = registeredCity().build();
     when(
       registerService.update(
         1l,
@@ -200,7 +200,7 @@ public class CuisineControllerTests {
         registered
       );
 
-    Cuisine actual = given()
+    City actual = given()
                       .contentType(ContentType.JSON)
                       .accept(ContentType.JSON)
                       .body(
@@ -211,15 +211,15 @@ public class CuisineControllerTests {
                     .when()
                       .put("/1")
                     .thenReturn()
-                      .as(Cuisine.class);
+                      .as(City.class);
 
-    assertThat(actual, isCuisineEqualTo(registered));
+    assertThat(actual, isCityEqualTo(registered));
   }
 
   @Test
-  void shouldReturnOk_whenPutIsCalledWithValidCuisine() {
-    Cuisine valid = validCuisine().build();
-    Cuisine registered = registeredCuisine().build();
+  void shouldReturnOk_whenPutIsCalledWithValidCity() {
+    City valid = validCity().build();
+    City registered = registeredCity().build();
     when(
       registerService.update(
         1l,
@@ -242,9 +242,9 @@ public class CuisineControllerTests {
   }
 
   @Test
-  void shouldReturnCreated_whenPostIsCalledWithValidCuisine() {
-    Cuisine valid = validCuisine().build();
-    Cuisine registered = registeredCuisine().build();
+  void shouldReturnCreated_whenPostIsCalledWithValidCity() {
+    City valid = validCity().build();
+    City registered = registeredCity().build();
 
     when(
       registerService.register(
@@ -267,9 +267,9 @@ public class CuisineControllerTests {
   }
 
   @Test
-  void shouldReturnSavedCuisine_whenPostIsCalledWithValidCuisine() {
-    Cuisine valid = validCuisine().build();
-    Cuisine registered = registeredCuisine().build();
+  void shouldReturnSavedCity_whenPostIsCalledWithValidCity() {
+    City valid = validCity().build();
+    City registered = registeredCity().build();
 
     when(
       registerService.register(
@@ -279,7 +279,7 @@ public class CuisineControllerTests {
         registered
       );
 
-    Cuisine actual = given()
+    City actual = given()
                       .contentType(ContentType.JSON)
                       .accept(ContentType.JSON)
                       .body(
@@ -290,14 +290,14 @@ public class CuisineControllerTests {
                     .when()
                       .post()
                     .thenReturn()
-                      .as(Cuisine.class);
+                      .as(City.class);
 
-    assertThat(actual, isCuisineEqualTo(registered));
+    assertThat(actual, isCityEqualTo(registered));
   }
 
   @Test
-  void shouldReturnCuisine_whenGetIsCalledWithValidCuisineId() {
-    Cuisine registered = registeredCuisine().build();
+  void shouldReturnCity_whenGetIsCalledWithValidCityId() {
+    City registered = registeredCity().build();
   
     when(
       registerService.fetchByID(1l)
@@ -305,14 +305,14 @@ public class CuisineControllerTests {
         registered
       );
 
-    Cuisine actual = given()
+    City actual = given()
                       .accept(ContentType.JSON)
                     .when()
                       .get("/1")
                     .thenReturn()
-                      .as(Cuisine.class);
+                      .as(City.class);
 
-    assertThat(actual, isCuisineEqualTo(registered));
+    assertThat(actual, isCityEqualTo(registered));
   }
 
   @Test
@@ -326,8 +326,8 @@ public class CuisineControllerTests {
   }
 
   @Test
-  void shouldReturnCuisineList_whenGetIsCalled() {  
-    Cuisine registered = registeredCuisine().build();
+  void shouldReturnCityList_whenGetIsCalled() {  
+    City registered = registeredCity().build();
     when(
       registerService.fetchAll()
     ).thenReturn(
@@ -345,7 +345,7 @@ public class CuisineControllerTests {
   }
 
   @Test
-  void shouldReturnNoContent_whenDeleteIsCalledWithValidCuisineId() {
+  void shouldReturnNoContent_whenDeleteIsCalledWithValidCityId() {
     given()
       .accept(ContentType.JSON)
     .when()
