@@ -1,17 +1,6 @@
-import java.time.Duration
 import com.bmuschko.gradle.docker.tasks.image.*
 import com.bmuschko.gradle.docker.tasks.container.*
-import com.bmuschko.gradle.docker.tasks.container.extras.*
-import com.bmuschko.gradle.docker.tasks.container.extras.*
 import org.flywaydb.gradle.task.*
-
-import com.github.dockerjava.api.command.*
-import com.github.dockerjava.api.command.*
-import groovy.transform.*
-import org.gradle.api.*
-import org.gradle.api.provider.*
-import org.gradle.api.tasks.*
-import org.gradle.api.tasks.*
 
 plugins {
 	id 'java'
@@ -26,9 +15,12 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
-configurations.all {
+
+configurations.
+        configureEach {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -36,53 +28,55 @@ configurations {
 }
  
 testing {
-    suites { 
-        test { 
-            useJUnitJupiter() 
+    suites {
+        test {
+            useJUnitJupiter()
             dependencies {
                 implementation 'io.rest-assured:spring-mock-mvc'
-	              implementation 'org.springframework.boot:spring-boot-starter-test'
+                implementation 'org.springframework.boot:spring-boot-starter-test'
                 implementation project()
             }
         }
 
-        intTest(JvmTestSuite) { 
+        intTest(JvmTestSuite) {
             dependencies {
-	              implementation 'org.springframework.boot:spring-boot-starter-test'
+                implementation 'org.springframework.boot:spring-boot-starter-test'
                 implementation project()
                 implementation sourceSets.test.output
             }
-        sources { 
-                java { 
-                    srcDirs = ['src/intTest/java'] 
+            sources {
+                java {
+                    srcDirs = ['src/intTest/java']
                 }
             }
-            targets { 
+
+            targets {
                 all {
                     testTask.configure {
-                      dependsOn startDBTestContainer, migrateDBTest
-                      finalizedBy stopDBTestContainer
+                        dependsOn setupDBTest
+                        finalizedBy stopDBTest
                         shouldRunAfter(test)
                     }
                 }
             }
         }
-        apiTest(JvmTestSuite) { 
+
+        apiTest(JvmTestSuite) {
             dependencies {
-                implementation project() 
+                implementation project()
                 implementation 'io.rest-assured:rest-assured:5.3.0'
-	              implementation 'org.springframework.boot:spring-boot-starter-test'
+                implementation 'org.springframework.boot:spring-boot-starter-test'
             }
-        sources { 
-                java { 
-                    srcDirs = ['src/apiTest/java'] 
+            sources {
+                java {
+                    srcDirs = ['src/apiTest/java']
                 }
             }
-            targets { 
+            targets {
                 all {
                     testTask.configure {
-                  System.setProperty("spring.profiles.active", "test")
-                      shouldRunAfter(intTest)
+                        System.setProperty("spring.profiles.active", "test")
+                        shouldRunAfter(intTest)
                     }
                 }
             }
@@ -135,26 +129,28 @@ task pullDBImage(type: DockerPullImage) {
     image = 'postgres:latest'
 }
 
-task createDBTestContainer(type: DockerCreateContainer) {
+task createDBTest(type: DockerCreateContainer) {
     group = 'Docker'
     dependsOn pullDBImage
     targetImageId  pullDBImage.getImage()
     containerName = 'algafood_test'
     hostConfig.portBindings = ['5432:5432']
+    hostConfig.autoRemove = true
     withEnvVar('POSTGRES_HOST_AUTH_METHOD','trust')
     withEnvVar('POSTGRES_DB', 'algafood_test')
 }
 
-task startDBTestContainer(type: DockerStartContainer) {
+task startDBTest(type: DockerStartContainer) {
    group = 'Docker'
-   dependsOn createDBTestContainer
-   targetContainerId  createDBTestContainer.getContainerName()
+   dependsOn createDBTest
+   targetContainerId  createDBTest.getContainerName()
 }
 
 
-task waitForContainerStartup(type: DockerLogsContainer) {
-    dependsOn startDBTestContainer
-    targetContainerId  createDBTestContainer.getContainerName()
+task setupDBTest(type: DockerLogsContainer) {
+    group = 'Docker'
+    dependsOn startDBTest
+    targetContainerId  createDBTest.getContainerName()
     follow = true
     tailAll = true
 
@@ -164,13 +160,12 @@ task waitForContainerStartup(type: DockerLogsContainer) {
             throw new StopExecutionException('CONTAINER-STARTED')
         }
     }
-    onComplete {
-      println
-    }
-    // finalizedBy migrateDBTest
+    finalizedBy migrateDBTest
 }
 
-task stopDBTestContainer(type: DockerStopContainer) {
+task stopDBTest(type: DockerStopContainer) {
     group = 'Docker'
-    targetContainerId  createDBTestContainer.getContainerName() 
+    targetContainerId createDBTest.getContainerName()
 }
+
+
