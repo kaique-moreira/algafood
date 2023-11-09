@@ -1,7 +1,12 @@
 package km1.algafood.api.controllers;
 
 import java.util.List;
-
+import km1.algafood.api.assemblers.CuisineDtoAssembler;
+import km1.algafood.api.assemblers.CuisineInputDisassembler;
+import km1.algafood.api.models.CuisineDto;
+import km1.algafood.api.models.CuisineInput;
+import km1.algafood.domain.services.CuisineRegisterService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,34 +18,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import km1.algafood.domain.models.Cuisine;
-import km1.algafood.domain.services.CuisineRegisterService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/cuisines")
+@AllArgsConstructor
 public class CuisineController {
-  
-  private final CuisineRegisterService registerService;
 
-  public CuisineController(CuisineRegisterService registerService) {
-    this.registerService = registerService;
-  }
+  private final CuisineRegisterService registerService;
+  private final CuisineInputDisassembler disassembler;
+  private final CuisineDtoAssembler assembler;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public Cuisine saveCuisine(@RequestBody Cuisine cuisine) {
-    return registerService.register(cuisine);
+  public CuisineDto saveCuisine(@RequestBody  @Valid CuisineInput cuisineinput) {
+    var cuisine = disassembler.apply(cuisineinput);
+    var registered =  registerService.register(cuisine);
+    var cuisineDto = assembler.apply(registered);
+    return cuisineDto;
   }
 
   @GetMapping
-  public List<Cuisine> findCuisines() {
-    List<Cuisine> cuisines = registerService.fetchAll();
-    return cuisines;
+  public List<CuisineDto> findCuisines() {
+    var cuisines = registerService.fetchAll();
+    var cuisinesDto = cuisines.stream().map(assembler).toList();
+    return cuisinesDto;
   }
 
   @GetMapping("/{id}")
-  public Cuisine findCuisineById(@PathVariable Long id) {
-    return registerService.fetchByID(id);
+  public CuisineDto findCuisineById(@PathVariable Long id) {
+    var cuisine = registerService.fetchByID(id);
+    var cuisineDto = assembler.apply(cuisine);
+    return cuisineDto;
   }
 
   @DeleteMapping("/{id}")
@@ -50,9 +59,10 @@ public class CuisineController {
   }
 
   @PutMapping("/{id}")
-  public Cuisine updateCuisineById(@PathVariable Long id,@RequestBody Cuisine cuisine) {
-    return registerService.update(id, cuisine);
+  public CuisineDto updateCuisineById(@PathVariable Long id, @RequestBody @Valid CuisineInput cuisineInput) {
+    var cuisine = disassembler.apply(cuisineInput);
+    var updated = registerService.update(id, cuisine);
+    var cuisineDto = assembler.apply(updated);
+    return cuisineDto;
   }
-
-
 }
