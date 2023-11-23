@@ -1,16 +1,12 @@
-import com.bmuschko.gradle.docker.tasks.image.*
-import com.bmuschko.gradle.docker.tasks.container.*
 import org.flywaydb.gradle.task.*
 
 plugins {
-  /* id 'jacoco' */
-  /* id 'pmd' */
+  id 'jacoco'
 	id 'java'
 	id 'org.springframework.boot' version '3.0.0'
 	id 'io.spring.dependency-management' version '1.1.0'
   id 'jvm-test-suite'
   id 'org.flywaydb.flyway' version '9.8.1'
-  id 'com.bmuschko.docker-remote-api' version '9.1.0'
 }
 
 flyway {
@@ -36,63 +32,6 @@ configurations {
 	}
 }
  
-testing {
-    suites {
-        test {
-            useJUnitJupiter()
-            dependencies {
-                implementation 'io.rest-assured:spring-mock-mvc'
-                implementation 'org.springframework.boot:spring-boot-starter-test'
-                implementation project()
-            }
-        }
-
-        intTest(JvmTestSuite) {
-            dependencies {
-                implementation 'org.springframework.boot:spring-boot-starter-test'
-                implementation project()
-                implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-                implementation sourceSets.test.output
-            }
-            sources {
-                java {
-                    srcDirs = ['src/intTest/java']
-                }
-            }
-
-            targets {
-                all {
-                    testTask.configure {
-                        dependsOn setupDBTest
-                        finalizedBy stopDBTest
-                        shouldRunAfter(test)
-                    }
-                }
-            }
-        }
-
-        apiTest(JvmTestSuite) {
-            dependencies {
-                implementation project()
-                implementation 'io.rest-assured:rest-assured:5.3.0'
-                implementation 'org.springframework.boot:spring-boot-starter-test'
-            }
-            sources {
-                java {
-                    srcDirs = ['src/apiTest/java']
-                }
-            }
-            targets {
-                all {
-                    testTask.configure {
-                        System.setProperty("spring.profiles.active", "test")
-                        shouldRunAfter(intTest)
-                    }
-                }
-            }
-        }
-    }
-}
 
 repositories {
 	mavenCentral()
@@ -100,6 +39,9 @@ repositories {
 }
 
 dependencies {
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+  implementation 'com.amazonaws:aws-java-sdk-s3:1.12.506'
   implementation 'com.github.librepdf:openpdf:1.3.30'
   implementation 'com.liferay:com.lowagie.itext:2.1.7.js10.LIFERAY-PATCHED-1'
   implementation 'com.innoventsolutions.birt.runtime:com.lowagie.text_2.1.7.v201004222200:4.8.0'
@@ -118,65 +60,36 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 }
 
-task migrateDBTest(type: FlywayMigrateTask) {
-    url = 'jdbc:postgresql://localhost:5432/algafood_test'
-    user = 'postgres'
-    password = ''
-
+tasks.named('test') {
+  useJUnitPlatform()
 }
 
-tasks.named('bootRun') {
-    doFirst {
-        file('.env').readLines().each() {
-            def (key, value) = it.tokenize('=')
-            environment key, value
+testing {
+  suites { 
+    test { 
+      useJUnitJupiter() 
+      }
+    integrationTest(JvmTestSuite) { 
+      dependencies {
+        implementation project() 
         }
+      targets { 
+        all {
+          testTask.configure {
+            shouldRunAfter(test)
+             }
+           }
+         }
+      sources { 
+        java { 
+          srcDirs = ['src/test-it/java'] 
+          }
+        }
+      }
     }
 }
 
-task pullDBImage(type: DockerPullImage) {
-    group = 'Docker'
-    image = 'postgres:latest'
-}
-
-task createDBTest(type: DockerCreateContainer) {
-    group = 'Docker'
-    dependsOn pullDBImage
-    targetImageId  pullDBImage.getImage()
-    containerName = 'algafood_test'
-    hostConfig.portBindings = ['5432:5432']
-    hostConfig.autoRemove = true
-    withEnvVar('POSTGRES_HOST_AUTH_METHOD','trust')
-    withEnvVar('POSTGRES_DB', 'algafood_test')
-}
-
-task startDBTest(type: DockerStartContainer) {
-   group = 'Docker'
-   dependsOn createDBTest
-   targetContainerId  createDBTest.getContainerName()
-}
-
-
-task setupDBTest(type: DockerLogsContainer) {
-    group = 'Docker'
-    dependsOn startDBTest
-    targetContainerId  createDBTest.getContainerName()
-    follow = true
-    tailAll = true
-
-    onNext { message ->
-        def foundMessage = message.toString()
-        if (foundMessage.contains("PostgreSQL init process complete; ready for start up.")) {
-            sleep(2 * 1000)
-            throw new StopExecutionException('CONTAINER-STARTED')
-        }
-    }
-  
-    finalizedBy migrateDBTest
-}
-
-task stopDBTest(type: DockerStopContainer) {
-    group = 'Docker'
-    targetContainerId createDBTest.getContainerName()
+tasks.named('check') { 
+    dependsOn(testing.suites.integrationTest)
 }
 
